@@ -1,6 +1,6 @@
 {
   "name": "react-native-epic-modal",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A flexible and powerful modal manager for React Native.",
   "source": "./src/index.tsx",
   "main": "./lib/module/index.js",
@@ -40,17 +40,17 @@
     "prepare": "bob build",
     "release": "release-it"
   },
-"keywords": [
-  "react-native",
-  "modal",
-  "portal",
-  "animation",
-  "gestures",
-  "mobile",
-  "overlay",
-  "reanimated",
-  "react-native-modal",
-  "react-native-modal-manager"
+  "keywords": [
+    "react-native",
+    "modal",
+    "portal",
+    "animation",
+    "gestures",
+    "mobile",
+    "overlay",
+    "reanimated",
+    "react-native-modal",
+    "react-native-modal-manager"
   ],
   "repository": {
     "type": "git",
