@@ -3,7 +3,8 @@ import {
   ModalSetStateProvider,
   ModalStateProvider,
 } from '../../context/context';
-import { ModalHost, type IModalComponent } from '../components';
+import { ModalHost } from '../modal-host/modal-host';
+import type { IModalComponent } from '../modal/types';
 
 export const ModalProvider: FC<PropsWithChildren> = ({ children }) => {
   const [state, setState] = useState<IModalComponent[]>([]);
