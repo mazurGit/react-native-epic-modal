@@ -40,10 +40,17 @@
     "prepare": "bob build",
     "release": "release-it"
   },
-  "keywords": [
-    "react-native",
-    "ios",
-    "android"
+"keywords": [
+  "react-native",
+  "modal",
+  "portal",
+  "animation",
+  "gestures",
+  "mobile",
+  "overlay",
+  "reanimated",
+  "react-native-modal",
+  "react-native-modal-manager"
   ],
   "repository": {
     "type": "git",
