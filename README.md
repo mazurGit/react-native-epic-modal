@@ -17,6 +17,12 @@ Supports **stacking**, **custom animations**, **gesture dismissals**, and **port
 
 ---
 
+## 🎥 Demo
+
+<p align="center">
+  <img src="docs/demo.gif" alt="Epic Modal Demo" width="300" />
+</p>
+
 ## 📦 Installation
 
 ```bash
