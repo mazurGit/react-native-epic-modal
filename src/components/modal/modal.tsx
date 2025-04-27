@@ -1,5 +1,6 @@
 import {
   forwardRef,
+  useCallback,
   useImperativeHandle,
   useState,
   type PropsWithChildren,
@@ -21,6 +22,7 @@ import {
 } from './constants';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { getAnimationConfig } from './utils';
+import { useAndroidBackHandler } from '../../hooks/hooks';
 
 export const ModalContent = forwardRef<
   IModalRef,
@@ -38,6 +40,7 @@ export const ModalContent = forwardRef<
       onEnter,
       animation = 'fade',
       gestureConfig = DEFAULT_GESTURE_CONFIG,
+      hiddenStatusBar = false,
     },
     ref
   ) => {
@@ -47,32 +50,48 @@ export const ModalContent = forwardRef<
       leftGestureAreaOffset,
       topGestureAreaOffset,
     } = gestureConfig as Required<IGestureConfig>;
+
     const isHorizontalDirection = gestureDirection === 'horizontal';
     const [visible, setVisible] = useState(false);
     const sensitiveAreaTouched = useSharedValue(false);
+    const progress = useSharedValue(0);
     const canSwipe = useDerivedValue(
       () => sensitiveAreaTouched.value && gestureEnabled,
       [gestureEnabled]
     );
-    const progress = useSharedValue(0);
 
-    useImperativeHandle(ref, () => ({
-      show: () => {
-        setVisible(true);
-        onEnter?.();
-        progress.value = withSpring(1, animationConfig);
-      },
-      hide: () => {
-        const animationCallback = () => {
-          setVisible(false);
-          onDismiss?.();
-        };
-        progress.value = withSpring(0, animationConfig, () => {
-          runOnJS(animationCallback)();
-        });
-      },
-    })),
-      [setVisible];
+    const hideWithAnimation = useCallback(() => {
+      const finishCallback = () => {
+        setVisible(false);
+        onDismiss?.();
+      };
+      progress.value = withSpring(0, animationConfig, () => {
+        runOnJS(finishCallback)();
+      });
+    }, [setVisible, onDismiss, animationConfig, progress]);
+
+    useImperativeHandle(
+      ref,
+      () => ({
+        show: () => {
+          setVisible(true);
+          onEnter?.();
+          progress.value = withSpring(1, animationConfig);
+        },
+        hide: hideWithAnimation,
+      }),
+      [setVisible, onEnter, hideWithAnimation, animationConfig, progress]
+    );
+
+    const onBackPress = useCallback(() => {
+      if (!visible) {
+        return false;
+      }
+      hideWithAnimation();
+      return true;
+    }, [visible, hideWithAnimation]);
+
+    useAndroidBackHandler(onBackPress, [onBackPress]);
 
     const pan = Gesture.Pan()
       .minDistance(1)
@@ -126,7 +145,7 @@ export const ModalContent = forwardRef<
 
     return (
       <>
-        <StatusBar hidden backgroundColor="white" />
+        <StatusBar hidden={hiddenStatusBar} />
         <GestureDetector gesture={pan}>
           <Animated.View
             style={[

@@ -168,7 +168,6 @@ const styles = StyleSheet.create({
   spacer: { height: 20 },
   modal: {
     padding: 30,
-    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
