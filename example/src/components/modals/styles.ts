@@ -33,6 +33,24 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
+  cardHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 14,
+  },
+  marker: {
+    alignItems: 'center',
+    borderRadius: 99,
+    height: 28,
+    justifyContent: 'center',
+    width: 28,
+  },
+  markerText: {
+    color: '#ffffff',
+    fontSize: 10,
+    fontWeight: '800',
+  },
   eyebrowText: {
     color: '#ffffff',
     fontSize: 10,

@@ -29,6 +29,7 @@ export function GestureModal({ modalRef, direction }: GestureModalProps) {
     >
       <ModalCard
         eyebrow="GESTURE LAB"
+        marker={isVertical ? 'V' : 'H'}
         title={title}
         description={
           isVertical

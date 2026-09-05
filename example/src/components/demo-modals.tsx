@@ -33,6 +33,7 @@ export function DemoModals({
       <StackedModal
         modalRef={stackedFirstModalRef}
         priority={1}
+        marker="01"
         title="First Stacked Modal (Priority 1)"
         eyebrow="LAYER 01"
         description="The base layer stays mounted while higher priority surfaces appear above it."
@@ -43,6 +44,7 @@ export function DemoModals({
       <StackedModal
         modalRef={stackedSecondModalRef}
         priority={2}
+        marker="02"
         title="Second Stacked Modal (Priority 2)"
         eyebrow="LAYER 02"
         description="Priority controls the visual depth and back-button dismissal order."
@@ -53,6 +55,7 @@ export function DemoModals({
       <StackedModal
         modalRef={stackedThirdModalRef}
         priority={3}
+        marker="03"
         title="Third Stacked Modal (Priority 3)"
         eyebrow="LAYER 03"
         description="The top layer can dismiss independently and reveal the modal below it."

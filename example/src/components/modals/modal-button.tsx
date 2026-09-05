@@ -15,7 +15,9 @@ export function ModalButton({ label, testID, onPress }: ModalButtonProps) {
       onPress={onPress}
       style={styles.actionButton}
     >
-      <Text style={styles.actionText}>{label}</Text>
+      <Text style={styles.actionText}>
+        {label} {'->'}
+      </Text>
     </Pressable>
   );
 }

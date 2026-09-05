@@ -24,6 +24,7 @@ export function BasicModal({ modalRef, onEnter, onDismiss }: BasicModalProps) {
     >
       <ModalCard
         eyebrow="READY TO GO"
+        marker="01"
         title="Basic Modal"
         description="A focused surface for confirmations, details, and quick decisions."
         accent="#0f766e"

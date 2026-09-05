@@ -8,6 +8,7 @@ interface StackedModalProps {
   modalRef: RefObject<IModalRef | null>;
   priority: number;
   title: string;
+  marker: string;
   eyebrow: string;
   description: string;
   accent: string;
@@ -19,6 +20,7 @@ export function StackedModal({
   modalRef,
   priority,
   title,
+  marker,
   eyebrow,
   description,
   accent,
@@ -36,6 +38,7 @@ export function StackedModal({
     >
       <ModalCard
         eyebrow={eyebrow}
+        marker={marker}
         title={title}
         description={description}
         accent={accent}

@@ -18,7 +18,11 @@ export default function App() {
     <GestureHandlerRootView style={styles.root}>
       <ModalProvider>
         <View style={styles.container}>
+          <Text style={styles.kicker}>MOTION SYSTEM / 01</Text>
           <Text style={styles.title}>Epic Modal Full Demo</Text>
+          <Text style={styles.subtitle}>
+            Explore layered surfaces, gestures, and shared animation progress.
+          </Text>
           <View style={styles.statusRow}>
             <Text testID="enter-count" style={styles.statusText}>
               Enter count: {enterCount}
@@ -27,6 +31,7 @@ export default function App() {
               Dismiss count: {dismissCount}
             </Text>
           </View>
+          <Text style={styles.sectionLabel}>TRY A PRESENTATION</Text>
 
           <Pressable
             testID="open-basic-modal"
@@ -105,6 +110,21 @@ const styles = StyleSheet.create({
     letterSpacing: -0.8,
     marginBottom: 12,
   },
+  kicker: {
+    color: '#0f766e',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1.8,
+    marginBottom: 10,
+  },
+  subtitle: {
+    color: '#667269',
+    fontSize: 16,
+    lineHeight: 23,
+    marginBottom: 18,
+    maxWidth: 310,
+    textAlign: 'center',
+  },
   statusRow: {
     flexDirection: 'row',
     gap: 12,
@@ -115,6 +135,14 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 0.5,
+  },
+  sectionLabel: {
+    alignSelf: 'flex-start',
+    color: '#819087',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 1.4,
+    marginBottom: 12,
   },
   openButton: {
     alignItems: 'center',
