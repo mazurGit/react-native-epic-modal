@@ -1,11 +1,13 @@
 import {
   forwardRef,
+  useContext,
   useCallback,
   useImperativeHandle,
+  useEffect,
   useState,
   type PropsWithChildren,
 } from 'react';
-import type { IGestureConfig, IModalProps, IModalRef } from './types';
+import type { IModalProps, IModalRef } from './types';
 import { StatusBar, StyleSheet } from 'react-native';
 import Animated, {
   runOnJS,
@@ -14,15 +16,11 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import {
-  DEFAULT_ANIMATION_CONFIG,
-  DEFAULT_GESTURE_CONFIG,
-  SCREEN_HEIGHT,
-  SCREEN_WIDTH,
-} from './constants';
+import { useWindowDimensions } from 'react-native';
+import { DEFAULT_ANIMATION_CONFIG, DEFAULT_GESTURE_CONFIG } from './constants';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { getAnimationConfig } from './utils';
-import { useAndroidBackHandler } from '../../hooks/hooks';
+import { ModalBackHandlerProvider } from '../../context/context';
 
 export const ModalContent = forwardRef<
   IModalRef,
@@ -34,6 +32,7 @@ export const ModalContent = forwardRef<
       gestureDirection = 'horizontal',
       gestureEnabled = true,
       children,
+      id,
       priority,
       style,
       onDismiss,
@@ -44,43 +43,65 @@ export const ModalContent = forwardRef<
     },
     ref
   ) => {
+    const resolvedGestureConfig = {
+      ...DEFAULT_GESTURE_CONFIG,
+      ...gestureConfig,
+    };
     const {
       swipeProgressToClose,
       swipeVelocityThreshold,
       leftGestureAreaOffset,
       topGestureAreaOffset,
-    } = gestureConfig as Required<IGestureConfig>;
+    } = resolvedGestureConfig;
 
     const isHorizontalDirection = gestureDirection === 'horizontal';
     const [visible, setVisible] = useState(false);
+    const { width, height } = useWindowDimensions();
+    const backHandler = useContext(ModalBackHandlerProvider);
     const sensitiveAreaTouched = useSharedValue(false);
     const progress = useSharedValue(0);
+    const animationVersion = useSharedValue(0);
+    const presented = useSharedValue(false);
     const canSwipe = useDerivedValue(
       () => sensitiveAreaTouched.value && gestureEnabled,
       [gestureEnabled]
     );
 
     const hideWithAnimation = useCallback(() => {
+      if (!presented.value) return;
+      const version = animationVersion.value + 1;
+      animationVersion.value = version;
       const finishCallback = () => {
+        if (animationVersion.value !== version) return;
+        presented.value = false;
         setVisible(false);
         onDismiss?.();
       };
       progress.value = withSpring(0, animationConfig, () => {
-        runOnJS(finishCallback)();
+        if (animationVersion.value === version) runOnJS(finishCallback)();
       });
-    }, [setVisible, onDismiss, animationConfig, progress]);
+    }, [animationConfig, animationVersion, onDismiss, presented, progress]);
 
     useImperativeHandle(
       ref,
       () => ({
         show: () => {
+          animationVersion.value += 1;
+          presented.value = true;
           setVisible(true);
           onEnter?.();
           progress.value = withSpring(1, animationConfig);
         },
         hide: hideWithAnimation,
       }),
-      [setVisible, onEnter, hideWithAnimation, animationConfig, progress]
+      [
+        animationVersion,
+        animationConfig,
+        hideWithAnimation,
+        onEnter,
+        presented,
+        progress,
+      ]
     );
 
     const onBackPress = useCallback(() => {
@@ -91,7 +112,10 @@ export const ModalContent = forwardRef<
       return true;
     }, [visible, hideWithAnimation]);
 
-    useAndroidBackHandler(onBackPress, [onBackPress]);
+    useEffect(() => {
+      if (!backHandler) return;
+      return backHandler.register(id ?? 'modal', priority ?? 1, onBackPress);
+    }, [backHandler, id, onBackPress, priority]);
 
     const pan = Gesture.Pan()
       .minDistance(1)
@@ -110,11 +134,11 @@ export const ModalContent = forwardRef<
         if (!canSwipe.value) {
           return;
         }
-        const distance = isHorizontalDirection ? SCREEN_WIDTH : SCREEN_HEIGHT;
+        const distance = isHorizontalDirection ? width : height;
         const translation = isHorizontalDirection
           ? event.translationX
           : event.translationY;
-        const swipeProgress = 1 - Math.abs(translation / distance);
+        const swipeProgress = 1 - Math.max(translation, 0) / distance;
         progress.value = Math.min(Math.max(swipeProgress, 0), 1);
       })
       .onEnd((event) => {
@@ -124,10 +148,16 @@ export const ModalContent = forwardRef<
           : event.velocityY;
         if (
           progress.value < Number(swipeProgressToClose) ||
-          Math.abs(swipeVelocity) > swipeVelocityThreshold
+          swipeVelocity > swipeVelocityThreshold
         ) {
+          const version = animationVersion.value + 1;
+          animationVersion.value = version;
           progress.value = withSpring(0, animationConfig, () => {
-            runOnJS(setVisible)(false);
+            if (animationVersion.value === version && presented.value) {
+              presented.value = false;
+              runOnJS(setVisible)(false);
+              if (onDismiss) runOnJS(onDismiss)();
+            }
           });
         } else {
           progress.value = withSpring(1, animationConfig);
@@ -135,8 +165,11 @@ export const ModalContent = forwardRef<
       });
 
     const aStyles = useAnimatedStyle(
-      () => getAnimationConfig(progress, gestureDirection)[animation],
-      [animation]
+      () =>
+        getAnimationConfig(progress, gestureDirection, width, height)[
+          animation
+        ],
+      [animation, gestureDirection, height, width]
     );
 
     if (!visible) {

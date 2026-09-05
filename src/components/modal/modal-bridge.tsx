@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, type PropsWithChildren } from 'react';
+import { forwardRef, useEffect, useId, type PropsWithChildren } from 'react';
 import type { IModalProps, IModalRef } from './types';
 import { useModal } from '../../hooks/hooks';
 import { ModalContent } from './modal';
@@ -22,12 +22,15 @@ const ModalBridge = forwardRef<IModalRef, PropsWithChildren<IModalProps>>(
     ref
   ) => {
     const { addUpdateModal, removeModal } = useModal();
+    const instanceId = useId();
 
     useEffect(() => {
       addUpdateModal({
+        id: instanceId,
         name,
         node: (
           <ModalContent
+            id={instanceId}
             gestureDirection={gestureDirection}
             gestureEnabled={gestureEnabled}
             animation={animation}
@@ -46,7 +49,7 @@ const ModalBridge = forwardRef<IModalRef, PropsWithChildren<IModalProps>>(
         ),
       });
       return () => {
-        removeModal(name);
+        removeModal(instanceId);
       };
     }, [
       animationConfig,
@@ -60,6 +63,7 @@ const ModalBridge = forwardRef<IModalRef, PropsWithChildren<IModalProps>>(
       onEnter,
       gestureConfig,
       hiddenStatusBar,
+      instanceId,
       addUpdateModal,
       removeModal,
       style,

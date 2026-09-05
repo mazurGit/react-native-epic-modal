@@ -87,13 +87,16 @@
     "react-native-builder-bob": "^0.40.6",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-reanimated": "~3.16.1",
+    "react-native-screens": "^4.10.0",
     "release-it": "^17.10.0",
     "typescript": "^5.2.2"
   },
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
-    "react-native-reanimated": ">=3.16.0"
+    "react-native-reanimated": ">=3.16.0",
+    "react-native-gesture-handler": ">=2.0.0",
+    "react-native-screens": ">=3.0.0"
   },
   "workspaces": [
     "example"

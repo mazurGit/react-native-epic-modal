@@ -13,7 +13,7 @@ export const useModal = () => {
       setState((prev) => {
         const stateClone = [...prev];
         const currentIndex = stateClone.findIndex(
-          (item) => item.name == modal.name
+          (item) => item.id === modal.id
         );
 
         if (currentIndex !== -1) {
@@ -28,9 +28,9 @@ export const useModal = () => {
   );
 
   const removeModal = useCallback(
-    (name: string) => {
+    (id: string) => {
       setState((prev) => {
-        const index = prev.findIndex((item) => item.name === name);
+        const index = prev.findIndex((item) => item.id === id);
         if (index === -1) {
           return prev;
         }

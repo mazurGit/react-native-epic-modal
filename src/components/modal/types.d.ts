@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 export interface IModalComponent {
+  id: string;
   name: string;
   node: ReactNode;
 }
@@ -21,7 +22,8 @@ export interface IGestureConfig {
   swipeProgressToClose?: `0.${number}`;
 }
 
-export interface IModalProps extends Omit<IModalComponent, 'node'> {
+export interface IModalProps extends Omit<IModalComponent, 'id' | 'node'> {
+  id?: string;
   onEnter?: () => void;
   onDismiss?: () => void;
   style?: StyleProp<ViewStyle>;
