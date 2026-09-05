@@ -2,6 +2,25 @@ import { useCallback, useContext } from 'react';
 import type { IModalComponent } from '../components/modal/types';
 import { ModalSetStateProvider } from '../context/context';
 
+export const upsertModal = (
+  state: IModalComponent[],
+  modal: IModalComponent
+) => {
+  const index = state.findIndex((item) => item.id === modal.id);
+  if (index === -1) return [...state, modal];
+
+  const nextState = [...state];
+  nextState[index] = modal;
+  return nextState;
+};
+
+export const removeModalById = (state: IModalComponent[], id: string) => {
+  const index = state.findIndex((item) => item.id === id);
+  if (index === -1) return state;
+
+  return [...state.slice(0, index), ...state.slice(index + 1)];
+};
+
 export const useModal = () => {
   const setState = useContext(ModalSetStateProvider);
   if (!setState) {
@@ -10,33 +29,14 @@ export const useModal = () => {
 
   const addUpdateModal = useCallback(
     (modal: IModalComponent) => {
-      setState((prev) => {
-        const stateClone = [...prev];
-        const currentIndex = stateClone.findIndex(
-          (item) => item.name == modal.name
-        );
-
-        if (currentIndex !== -1) {
-          stateClone[currentIndex] = modal;
-        } else {
-          stateClone.push(modal);
-        }
-        return stateClone;
-      });
+      setState((prev) => upsertModal(prev, modal));
     },
     [setState]
   );
 
   const removeModal = useCallback(
-    (name: string) => {
-      setState((prev) => {
-        const index = prev.findIndex((item) => item.name === name);
-        if (index === -1) {
-          return prev;
-        }
-        const newState = [...prev.slice(0, index), ...prev.slice(index + 1)];
-        return newState;
-      });
+    (id: string) => {
+      setState((prev) => removeModalById(prev, id));
     },
     [setState]
   );

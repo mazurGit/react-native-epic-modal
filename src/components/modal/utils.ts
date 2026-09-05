@@ -1,11 +1,12 @@
 import { interpolate, type SharedValue } from 'react-native-reanimated';
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from './constants';
 import type { ViewStyle } from 'react-native';
 import type { TAnimation, TDirection } from './types';
 
 export const getAnimationConfig = (
   progress: SharedValue<number>,
-  direction: TDirection
+  direction: TDirection,
+  width: number,
+  height: number
 ): Record<TAnimation, ViewStyle> => {
   'worklet';
 
@@ -19,18 +20,10 @@ export const getAnimationConfig = (
       transform: [
         isHorizontalDirection
           ? {
-              translateX: interpolate(
-                progress.value,
-                [0, 1],
-                [SCREEN_WIDTH, 0]
-              ),
+              translateX: interpolate(progress.value, [0, 1], [width, 0]),
             }
           : {
-              translateY: interpolate(
-                progress.value,
-                [0, 1],
-                [SCREEN_HEIGHT, 0]
-              ),
+              translateY: interpolate(progress.value, [0, 1], [height, 0]),
             },
       ],
     },

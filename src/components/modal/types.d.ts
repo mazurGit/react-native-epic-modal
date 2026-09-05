@@ -1,8 +1,9 @@
-import type { ReactNode } from 'react';
+import type { ReactNode, Ref } from 'react';
 
 export interface IModalComponent {
-  name: string;
-  node: ReactNode;
+  id: string;
+  props: IModalProps;
+  ref: Ref<IModalRef>;
 }
 
 export type TAnimation = 'fade' | 'slide' | 'zoom';
@@ -21,7 +22,10 @@ export interface IGestureConfig {
   swipeProgressToClose?: `0.${number}`;
 }
 
-export interface IModalProps extends Omit<IModalComponent, 'node'> {
+export interface IModalProps {
+  name: string;
+  children?: ReactNode;
+  id?: string;
   onEnter?: () => void;
   onDismiss?: () => void;
   style?: StyleProp<ViewStyle>;
