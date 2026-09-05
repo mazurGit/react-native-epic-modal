@@ -20,13 +20,13 @@ Supports **stacking**, **custom animations**, **gesture dismissals**, and **port
 ## 📦 Installation
 
 ```bash
-npm install react-native-epic-modal react-native-gesture-handler react-native-reanimated
+npm install react-native-epic-modal react-native-gesture-handler react-native-reanimated react-native-screens react-native-worklets
 ```
 
 or
 
 ```bash
-yarn add react-native-epic-modal react-native-gesture-handler react-native-reanimated
+yarn add react-native-epic-modal react-native-gesture-handler react-native-reanimated react-native-screens react-native-worklets
 ```
 
 > **Note:**  
@@ -86,10 +86,12 @@ export default function Screen() {
 
 | Prop | Type | Default | Description |
 |:-----|:-----|:--------|:------------|
-| `name` | `string` | — | Unique name for the modal |
+| `name` | `string` | — | Unique registry name within the provider |
+| `id` | `string` | `name` | Optional explicit registry ID |
 | `animation` | `"fade"` / `"slide"` / `"zoom"` | `"fade"` | Modal entrance and exit animation |
 | `gestureEnabled` | `boolean` | `true` | Enable swipe-to-dismiss gestures |
 | `gestureDirection` | `"horizontal"` / `"vertical"` | `"horizontal"` | Direction allowed for swipe dismiss |
+| `gestureConfig.edgeTarget` | `"screen"` / `"content"` | `"screen"` | Whether the gesture edge is measured from the screen or modal content |
 | `priority` | `number` | `1` | Stacking priority between multiple modals |
 | `onEnter` | `() => void` | — | Callback when modal appears |
 | `onDismiss` | `() => void` | — | Callback when modal is dismissed |
@@ -102,6 +104,7 @@ export default function Screen() {
 
 ```tsx
 gestureConfig={{
+  edgeTarget: "content",
   leftGestureAreaOffset: 50,
   topGestureAreaOffset: 100,
   swipeVelocityThreshold: 800,
@@ -109,13 +112,37 @@ gestureConfig={{
 }}
 ```
 
+## Animate Custom Content
+
+Use `useProgress` inside a modal child to build an animation that follows the
+modal presentation progress on the UI thread:
+
+```tsx
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { useProgress } from 'react-native-epic-modal';
+
+function ModalContent() {
+  const progress = useProgress();
+  const style = useAnimatedStyle(() => ({
+    transform: [{ translateY: (1 - progress.value) * 24 }],
+    opacity: progress.value,
+  }));
+
+  return <Animated.View style={style}>{/* content */}</Animated.View>;
+}
+```
+
+`useProgress` must be called from a component rendered inside `Modal`.
+
 ---
 
 ## 🛠 Requirements
 
 - React Native >= 0.71
 - react-native-gesture-handler >= 2.0
-- react-native-reanimated >= 3.0
+- react-native-reanimated >= 3.16
+- react-native-screens >= 3.0
+- react-native-worklets >= 0.5
 
 ✅ Compatible with Expo, Bare React Native, and monorepo setups.
 

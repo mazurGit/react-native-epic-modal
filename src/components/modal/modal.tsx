@@ -4,12 +4,13 @@ import {
   useCallback,
   useImperativeHandle,
   useEffect,
+  useRef,
   useState,
   type PropsWithChildren,
 } from 'react';
 import type { LayoutChangeEvent } from 'react-native';
 import type { IModalProps, IModalRef } from './types';
-import { StatusBar, StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet, View } from 'react-native';
 import { scheduleOnRN } from 'react-native-worklets';
 import Animated, {
   useAnimatedStyle,
@@ -23,6 +24,7 @@ import { DEFAULT_ANIMATION_CONFIG, DEFAULT_GESTURE_CONFIG } from './constants';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { getAnimationConfig } from './utils';
 import { ModalBackHandlerProvider } from '../../context/context';
+import { ModalProgressContext } from '../../context/modal-progress-context';
 
 export const ModalContent = forwardRef<
   IModalRef,
@@ -37,6 +39,7 @@ export const ModalContent = forwardRef<
       id,
       priority,
       style,
+      backdropStyle,
       onDismiss,
       onEnter,
       animation = 'fade',
@@ -54,13 +57,17 @@ export const ModalContent = forwardRef<
       swipeVelocityThreshold,
       leftGestureAreaOffset,
       topGestureAreaOffset,
+      edgeTarget,
     } = resolvedGestureConfig;
 
     const isHorizontalDirection = gestureDirection === 'horizontal';
     const [visible, setVisible] = useState(false);
+    const visibleRef = useRef(false);
     const { width, height } = useWindowDimensions();
     const containerWidth = useSharedValue(0);
     const containerHeight = useSharedValue(0);
+    const contentX = useSharedValue(0);
+    const contentY = useSharedValue(0);
     const backHandler = useContext(ModalBackHandlerProvider);
     const sensitiveAreaTouched = useSharedValue(false);
     const progress = useSharedValue(0);
@@ -121,12 +128,16 @@ export const ModalContent = forwardRef<
     );
 
     const onBackPress = useCallback(() => {
-      if (!visible) {
+      if (!visibleRef.current) {
         return false;
       }
       hideWithAnimation();
       return true;
-    }, [visible, hideWithAnimation]);
+    }, [hideWithAnimation]);
+
+    useEffect(() => {
+      visibleRef.current = visible;
+    }, [visible]);
 
     useEffect(() => {
       if (!backHandler) return;
@@ -137,9 +148,27 @@ export const ModalContent = forwardRef<
       .minDistance(1)
       .onStart((event) => {
         'worklet';
-        if (event.x < leftGestureAreaOffset && isHorizontalDirection) {
+        const left = edgeTarget === 'content' ? contentX.value : 0;
+        const top = edgeTarget === 'content' ? contentY.value : 0;
+        const right =
+          edgeTarget === 'content'
+            ? contentX.value + containerWidth.value
+            : width;
+        const bottom =
+          edgeTarget === 'content'
+            ? contentY.value + containerHeight.value
+            : height;
+        if (
+          event.x >= left &&
+          event.x <= Math.min(left + leftGestureAreaOffset, right) &&
+          isHorizontalDirection
+        ) {
           sensitiveAreaTouched.value = true;
-        } else if (event.y < topGestureAreaOffset && !isHorizontalDirection) {
+        } else if (
+          event.y >= top &&
+          event.y <= Math.min(top + topGestureAreaOffset, bottom) &&
+          !isHorizontalDirection
+        ) {
           sensitiveAreaTouched.value = true;
         } else {
           sensitiveAreaTouched.value = false;
@@ -195,13 +224,18 @@ export const ModalContent = forwardRef<
         )[animation],
       [animation, gestureDirection, height, width]
     );
+    const backdropAnimatedStyle = useAnimatedStyle(() => ({
+      opacity: progress.value,
+    }));
 
     const onLayout = useCallback(
       ({ nativeEvent: { layout } }: LayoutChangeEvent) => {
+        contentX.value = layout.x;
+        contentY.value = layout.y;
         containerWidth.value = layout.width;
         containerHeight.value = layout.height;
       },
-      [containerHeight, containerWidth]
+      [containerHeight, containerWidth, contentX, contentY]
     );
 
     if (!visible) {
@@ -212,17 +246,28 @@ export const ModalContent = forwardRef<
       <>
         <StatusBar hidden={hiddenStatusBar} />
         <GestureDetector gesture={pan}>
-          <Animated.View
-            onLayout={onLayout}
-            style={[
-              StyleSheet.absoluteFill,
-              { zIndex: priority },
-              style,
-              aStyles,
-            ]}
-          >
-            {children}
-          </Animated.View>
+          <View style={StyleSheet.absoluteFill}>
+            <Animated.View
+              pointerEvents="none"
+              style={[
+                StyleSheet.absoluteFill,
+                backdropStyle,
+                backdropAnimatedStyle,
+              ]}
+            />
+            <Animated.View
+              onLayout={onLayout}
+              style={[
+                style ?? StyleSheet.absoluteFill,
+                { zIndex: priority },
+                aStyles,
+              ]}
+            >
+              <ModalProgressContext.Provider value={progress}>
+                {children}
+              </ModalProgressContext.Provider>
+            </Animated.View>
+          </View>
         </GestureDetector>
       </>
     );

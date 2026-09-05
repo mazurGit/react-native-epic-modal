@@ -1,8 +1,8 @@
 import {
   forwardRef,
   useEffect,
-  useId,
   useMemo,
+  useRef,
   type PropsWithChildren,
 } from 'react';
 import type { IModalProps, IModalRef } from './types';
@@ -13,7 +13,9 @@ const ModalBridge = forwardRef<IModalRef, PropsWithChildren<IModalProps>>(
     {
       children,
       name,
+      id,
       style,
+      backdropStyle,
       onDismiss,
       onEnter,
       animation,
@@ -26,13 +28,14 @@ const ModalBridge = forwardRef<IModalRef, PropsWithChildren<IModalProps>>(
     },
     ref
   ) => {
-    const { addUpdateModal, removeModal } = useModal();
-    const instanceId = useId();
+    const { registerModal, updateModal, removeModal } = useModal();
+    const instanceId = id ?? name;
     const modalProps = useMemo(
       () => ({
         name,
         children,
         style,
+        backdropStyle,
         onDismiss,
         onEnter,
         animation,
@@ -46,6 +49,7 @@ const ModalBridge = forwardRef<IModalRef, PropsWithChildren<IModalProps>>(
       [
         animation,
         animationConfig,
+        backdropStyle,
         children,
         gestureConfig,
         gestureDirection,
@@ -58,17 +62,22 @@ const ModalBridge = forwardRef<IModalRef, PropsWithChildren<IModalProps>>(
         style,
       ]
     );
+    const initialModalProps = useRef(modalProps).current;
 
     useEffect(() => {
-      addUpdateModal({
+      registerModal({
         id: instanceId,
-        props: modalProps,
+        props: initialModalProps,
         ref,
       });
       return () => {
         removeModal(instanceId);
       };
-    }, [instanceId, addUpdateModal, removeModal, ref, modalProps]);
+    }, [initialModalProps, instanceId, registerModal, removeModal, ref]);
+
+    useEffect(() => {
+      updateModal(instanceId, modalProps);
+    }, [instanceId, modalProps, updateModal]);
 
     return null;
   }
