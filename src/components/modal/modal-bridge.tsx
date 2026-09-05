@@ -1,14 +1,19 @@
-import { forwardRef, useEffect, useId, type PropsWithChildren } from 'react';
+import {
+  forwardRef,
+  useEffect,
+  useId,
+  useMemo,
+  type PropsWithChildren,
+} from 'react';
 import type { IModalProps, IModalRef } from './types';
 import { useModal } from '../../hooks/hooks';
-import { ModalContent } from './modal';
 
 const ModalBridge = forwardRef<IModalRef, PropsWithChildren<IModalProps>>(
   (
     {
-      style,
       children,
       name,
+      style,
       onDismiss,
       onEnter,
       animation,
@@ -23,52 +28,47 @@ const ModalBridge = forwardRef<IModalRef, PropsWithChildren<IModalProps>>(
   ) => {
     const { addUpdateModal, removeModal } = useModal();
     const instanceId = useId();
+    const modalProps = useMemo(
+      () => ({
+        name,
+        children,
+        style,
+        onDismiss,
+        onEnter,
+        animation,
+        gestureDirection,
+        gestureEnabled,
+        priority,
+        animationConfig,
+        gestureConfig,
+        hiddenStatusBar,
+      }),
+      [
+        animation,
+        animationConfig,
+        children,
+        gestureConfig,
+        gestureDirection,
+        gestureEnabled,
+        hiddenStatusBar,
+        name,
+        onDismiss,
+        onEnter,
+        priority,
+        style,
+      ]
+    );
 
     useEffect(() => {
       addUpdateModal({
         id: instanceId,
-        name,
-        node: (
-          <ModalContent
-            id={instanceId}
-            gestureDirection={gestureDirection}
-            gestureEnabled={gestureEnabled}
-            animation={animation}
-            onDismiss={onDismiss}
-            onEnter={onEnter}
-            name={name}
-            style={style}
-            priority={priority}
-            ref={ref}
-            animationConfig={animationConfig}
-            gestureConfig={gestureConfig}
-            hiddenStatusBar={hiddenStatusBar}
-          >
-            {children}
-          </ModalContent>
-        ),
+        props: modalProps,
+        ref,
       });
       return () => {
         removeModal(instanceId);
       };
-    }, [
-      animationConfig,
-      gestureDirection,
-      gestureEnabled,
-      children,
-      priority,
-      name,
-      animation,
-      onDismiss,
-      onEnter,
-      gestureConfig,
-      hiddenStatusBar,
-      instanceId,
-      addUpdateModal,
-      removeModal,
-      style,
-      ref,
-    ]);
+    }, [instanceId, addUpdateModal, removeModal, ref, modalProps]);
 
     return null;
   }

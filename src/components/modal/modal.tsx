@@ -7,6 +7,7 @@ import {
   useState,
   type PropsWithChildren,
 } from 'react';
+import type { LayoutChangeEvent } from 'react-native';
 import type { IModalProps, IModalRef } from './types';
 import { StatusBar, StyleSheet } from 'react-native';
 import Animated, {
@@ -57,30 +58,42 @@ export const ModalContent = forwardRef<
     const isHorizontalDirection = gestureDirection === 'horizontal';
     const [visible, setVisible] = useState(false);
     const { width, height } = useWindowDimensions();
+    const containerWidth = useSharedValue(0);
+    const containerHeight = useSharedValue(0);
     const backHandler = useContext(ModalBackHandlerProvider);
     const sensitiveAreaTouched = useSharedValue(false);
     const progress = useSharedValue(0);
     const animationVersion = useSharedValue(0);
     const presented = useSharedValue(false);
+    const closing = useSharedValue(false);
     const canSwipe = useDerivedValue(
-      () => sensitiveAreaTouched.value && gestureEnabled,
-      [gestureEnabled]
+      () => sensitiveAreaTouched.value && gestureEnabled && !closing.value,
+      [closing, gestureEnabled]
     );
 
     const hideWithAnimation = useCallback(() => {
-      if (!presented.value) return;
+      if (!presented.value || closing.value) return;
+      closing.value = true;
       const version = animationVersion.value + 1;
       animationVersion.value = version;
       const finishCallback = () => {
         if (animationVersion.value !== version) return;
         presented.value = false;
+        closing.value = false;
         setVisible(false);
         onDismiss?.();
       };
       progress.value = withSpring(0, animationConfig, () => {
         if (animationVersion.value === version) runOnJS(finishCallback)();
       });
-    }, [animationConfig, animationVersion, onDismiss, presented, progress]);
+    }, [
+      animationConfig,
+      animationVersion,
+      closing,
+      onDismiss,
+      presented,
+      progress,
+    ]);
 
     useImperativeHandle(
       ref,
@@ -88,6 +101,7 @@ export const ModalContent = forwardRef<
         show: () => {
           animationVersion.value += 1;
           presented.value = true;
+          closing.value = false;
           setVisible(true);
           onEnter?.();
           progress.value = withSpring(1, animationConfig);
@@ -101,6 +115,7 @@ export const ModalContent = forwardRef<
         onEnter,
         presented,
         progress,
+        closing,
       ]
     );
 
@@ -134,7 +149,9 @@ export const ModalContent = forwardRef<
         if (!canSwipe.value) {
           return;
         }
-        const distance = isHorizontalDirection ? width : height;
+        const distance = isHorizontalDirection
+          ? containerWidth.value || width
+          : containerHeight.value || height;
         const translation = isHorizontalDirection
           ? event.translationX
           : event.translationY;
@@ -150,11 +167,14 @@ export const ModalContent = forwardRef<
           progress.value < Number(swipeProgressToClose) ||
           swipeVelocity > swipeVelocityThreshold
         ) {
+          if (closing.value) return;
+          closing.value = true;
           const version = animationVersion.value + 1;
           animationVersion.value = version;
           progress.value = withSpring(0, animationConfig, () => {
             if (animationVersion.value === version && presented.value) {
               presented.value = false;
+              closing.value = false;
               runOnJS(setVisible)(false);
               if (onDismiss) runOnJS(onDismiss)();
             }
@@ -166,10 +186,21 @@ export const ModalContent = forwardRef<
 
     const aStyles = useAnimatedStyle(
       () =>
-        getAnimationConfig(progress, gestureDirection, width, height)[
-          animation
-        ],
+        getAnimationConfig(
+          progress,
+          gestureDirection,
+          containerWidth.value || width,
+          containerHeight.value || height
+        )[animation],
       [animation, gestureDirection, height, width]
+    );
+
+    const onLayout = useCallback(
+      ({ nativeEvent: { layout } }: LayoutChangeEvent) => {
+        containerWidth.value = layout.width;
+        containerHeight.value = layout.height;
+      },
+      [containerHeight, containerWidth]
     );
 
     if (!visible) {
@@ -181,6 +212,7 @@ export const ModalContent = forwardRef<
         <StatusBar hidden={hiddenStatusBar} />
         <GestureDetector gesture={pan}>
           <Animated.View
+            onLayout={onLayout}
             style={[
               StyleSheet.absoluteFill,
               { zIndex: priority },

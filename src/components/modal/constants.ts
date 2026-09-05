@@ -1,8 +1,8 @@
-import type { SpringConfig } from 'react-native-reanimated/lib/typescript/animation/springUtils';
+import type { WithSpringConfig } from 'react-native-reanimated';
 import type { IGestureConfig } from './types';
 
-export const DEFAULT_ANIMATION_CONFIG: SpringConfig = {
-  damping: 75,
+export const DEFAULT_ANIMATION_CONFIG: WithSpringConfig = {
+  damping: 100,
   stiffness: 500,
 };
 

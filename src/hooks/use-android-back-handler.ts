@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { BackHandler, Platform } from 'react-native';
-import type { DependencyList } from 'react-native-reanimated/lib/typescript/hook';
+import type { DependencyList } from 'react-native-reanimated/lib/typescript/hook/commonTypes';
 
 export const useAndroidBackHandler = (
   onBackPress: () => boolean,
