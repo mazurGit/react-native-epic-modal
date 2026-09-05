@@ -33,9 +33,21 @@ export default defineConfig([
     },
   },
   {
-    ignores: [
-      'node_modules/',
-      'lib/'
-    ],
+    ignores: ['node_modules/', 'lib/', 'example/android/', 'example/ios/'],
+  },
+  {
+    files: ['e2e/**/*.{js,ts}'],
+    languageOptions: {
+      globals: {
+        beforeEach: 'readonly',
+        by: 'readonly',
+        describe: 'readonly',
+        device: 'readonly',
+        element: 'readonly',
+        expect: 'readonly',
+        it: 'readonly',
+        waitFor: 'readonly',
+      },
+    },
   },
 ]);

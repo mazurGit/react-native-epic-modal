@@ -10,9 +10,10 @@ import {
 import type { LayoutChangeEvent } from 'react-native';
 import type { IModalProps, IModalRef } from './types';
 import { StatusBar, StyleSheet } from 'react-native';
+import { scheduleOnRN } from 'react-native-worklets';
 import Animated, {
-  runOnJS,
   useAnimatedStyle,
+  useAnimatedReaction,
   useDerivedValue,
   useSharedValue,
   withSpring,
@@ -66,34 +67,34 @@ export const ModalContent = forwardRef<
     const animationVersion = useSharedValue(0);
     const presented = useSharedValue(false);
     const closing = useSharedValue(false);
+    const hideRequest = useSharedValue(0);
     const canSwipe = useDerivedValue(
       () => sensitiveAreaTouched.value && gestureEnabled && !closing.value,
       [closing, gestureEnabled]
     );
 
     const hideWithAnimation = useCallback(() => {
-      if (!presented.value || closing.value) return;
-      closing.value = true;
-      const version = animationVersion.value + 1;
-      animationVersion.value = version;
-      const finishCallback = () => {
-        if (animationVersion.value !== version) return;
-        presented.value = false;
-        closing.value = false;
-        setVisible(false);
-        onDismiss?.();
-      };
-      progress.value = withSpring(0, animationConfig, () => {
-        if (animationVersion.value === version) runOnJS(finishCallback)();
-      });
-    }, [
-      animationConfig,
-      animationVersion,
-      closing,
-      onDismiss,
-      presented,
-      progress,
-    ]);
+      hideRequest.value += 1;
+    }, [hideRequest]);
+
+    useAnimatedReaction(
+      () => hideRequest.value,
+      (request, previousRequest) => {
+        if (request === 0 || request === previousRequest) return;
+        if (!presented.value || closing.value) return;
+        closing.value = true;
+        const version = animationVersion.value + 1;
+        animationVersion.value = version;
+        progress.value = withSpring(0, animationConfig, (finished) => {
+          if (!finished || animationVersion.value !== version) return;
+          presented.value = false;
+          closing.value = false;
+          scheduleOnRN(setVisible, false);
+          if (onDismiss) scheduleOnRN(onDismiss);
+        });
+      },
+      [animationConfig, onDismiss]
+    );
 
     useImperativeHandle(
       ref,
@@ -175,8 +176,8 @@ export const ModalContent = forwardRef<
             if (animationVersion.value === version && presented.value) {
               presented.value = false;
               closing.value = false;
-              runOnJS(setVisible)(false);
-              if (onDismiss) runOnJS(onDismiss)();
+              scheduleOnRN(setVisible, false);
+              if (onDismiss) scheduleOnRN(onDismiss);
             }
           });
         } else {
