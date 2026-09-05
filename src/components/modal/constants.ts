@@ -7,6 +7,7 @@ export const DEFAULT_ANIMATION_CONFIG: WithSpringConfig = {
 };
 
 export const DEFAULT_GESTURE_CONFIG: Required<IGestureConfig> = {
+  edgeTarget: 'screen',
   leftGestureAreaOffset: 50,
   topGestureAreaOffset: 200,
   swipeVelocityThreshold: 800,

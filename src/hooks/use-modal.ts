@@ -1,24 +1,47 @@
 import { useCallback, useContext } from 'react';
-import type { IModalComponent } from '../components/modal/types';
+import type {
+  IModalComponent,
+  IModalRegistry,
+} from '../components/modal/types';
 import { ModalSetStateProvider } from '../context/context';
 
-export const upsertModal = (
-  state: IModalComponent[],
+export const registerModalById = (
+  state: IModalRegistry,
   modal: IModalComponent
 ) => {
-  const index = state.findIndex((item) => item.id === modal.id);
-  if (index === -1) return [...state, modal];
+  if (state.byId[modal.id]) {
+    return { ...state, byId: { ...state.byId, [modal.id]: modal } };
+  }
 
-  const nextState = [...state];
-  nextState[index] = modal;
-  return nextState;
+  return {
+    byId: { ...state.byId, [modal.id]: modal },
+    order: [...state.order, modal.id],
+  };
 };
 
-export const removeModalById = (state: IModalComponent[], id: string) => {
-  const index = state.findIndex((item) => item.id === id);
-  if (index === -1) return state;
+export const removeModalById = (state: IModalRegistry, id: string) => {
+  if (!state.byId[id]) return state;
 
-  return [...state.slice(0, index), ...state.slice(index + 1)];
+  const byId = { ...state.byId };
+  delete byId[id];
+  return {
+    byId,
+    order: state.order.filter((itemId) => itemId !== id),
+  };
+};
+
+export const updateModalById = (
+  state: IModalRegistry,
+  id: string,
+  props: IModalComponent['props']
+) => {
+  const current = state.byId[id];
+  if (!current) return state;
+
+  return {
+    ...state,
+    byId: { ...state.byId, [id]: { ...current, props } },
+  };
 };
 
 export const useModal = () => {
@@ -27,9 +50,16 @@ export const useModal = () => {
     throw new Error("[ModalSetStateProvider] - context can't be null");
   }
 
-  const addUpdateModal = useCallback(
+  const registerModal = useCallback(
     (modal: IModalComponent) => {
-      setState((prev) => upsertModal(prev, modal));
+      setState((prev) => registerModalById(prev, modal));
+    },
+    [setState]
+  );
+
+  const updateModal = useCallback(
+    (id: string, props: IModalComponent['props']) => {
+      setState((prev) => updateModalById(prev, id, props));
     },
     [setState]
   );
@@ -41,5 +71,5 @@ export const useModal = () => {
     [setState]
   );
 
-  return { addUpdateModal, removeModal };
+  return { registerModal, updateModal, removeModal };
 };

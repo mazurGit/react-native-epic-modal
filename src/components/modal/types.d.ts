@@ -6,6 +6,11 @@ export interface IModalComponent {
   ref: Ref<IModalRef>;
 }
 
+export interface IModalRegistry {
+  byId: Record<string, IModalComponent>;
+  order: string[];
+}
+
 export type TAnimation = 'fade' | 'slide' | 'zoom';
 
 export type TDirection = 'horizontal' | 'vertical';
@@ -16,6 +21,7 @@ export interface IModalRef {
 }
 
 export interface IGestureConfig {
+  edgeTarget?: 'screen' | 'content';
   leftGestureAreaOffset?: number;
   topGestureAreaOffset?: number;
   swipeVelocityThreshold?: number;
@@ -29,6 +35,7 @@ export interface IModalProps {
   onEnter?: () => void;
   onDismiss?: () => void;
   style?: StyleProp<ViewStyle>;
+  backdropStyle?: StyleProp<ViewStyle>;
   animation?: TAnimation;
   gestureDirection?: 'horizontal' | 'vertical';
   gestureEnabled?: boolean;

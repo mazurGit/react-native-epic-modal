@@ -1,0 +1,108 @@
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+  modal: {
+    bottom: 16,
+    left: 16,
+    justifyContent: 'flex-end',
+    padding: 16,
+    position: 'absolute',
+    right: 16,
+  },
+  backdrop: {
+    backgroundColor: 'rgba(23, 33, 27, 0.46)',
+  },
+  modalBackdrop: {
+    width: '100%',
+  },
+  card: {
+    backgroundColor: '#fbfcf8',
+    borderRadius: 24,
+    borderTopWidth: 5,
+    elevation: 8,
+    padding: 24,
+    shadowColor: '#102017',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 18,
+  },
+  eyebrow: {
+    alignSelf: 'flex-start',
+    borderRadius: 99,
+    marginBottom: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  eyebrowText: {
+    color: '#ffffff',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 1.2,
+  },
+  title: {
+    color: '#17211b',
+    fontSize: 24,
+    fontWeight: '800',
+    letterSpacing: -0.4,
+    marginBottom: 10,
+  },
+  description: {
+    color: '#667269',
+    fontSize: 15,
+    lineHeight: 22,
+    marginBottom: 22,
+  },
+  detailRow: {
+    alignItems: 'center',
+    borderBottomColor: '#e1e8e0',
+    borderBottomWidth: 1,
+    borderTopColor: '#e1e8e0',
+    borderTopWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    paddingVertical: 13,
+  },
+  detailLabel: {
+    color: '#819087',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 1.1,
+  },
+  detailValue: {
+    color: '#0f766e',
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 1,
+  },
+  actionButton: {
+    alignItems: 'center',
+    backgroundColor: '#17211b',
+    borderRadius: 13,
+    paddingVertical: 14,
+  },
+  actionText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  gestureHint: {
+    alignItems: 'center',
+    backgroundColor: '#f0eaf8',
+    borderRadius: 14,
+    flexDirection: 'row',
+    marginBottom: 16,
+    padding: 12,
+  },
+  gestureHintArrow: {
+    color: '#7c3aed',
+    fontSize: 24,
+    fontWeight: '700',
+    marginRight: 10,
+  },
+  gestureHintText: {
+    color: '#5b4775',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+});

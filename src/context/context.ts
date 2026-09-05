@@ -1,5 +1,5 @@
 import { createContext, type Dispatch, type SetStateAction } from 'react';
-import type { IModalComponent } from '../components/components';
+import type { IModalRegistry } from '../components/modal/types';
 
 export interface ModalBackHandlerContextValue {
   register: (
@@ -9,9 +9,12 @@ export interface ModalBackHandlerContextValue {
   ) => () => void;
 }
 
-export const ModalStateProvider = createContext<IModalComponent[]>([]);
+export const ModalStateProvider = createContext<IModalRegistry>({
+  byId: {},
+  order: [],
+});
 export const ModalSetStateProvider = createContext<Dispatch<
-  SetStateAction<IModalComponent[]>
+  SetStateAction<IModalRegistry>
 > | null>(null);
 export const ModalBackHandlerProvider =
   createContext<ModalBackHandlerContextValue | null>(null);

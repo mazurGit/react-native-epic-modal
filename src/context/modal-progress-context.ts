@@ -1,0 +1,6 @@
+import { createContext } from 'react';
+import type { SharedValue } from 'react-native-reanimated';
+
+export const ModalProgressContext = createContext<SharedValue<number> | null>(
+  null
+);

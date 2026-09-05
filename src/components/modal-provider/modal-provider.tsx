@@ -1,23 +1,25 @@
 import {
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState,
   type FC,
   type PropsWithChildren,
 } from 'react';
-import { BackHandler, Platform } from 'react-native';
 import {
   ModalBackHandlerProvider,
   ModalSetStateProvider,
   ModalStateProvider,
 } from '../../context/context';
+import { useAndroidBackHandler } from '../../hooks/use-android-back-handler';
 import { ModalHost } from '../modal-host/modal-host';
-import type { IModalComponent } from '../modal/types';
+import type { IModalRegistry } from '../modal/types';
 
 export const ModalProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [state, setState] = useState<IModalComponent[]>([]);
+  const [state, setState] = useState<IModalRegistry>({
+    byId: {},
+    order: [],
+  });
   const handlers = useRef(
     new Map<
       string,
@@ -35,19 +37,13 @@ export const ModalProvider: FC<PropsWithChildren> = ({ children }) => {
     },
     []
   );
-  useEffect(() => {
-    if (Platform.OS !== 'android') return;
-    const subscription = BackHandler.addEventListener(
-      'hardwareBackPress',
-      () => {
-        const entries = [...handlers.current.values()].sort(
-          (a, b) => b.priority - a.priority || b.order - a.order
-        );
-        return entries.some(({ handler }) => handler());
-      }
+  const onBackPress = useCallback(() => {
+    const entries = [...handlers.current.values()].sort(
+      (a, b) => b.priority - a.priority || b.order - a.order
     );
-    return () => subscription.remove();
+    return entries.some(({ handler }) => handler());
   }, []);
+  useAndroidBackHandler(onBackPress);
   const backHandlerContext = useMemo(
     () => ({ register: registerBackHandler }),
     [registerBackHandler]
