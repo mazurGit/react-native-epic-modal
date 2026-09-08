@@ -20,6 +20,7 @@ export const ModalProvider: FC<PropsWithChildren> = ({ children }) => {
     byId: {},
     order: [],
   });
+
   const handlers = useRef(
     new Map<
       string,

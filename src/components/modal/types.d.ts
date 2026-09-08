@@ -1,4 +1,6 @@
 import type { ReactNode, Ref } from 'react';
+import type { ViewStyle, StyleProp } from 'react-native';
+import type { type SpringConfig } from 'react-native-reanimated';
 
 export interface IModalComponent {
   id: string;

@@ -9,14 +9,15 @@ export const ModalHost = () => {
   const modals = context.order
     .map((id) => context.byId[id])
     .filter((modal): modal is NonNullable<typeof modal> => Boolean(modal));
+
   const content = (
-    <View style={StyleSheet.absoluteFill}>
+    <Fragment>
       {modals.map((modal) => (
         <Fragment key={modal.id}>
           <ModalContent id={modal.id} ref={modal.ref} {...modal.props} />
         </Fragment>
       ))}
-    </View>
+    </Fragment>
   );
 
   if (Platform.OS === 'ios') {

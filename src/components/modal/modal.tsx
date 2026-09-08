@@ -52,6 +52,7 @@ export const ModalContent = forwardRef<
       ...DEFAULT_GESTURE_CONFIG,
       ...gestureConfig,
     };
+
     const {
       swipeProgressToClose,
       swipeVelocityThreshold,

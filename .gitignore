@@ -90,3 +90,9 @@ android/generated
 
 # React Native Nitro Modules
 nitrogen/
+
+# Local Codex context
+.local-context/
+
+# Local Codex context
+.codex/context/
