@@ -7,6 +7,8 @@ export type {
 } from './components/modal-bridge/modal-bridge';
 export type {
   ModalAnimationConfig,
+  ModalEnteringAnimationPreset,
+  ModalExitingAnimationPreset,
   ModalAnimationPreset,
 } from './components/modal/modal-animation';
 export type {

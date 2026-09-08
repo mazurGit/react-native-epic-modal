@@ -17,13 +17,22 @@ type UseModalGestureOptions = {
   progress: SharedValue<number>;
   config?: ModalGestureConfig;
   onDismissRequest: () => void;
+  freeSwipe?: boolean;
+};
+
+type ModalGestureState = {
+  gesture: GestureType;
+  gestureActive: SharedValue<boolean>;
+  translationX: SharedValue<number>;
+  translationY: SharedValue<number>;
 };
 
 export const useModalGesture = ({
   progress,
   config,
   onDismissRequest,
-}: UseModalGestureOptions): GestureType => {
+  freeSwipe = false,
+}: UseModalGestureOptions): ModalGestureState => {
   const { width, height } = useWindowDimensions();
   const resolvedConfig = useMemo(
     () => ({
@@ -43,8 +52,11 @@ export const useModalGesture = ({
   const activeEdge = useSharedValue<ModalGestureEdge | 'immersive' | null>(
     null
   );
+  const translationX = useSharedValue(0);
+  const translationY = useSharedValue(0);
+  const gestureActive = useSharedValue(false);
 
-  return useMemo(() => {
+  const gesture = useMemo(() => {
     const {
       edges,
       enabled,
@@ -63,9 +75,13 @@ export const useModalGesture = ({
       .onStart((event) => {
         'worklet';
         activeEdge.value = null;
+        gestureActive.value = false;
+        translationX.value = 0;
+        translationY.value = 0;
 
         if (immersive) {
           activeEdge.value = 'immersive';
+          gestureActive.value = true;
           return;
         }
 
@@ -78,11 +94,15 @@ export const useModalGesture = ({
         } else if (bottomOffset > 0 && event.y >= height - bottomOffset) {
           activeEdge.value = 'bottom';
         }
+        gestureActive.value = activeEdge.value !== null;
       })
       .onUpdate((event) => {
         'worklet';
         const edge = activeEdge.value;
         if (!edge) return;
+
+        translationX.value = event.translationX;
+        translationY.value = event.translationY;
 
         if (edge === 'immersive') {
           const isHorizontal =
@@ -126,9 +146,28 @@ export const useModalGesture = ({
             Math.abs(velocity) > swipeVelocityThreshold;
 
           if (shouldDismiss) {
+            if (freeSwipe) {
+              const signedDirection = isHorizontal
+                ? event.translationX || event.velocityX
+                : event.translationY || event.velocityY;
+              const distance = isHorizontal ? width : height;
+              const target = Math.sign(signedDirection || 1) * distance;
+
+              if (isHorizontal) {
+                translationX.value = withTiming(target, { duration: 250 });
+                translationY.value = withTiming(0, { duration: 250 });
+              } else {
+                translationX.value = withTiming(0, { duration: 250 });
+                translationY.value = withTiming(target, { duration: 250 });
+              }
+            }
             scheduleOnRN(onDismissRequest);
           } else {
-            progress.value = withTiming(1, { duration: 180 });
+            translationX.value = withTiming(0, { duration: 180 });
+            translationY.value = withTiming(0, { duration: 180 });
+            progress.value = withTiming(1, { duration: 180 }, (finished) => {
+              if (finished) gestureActive.value = false;
+            });
           }
           return;
         }
@@ -142,10 +181,44 @@ export const useModalGesture = ({
           signedVelocity > swipeVelocityThreshold;
 
         if (shouldDismiss) {
+          if (freeSwipe) {
+            const isHorizontal =
+              Math.abs(event.translationX) >= Math.abs(event.translationY);
+            const signedDirection = isHorizontal
+              ? event.translationX || event.velocityX
+              : event.translationY || event.velocityY;
+            const distance = isHorizontal ? width : height;
+            const target = Math.sign(signedDirection || 1) * distance;
+
+            if (isHorizontal) {
+              translationX.value = withTiming(target, { duration: 250 });
+              translationY.value = withTiming(0, { duration: 250 });
+            } else {
+              translationX.value = withTiming(0, { duration: 250 });
+              translationY.value = withTiming(target, { duration: 250 });
+            }
+          }
           scheduleOnRN(onDismissRequest);
         } else {
-          progress.value = withTiming(1, { duration: 180 });
+          translationX.value = withTiming(0, { duration: 180 });
+          translationY.value = withTiming(0, { duration: 180 });
+          progress.value = withTiming(1, { duration: 180 }, (finished) => {
+            if (finished) gestureActive.value = false;
+          });
         }
       });
-  }, [activeEdge, height, onDismissRequest, progress, resolvedConfig, width]);
+  }, [
+    activeEdge,
+    freeSwipe,
+    gestureActive,
+    height,
+    onDismissRequest,
+    progress,
+    resolvedConfig,
+    translationX,
+    translationY,
+    width,
+  ]);
+
+  return { gesture, gestureActive, translationX, translationY };
 };

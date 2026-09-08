@@ -1,8 +1,20 @@
-export type ModalAnimationPreset = 'fade' | 'zoom';
+export type ModalEnteringAnimationPreset =
+  | 'fade'
+  | 'zoom'
+  | 'slideLeft'
+  | 'slideRight'
+  | 'slideTop'
+  | 'slideBottom';
+
+export type ModalExitingAnimationPreset =
+  | ModalEnteringAnimationPreset
+  | 'slideFree';
+
+export type ModalAnimationPreset = ModalExitingAnimationPreset;
 
 export interface ModalAnimationConfig {
-  entering?: ModalAnimationPreset;
-  exiting?: ModalAnimationPreset;
+  entering?: ModalEnteringAnimationPreset;
+  exiting?: ModalExitingAnimationPreset;
   duration?: number;
 }
 

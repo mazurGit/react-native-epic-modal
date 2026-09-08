@@ -1,6 +1,12 @@
 import { useMemo } from 'react';
 import type { PropsWithChildren } from 'react';
-import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import {
+  StyleSheet,
+  useWindowDimensions,
+  View,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { GestureDetector } from 'react-native-gesture-handler';
 import { ModalProgressContext } from '../../context/modal-progress-context';
@@ -34,6 +40,7 @@ export const ModalView = ({
   onExitComplete,
   onDismissRequest,
 }: ModalViewProps) => {
+  const { width, height } = useWindowDimensions();
   const resolvedAnimation = useMemo(
     () => ({ ...DEFAULT_MODAL_ANIMATION, ...animation }),
     [animation]
@@ -43,8 +50,14 @@ export const ModalView = ({
     exiting,
     onExitComplete,
   });
-  const gesture = useModalGesture({
+  const {
+    gesture: gestureHandler,
+    gestureActive,
+    translationX,
+    translationY,
+  } = useModalGesture({
     config: gestureConfig,
+    freeSwipe: resolvedAnimation.exiting === 'slideFree',
     onDismissRequest: onDismissRequest ?? (() => undefined),
     progress,
   });
@@ -56,7 +69,14 @@ export const ModalView = ({
   const contentAnimatedStyle = useAnimatedStyle(() =>
     getModalAnimationStyle(
       progress,
-      exiting ? resolvedAnimation.exiting : resolvedAnimation.entering
+      resolvedAnimation.entering,
+      resolvedAnimation.exiting,
+      exiting,
+      gestureActive,
+      width,
+      height,
+      translationX,
+      translationY
     )
   );
 
@@ -79,11 +99,11 @@ export const ModalView = ({
     <View style={styles.container}>
       {immersive ? (
         <>
-          <GestureDetector gesture={gesture}>{backdrop}</GestureDetector>
+          <GestureDetector gesture={gestureHandler}>{backdrop}</GestureDetector>
           {content}
         </>
       ) : (
-        <GestureDetector gesture={gesture}>
+        <GestureDetector gesture={gestureHandler}>
           <View style={styles.gestureSurface}>
             {backdrop}
             {content}
