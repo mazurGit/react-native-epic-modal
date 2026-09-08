@@ -5,7 +5,12 @@ export type {
   ModalBridgeProps as ModalProps,
   ModalRef,
 } from './components/modal-bridge/modal-bridge';
+export type {
+  ModalAnimationConfig,
+  ModalAnimationPreset,
+} from './components/modal/modal-animation';
 export { ModalProvider } from './components/modal-provider/modal-provider';
 export type { ModalProviderProps } from './components/modal-provider/modal-provider';
 export type { ModalEntry } from './store/modal-entry';
 export { modalManager } from './store/external/modal-manager';
+export { useModalProgress } from './hooks/use-modal-progress';

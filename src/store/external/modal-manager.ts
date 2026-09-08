@@ -10,6 +10,7 @@ type ModalRegistration = {
 
 type StoredEntry = ModalEntry & {
   visible: boolean;
+  exiting: boolean;
   presentationOrder: number;
 };
 
@@ -42,6 +43,8 @@ export class ModalManager {
 
   getRenderer = (id: string) => this.renderers.get(id);
 
+  isExiting = (id: string) => this.entries.get(id)?.exiting ?? false;
+
   register = (registration: ModalRegistration) => {
     this.renderers.set(registration.id, registration.render);
     this.updateSnapshot();
@@ -62,10 +65,12 @@ export class ModalManager {
     const storedEntry: StoredEntry = existingEntry ?? {
       ...entry,
       visible: false,
+      exiting: false,
       presentationOrder: 0,
     };
     Object.assign(storedEntry, entry, {
       visible: true,
+      exiting: false,
       presentationOrder: this.nextPresentationOrder++,
     });
     this.entries.set(entry.id, storedEntry);
@@ -79,9 +84,17 @@ export class ModalManager {
 
   dismiss = (id: string) => {
     const entry = this.entries.get(id);
-    if (!entry || !entry.visible) return;
+    if (!entry || !entry.visible || entry.exiting) return;
 
-    entry.visible = false;
+    entry.exiting = true;
+    this.updateSnapshot();
+  };
+
+  completeDismiss = (id: string) => {
+    const entry = this.entries.get(id);
+    if (!entry || !entry.exiting) return;
+
+    this.entries.delete(id);
     this.updateSnapshot();
   };
 
@@ -98,6 +111,7 @@ export class ModalManager {
       .map(
         ({
           visible: _visible,
+          exiting: _exiting,
           presentationOrder: _presentationOrder,
           ...entry
         }) => entry
