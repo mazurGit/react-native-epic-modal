@@ -3,6 +3,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useId,
   useMemo,
   useRef,
   type PropsWithChildren,
@@ -17,14 +18,14 @@ export interface ModalRef {
 }
 
 export type ModalBridgeProps = PropsWithChildren<{
-  id: string;
   style?: StyleProp<ViewStyle>;
   backdropStyle?: StyleProp<ViewStyle>;
 }>;
 
 /** Bridges React modal props and ref actions to the external modal manager. */
 export const ModalBridge = forwardRef<ModalRef, ModalBridgeProps>(
-  ({ id, style, backdropStyle, children }, ref) => {
+  ({ style, backdropStyle, children }, ref) => {
+    const id = useId();
     const modalProps = useMemo(
       () => ({ style, backdropStyle, children }),
       [backdropStyle, children, style]

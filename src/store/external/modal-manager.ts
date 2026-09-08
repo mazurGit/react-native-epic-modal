@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { ModalEntry, PersistedModalState } from '../modal-entry';
+import type { ModalEntry } from '../modal-entry';
 
 type Listener = () => void;
 
@@ -41,32 +41,6 @@ export class ModalManager {
   getSnapshot = () => this.snapshot;
 
   getRenderer = (id: string) => this.renderers.get(id);
-
-  serialize = (): PersistedModalState => ({
-    version: 1,
-    entries: [...this.entries.values()]
-      .filter((entry) => entry.visible)
-      .map(({ visible: _visible, ...entry }) => entry),
-  });
-
-  hydrate = (state: PersistedModalState) => {
-    if (state.version !== 1) return;
-
-    this.entries.clear();
-    state.entries.forEach((entry) => {
-      const { presentationOrder, ...modalEntry } = entry;
-      this.entries.set(entry.id, {
-        ...modalEntry,
-        visible: true,
-        presentationOrder,
-      });
-      this.nextPresentationOrder = Math.max(
-        this.nextPresentationOrder,
-        presentationOrder + 1
-      );
-    });
-    this.updateSnapshot();
-  };
 
   register = (registration: ModalRegistration) => {
     this.renderers.set(registration.id, registration.render);

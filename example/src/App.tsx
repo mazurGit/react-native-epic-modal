@@ -65,7 +65,7 @@ const FilterModal = forwardRef<ModalRef, { onPresentNext: () => void }>(
     }));
 
     return (
-      <Modal ref={modalRef} id="filter">
+      <Modal ref={modalRef}>
         <ModalCard title="Filters" eyebrow="FILTER MODAL">
           <Text style={styles.cardDescription}>
             A concrete modal built on top of the generic Modal container.
@@ -92,7 +92,7 @@ const ConfirmationModal = forwardRef<ModalRef, { onPresentNext: () => void }>(
     }));
 
     return (
-      <Modal ref={modalRef} id="confirmation">
+      <Modal ref={modalRef}>
         <ModalCard title="Confirmation" eyebrow="SECOND MODAL">
           <Text style={styles.cardDescription}>
             This modal is rendered above FilterModal because it was opened
@@ -120,7 +120,7 @@ const DetailsModal = forwardRef<ModalRef>(
     }));
 
     return (
-      <Modal ref={modalRef} id="details">
+      <Modal ref={modalRef}>
         <ModalCard title="Details" eyebrow="THIRD MODAL">
           <Text style={styles.cardDescription}>
             This is the top layer. Dismiss it to reveal the modal below.

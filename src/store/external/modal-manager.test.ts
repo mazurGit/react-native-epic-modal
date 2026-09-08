@@ -40,26 +40,4 @@ describe('ModalManager', () => {
 
     expect(listener).toHaveBeenCalledTimes(4);
   });
-
-  it('serializes and restores visible entries', () => {
-    const manager = modalManager;
-    manager.clear();
-    manager.register({
-      id: 'settings',
-      render: () => null,
-    });
-    manager.present({
-      id: 'settings',
-    });
-
-    const serialized = manager.serialize();
-    manager.clear();
-    manager.hydrate(serialized);
-
-    expect(manager.getSnapshot()).toEqual([
-      {
-        id: 'settings',
-      },
-    ]);
-  });
 });
