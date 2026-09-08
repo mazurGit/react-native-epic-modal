@@ -11,6 +11,7 @@ import {
 import type { StyleProp, ViewStyle } from 'react-native';
 import { ModalView } from '../modal/modal';
 import type { ModalAnimationConfig } from '../modal/modal-animation';
+import type { ModalGestureConfig } from '../modal/modal-gesture';
 import { modalManager } from '../../store/external/modal-manager';
 
 export interface ModalRef {
@@ -22,19 +23,26 @@ export type ModalBridgeProps = PropsWithChildren<{
   style?: StyleProp<ViewStyle>;
   backdropStyle?: StyleProp<ViewStyle>;
   animation?: ModalAnimationConfig;
+  gestureConfig?: ModalGestureConfig;
 }>;
 
 /** Bridges React modal props and ref actions to the external modal manager. */
 export const ModalBridge = forwardRef<ModalRef, ModalBridgeProps>(
-  ({ style, backdropStyle, animation, children }, ref) => {
+  ({ style, backdropStyle, animation, gestureConfig, children }, ref) => {
     const id = useId();
     const modalProps = useMemo(
-      () => ({ style, backdropStyle, animation, children }),
-      [animation, backdropStyle, children, style]
+      () => ({ style, backdropStyle, animation, gestureConfig, children }),
+      [animation, backdropStyle, children, gestureConfig, style]
     );
 
     const latestProps = useRef(modalProps);
     latestProps.current = modalProps;
+
+    const dismiss = useCallback(() => modalManager.dismiss(id), [id]);
+    const completeDismiss = useCallback(
+      () => modalManager.completeDismiss(id),
+      [id]
+    );
 
     const render = useCallback(() => {
       const {
@@ -42,20 +50,23 @@ export const ModalBridge = forwardRef<ModalRef, ModalBridgeProps>(
         style: currentStyle,
         backdropStyle: currentBackdropStyle,
         animation: currentAnimation,
+        gestureConfig: currentGestureConfig,
       } = latestProps.current;
 
       return (
         <ModalView
           animation={currentAnimation}
+          gestureConfig={currentGestureConfig}
           exiting={modalManager.isExiting(id)}
-          onExitComplete={() => modalManager.completeDismiss(id)}
+          onExitComplete={completeDismiss}
+          onDismissRequest={dismiss}
           style={currentStyle}
           backdropStyle={currentBackdropStyle}
         >
           {currentChildren}
         </ModalView>
       );
-    }, [id]);
+    }, [completeDismiss, dismiss, id]);
 
     useEffect(() => modalManager.register({ id, render }), [id, render]);
 
