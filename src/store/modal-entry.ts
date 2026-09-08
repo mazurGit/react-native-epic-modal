@@ -1,8 +1,17 @@
-import type { ReactNode } from 'react';
+export type JsonPrimitive = string | number | boolean | null;
+export type JsonValue =
+  | JsonPrimitive
+  | JsonValue[]
+  | { [key: string]: JsonValue };
 
-/** A single item rendered by the modal host. */
+/** Serializable data describing a modal instance. */
 export interface ModalEntry {
   id: string;
   priority?: number;
-  render: () => ReactNode;
+  params?: { [key: string]: JsonValue };
+}
+
+export interface PersistedModalState {
+  version: 1;
+  entries: Array<ModalEntry & { presentationOrder: number }>;
 }
