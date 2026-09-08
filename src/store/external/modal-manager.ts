@@ -1,9 +1,5 @@
 import type { ReactNode } from 'react';
-import type {
-  ModalEntry,
-  ModalEntryUpdate,
-  PersistedModalState,
-} from '../modal-entry';
+import type { ModalEntry, PersistedModalState } from '../modal-entry';
 
 type Listener = () => void;
 
@@ -102,11 +98,8 @@ export class ModalManager {
     this.updateSnapshot();
   };
 
-  update = (id: string, changes: ModalEntryUpdate) => {
-    const entry = this.entries.get(id);
-    if (!entry) return;
-
-    Object.assign(entry, changes);
+  notify = (id: string) => {
+    if (!this.entries.has(id) && !this.renderers.has(id)) return;
     this.updateSnapshot();
   };
 
@@ -127,11 +120,7 @@ export class ModalManager {
   private updateSnapshot() {
     this.snapshot = [...this.entries.values()]
       .filter((entry) => entry.visible)
-      .sort(
-        (a, b) =>
-          (a.priority ?? 0) - (b.priority ?? 0) ||
-          a.presentationOrder - b.presentationOrder
-      )
+      .sort((a, b) => a.presentationOrder - b.presentationOrder)
       .map(
         ({
           visible: _visible,

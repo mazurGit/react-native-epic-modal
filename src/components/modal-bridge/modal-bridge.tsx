@@ -18,17 +18,16 @@ export interface ModalRef {
 
 export type ModalBridgeProps = PropsWithChildren<{
   id: string;
-  priority?: number;
   style?: StyleProp<ViewStyle>;
   backdropStyle?: StyleProp<ViewStyle>;
 }>;
 
 /** Bridges React modal props and ref actions to the external modal manager. */
 export const ModalBridge = forwardRef<ModalRef, ModalBridgeProps>(
-  ({ id, priority, style, backdropStyle, children }, ref) => {
+  ({ id, style, backdropStyle, children }, ref) => {
     const modalProps = useMemo(
-      () => ({ priority, style, backdropStyle, children }),
-      [backdropStyle, children, priority, style]
+      () => ({ style, backdropStyle, children }),
+      [backdropStyle, children, style]
     );
 
     const latestProps = useRef(modalProps);
@@ -51,7 +50,7 @@ export const ModalBridge = forwardRef<ModalRef, ModalBridgeProps>(
     useEffect(() => modalManager.register({ id, render }), [id, render]);
 
     useEffect(() => {
-      modalManager.update(id, { priority: modalProps.priority });
+      modalManager.notify(id);
     }, [id, modalProps]);
 
     useImperativeHandle(
@@ -60,7 +59,6 @@ export const ModalBridge = forwardRef<ModalRef, ModalBridgeProps>(
         present: () => {
           modalManager.present({
             id,
-            priority: latestProps.current.priority,
           });
         },
         dismiss: () => modalManager.dismiss(id),

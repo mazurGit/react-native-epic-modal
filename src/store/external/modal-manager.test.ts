@@ -1,7 +1,7 @@
 import { modalManager } from './modal-manager';
 
 describe('ModalManager', () => {
-  it('orders entries by priority and then by presentation order', () => {
+  it('orders entries by presentation order', () => {
     const manager = modalManager;
     manager.clear();
 
@@ -14,12 +14,9 @@ describe('ModalManager', () => {
       id: 'same-priority',
       render: () => null,
     });
-    manager.present({ id: 'low', priority: 1 });
-    manager.present({ id: 'latest', priority: 10 });
-    manager.present({
-      id: 'same-priority',
-      priority: 10,
-    });
+    manager.present({ id: 'low' });
+    manager.present({ id: 'latest' });
+    manager.present({ id: 'same-priority' });
 
     expect(manager.getSnapshot().map(({ id }) => id)).toEqual([
       'low',
@@ -36,30 +33,12 @@ describe('ModalManager', () => {
 
     manager.register({ id: 'modal', render: () => null });
     manager.present({ id: 'modal' });
+    manager.notify('modal');
     manager.dismiss('modal');
     unsubscribe();
     manager.clear();
 
-    expect(listener).toHaveBeenCalledTimes(3);
-  });
-
-  it('updates visible entry data without resetting its presentation order', () => {
-    const manager = modalManager;
-    manager.clear();
-    manager.register({
-      id: 'modal',
-      render: () => null,
-    });
-    manager.present({
-      id: 'modal',
-      priority: 1,
-    });
-
-    manager.update('modal', {
-      priority: 2,
-    });
-
-    expect(manager.getSnapshot()).toEqual([{ id: 'modal', priority: 2 }]);
+    expect(listener).toHaveBeenCalledTimes(4);
   });
 
   it('serializes and restores visible entries', () => {
@@ -71,7 +50,6 @@ describe('ModalManager', () => {
     });
     manager.present({
       id: 'settings',
-      priority: 2,
     });
 
     const serialized = manager.serialize();
@@ -81,7 +59,6 @@ describe('ModalManager', () => {
     expect(manager.getSnapshot()).toEqual([
       {
         id: 'settings',
-        priority: 2,
       },
     ]);
   });

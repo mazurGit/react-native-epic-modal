@@ -2,7 +2,6 @@ import {
   forwardRef,
   useImperativeHandle,
   useRef,
-  useState,
   type ReactNode,
   type RefObject,
 } from 'react';
@@ -32,13 +31,13 @@ export default function App() {
           />
           <ActionButton
             testID="open-confirmation-modal"
-            label="Present higher-priority modal"
+            label="Present second modal"
             secondary
             onPress={() => confirmationRef.current?.present()}
           />
           <ActionButton
             testID="open-details-modal"
-            label="Present top-priority modal"
+            label="Present third modal"
             onPress={() => detailsRef.current?.present()}
           />
         </SafeAreaView>
@@ -59,7 +58,6 @@ export default function App() {
 
 const FilterModal = forwardRef<ModalRef, { onPresentNext: () => void }>(
   function FilterModalImpl({ onPresentNext }, forwardedRef) {
-    const [priority, setPriority] = useState(1);
     const modalRef = useRef<ModalRef>(null);
     useImperativeHandle(forwardedRef, () => ({
       present: () => modalRef.current?.present(),
@@ -67,11 +65,8 @@ const FilterModal = forwardRef<ModalRef, { onPresentNext: () => void }>(
     }));
 
     return (
-      <Modal ref={modalRef} id="filter" priority={priority}>
-        <ModalCard
-          title="Filters"
-          eyebrow={`FILTER MODAL · PRIORITY ${priority}`}
-        >
+      <Modal ref={modalRef} id="filter">
+        <ModalCard title="Filters" eyebrow="FILTER MODAL">
           <Text style={styles.cardDescription}>
             A concrete modal built on top of the generic Modal container.
           </Text>
@@ -79,12 +74,6 @@ const FilterModal = forwardRef<ModalRef, { onPresentNext: () => void }>(
             testID="open-confirmation-from-filter"
             label="Open confirmation above"
             onPress={onPresentNext}
-            secondary
-          />
-          <ActionButton
-            testID="raise-filter-priority"
-            label="Raise priority to 4"
-            onPress={() => setPriority(4)}
             secondary
           />
           <CloseButton modalRef={modalRef} testID="close-filter-modal" />
@@ -103,11 +92,11 @@ const ConfirmationModal = forwardRef<ModalRef, { onPresentNext: () => void }>(
     }));
 
     return (
-      <Modal ref={modalRef} id="confirmation" priority={2}>
-        <ModalCard title="Confirmation" eyebrow="PRIORITY 2">
+      <Modal ref={modalRef} id="confirmation">
+        <ModalCard title="Confirmation" eyebrow="SECOND MODAL">
           <Text style={styles.cardDescription}>
-            This modal is rendered above FilterModal because it has a higher
-            priority.
+            This modal is rendered above FilterModal because it was opened
+            later.
           </Text>
           <ActionButton
             testID="open-details-from-confirmation"
@@ -131,8 +120,8 @@ const DetailsModal = forwardRef<ModalRef>(
     }));
 
     return (
-      <Modal ref={modalRef} id="details" priority={3}>
-        <ModalCard title="Details" eyebrow="PRIORITY 3">
+      <Modal ref={modalRef} id="details">
+        <ModalCard title="Details" eyebrow="THIRD MODAL">
           <Text style={styles.cardDescription}>
             This is the top layer. Dismiss it to reveal the modal below.
           </Text>
