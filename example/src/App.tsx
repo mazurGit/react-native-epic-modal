@@ -1,161 +1,263 @@
-import { ModalProvider, type IModalRef } from 'react-native-epic-modal';
+import {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+  type ReactNode,
+  type RefObject,
+} from 'react';
+import { Modal, ModalProvider, type ModalRef } from 'react-native-epic-modal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Pressable, View, Text, StyleSheet } from 'react-native';
-import { useRef, useState } from 'react';
-import { DemoModals } from './components/demo-modals';
+import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 export default function App() {
-  const [enterCount, setEnterCount] = useState(0);
-  const [dismissCount, setDismissCount] = useState(0);
-  const basicModalRef = useRef<IModalRef>(null);
-  const stackedFirstModalRef = useRef<IModalRef>(null);
-  const stackedSecondModalRef = useRef<IModalRef>(null);
-  const stackedThirdModalRef = useRef<IModalRef>(null);
-  const swipeHorizontalModalRef = useRef<IModalRef>(null);
-  const swipeVerticalModalRef = useRef<IModalRef>(null);
+  const filterRef = useRef<ModalRef>(null);
+  const confirmationRef = useRef<ModalRef>(null);
+  const detailsRef = useRef<ModalRef>(null);
 
   return (
     <GestureHandlerRootView style={styles.root}>
       <ModalProvider>
-        <View style={styles.container}>
-          <Text style={styles.kicker}>MOTION SYSTEM / 01</Text>
-          <Text style={styles.title}>Epic Modal Full Demo</Text>
-          <Text style={styles.subtitle}>
-            Explore layered surfaces, gestures, and shared animation progress.
+        <SafeAreaView style={styles.screen}>
+          <Text style={styles.eyebrow}>REACT NATIVE EPIC MODAL</Text>
+          <Text style={styles.title}>Current architecture</Text>
+          <Text style={styles.description}>
+            Modal components register themselves. ModalHost renders presented
+            entries from the external store.
           </Text>
-          <View style={styles.statusRow}>
-            <Text testID="enter-count" style={styles.statusText}>
-              Enter count: {enterCount}
-            </Text>
-            <Text testID="dismiss-count" style={styles.statusText}>
-              Dismiss count: {dismissCount}
-            </Text>
-          </View>
-          <Text style={styles.sectionLabel}>TRY A PRESENTATION</Text>
-
-          <Pressable
-            testID="open-basic-modal"
-            onPress={() => basicModalRef.current?.show()}
-            style={styles.openButton}
-          >
-            <Text style={styles.openButtonText}>Open Basic Modal</Text>
-          </Pressable>
-          <View style={styles.spacer} />
-
-          <Pressable
-            testID="open-stacked-modals"
-            onPress={() => {
-              stackedFirstModalRef.current?.show();
-              setTimeout(() => {
-                stackedSecondModalRef.current?.show();
-                setTimeout(() => {
-                  stackedThirdModalRef.current?.show();
-                }, 300);
-              }, 300);
-            }}
-            style={styles.openButton}
-          >
-            <Text style={styles.openButtonText}>Open Stacked Modals</Text>
-          </Pressable>
-          <View style={styles.spacer} />
-
-          <Pressable
-            testID="open-horizontal-modal"
-            onPress={() => swipeHorizontalModalRef.current?.show()}
-            style={styles.openButton}
-          >
-            <Text style={styles.openButtonText}>Open Swipe (Horizontal)</Text>
-          </Pressable>
-          <View style={styles.spacer} />
-
-          <Pressable
-            testID="open-vertical-modal"
-            onPress={() => swipeVerticalModalRef.current?.show()}
-            style={styles.openButton}
-          >
-            <Text style={styles.openButtonText}>Open Swipe (Vertical)</Text>
-          </Pressable>
-
-          <DemoModals
-            basicModalRef={basicModalRef}
-            stackedFirstModalRef={stackedFirstModalRef}
-            stackedSecondModalRef={stackedSecondModalRef}
-            stackedThirdModalRef={stackedThirdModalRef}
-            swipeHorizontalModalRef={swipeHorizontalModalRef}
-            swipeVerticalModalRef={swipeVerticalModalRef}
-            onEnter={() => setEnterCount((count) => count + 1)}
-            onDismiss={() => setDismissCount((count) => count + 1)}
+          <ActionButton
+            testID="open-filter-modal"
+            label="Present FilterModal"
+            onPress={() => filterRef.current?.present()}
           />
-        </View>
+          <ActionButton
+            testID="open-confirmation-modal"
+            label="Present higher-priority modal"
+            secondary
+            onPress={() => confirmationRef.current?.present()}
+          />
+          <ActionButton
+            testID="open-details-modal"
+            label="Present top-priority modal"
+            onPress={() => detailsRef.current?.present()}
+          />
+        </SafeAreaView>
+
+        <FilterModal
+          ref={filterRef}
+          onPresentNext={() => confirmationRef.current?.present()}
+        />
+        <ConfirmationModal
+          ref={confirmationRef}
+          onPresentNext={() => detailsRef.current?.present()}
+        />
+        <DetailsModal ref={detailsRef} />
       </ModalProvider>
     </GestureHandlerRootView>
   );
 }
 
+const FilterModal = forwardRef<ModalRef, { onPresentNext: () => void }>(
+  function FilterModalImpl({ onPresentNext }, forwardedRef) {
+    const [priority, setPriority] = useState(1);
+    const modalRef = useRef<ModalRef>(null);
+    useImperativeHandle(forwardedRef, () => ({
+      present: () => modalRef.current?.present(),
+      dismiss: () => modalRef.current?.dismiss(),
+    }));
+
+    return (
+      <Modal ref={modalRef} id="filter" priority={priority}>
+        <ModalCard
+          title="Filters"
+          eyebrow={`FILTER MODAL · PRIORITY ${priority}`}
+        >
+          <Text style={styles.cardDescription}>
+            A concrete modal built on top of the generic Modal container.
+          </Text>
+          <ActionButton
+            testID="open-confirmation-from-filter"
+            label="Open confirmation above"
+            onPress={onPresentNext}
+            secondary
+          />
+          <ActionButton
+            testID="raise-filter-priority"
+            label="Raise priority to 4"
+            onPress={() => setPriority(4)}
+            secondary
+          />
+          <CloseButton modalRef={modalRef} testID="close-filter-modal" />
+        </ModalCard>
+      </Modal>
+    );
+  }
+);
+
+const ConfirmationModal = forwardRef<ModalRef, { onPresentNext: () => void }>(
+  function ConfirmationModalImpl({ onPresentNext }, forwardedRef) {
+    const modalRef = useRef<ModalRef>(null);
+    useImperativeHandle(forwardedRef, () => ({
+      present: () => modalRef.current?.present(),
+      dismiss: () => modalRef.current?.dismiss(),
+    }));
+
+    return (
+      <Modal ref={modalRef} id="confirmation" priority={2}>
+        <ModalCard title="Confirmation" eyebrow="PRIORITY 2">
+          <Text style={styles.cardDescription}>
+            This modal is rendered above FilterModal because it has a higher
+            priority.
+          </Text>
+          <ActionButton
+            testID="open-details-from-confirmation"
+            label="Open details above"
+            onPress={onPresentNext}
+            secondary
+          />
+          <CloseButton modalRef={modalRef} testID="close-confirmation-modal" />
+        </ModalCard>
+      </Modal>
+    );
+  }
+);
+
+const DetailsModal = forwardRef<ModalRef>(
+  function DetailsModalImpl(_, forwardedRef) {
+    const modalRef = useRef<ModalRef>(null);
+    useImperativeHandle(forwardedRef, () => ({
+      present: () => modalRef.current?.present(),
+      dismiss: () => modalRef.current?.dismiss(),
+    }));
+
+    return (
+      <Modal ref={modalRef} id="details" priority={3}>
+        <ModalCard title="Details" eyebrow="PRIORITY 3">
+          <Text style={styles.cardDescription}>
+            This is the top layer. Dismiss it to reveal the modal below.
+          </Text>
+          <CloseButton modalRef={modalRef} testID="close-details-modal" />
+        </ModalCard>
+      </Modal>
+    );
+  }
+);
+
+function ModalCard({
+  title,
+  eyebrow,
+  children,
+}: {
+  title: string;
+  eyebrow: string;
+  children: ReactNode;
+}) {
+  return (
+    <View style={styles.card}>
+      <Text style={styles.cardEyebrow}>{eyebrow}</Text>
+      <Text style={styles.cardTitle}>{title}</Text>
+      {children}
+    </View>
+  );
+}
+
+const CloseButton = ({
+  modalRef,
+  testID,
+}: {
+  modalRef: RefObject<ModalRef | null>;
+  testID: string;
+}) => (
+  <ActionButton
+    testID={testID}
+    label="Dismiss"
+    onPress={() => modalRef.current?.dismiss()}
+  />
+);
+
+function ActionButton({
+  label,
+  testID,
+  secondary = false,
+  onPress,
+}: {
+  label: string;
+  testID: string;
+  secondary?: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      testID={testID}
+      onPress={onPress}
+      style={[styles.button, secondary && styles.secondaryButton]}
+    >
+      <Text style={secondary ? styles.secondaryButtonText : styles.buttonText}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: '#f3f5f2',
-  },
-  container: {
+  root: { flex: 1 },
+  screen: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    padding: 24,
+    backgroundColor: '#f4f7f5',
+  },
+  eyebrow: {
+    marginBottom: 12,
+    color: '#16796f',
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1.2,
   },
   title: {
-    color: '#17211b',
-    fontSize: 30,
-    fontWeight: '800',
-    letterSpacing: -0.8,
     marginBottom: 12,
-  },
-  kicker: {
-    color: '#0f766e',
-    fontSize: 11,
+    color: '#17211b',
+    fontSize: 32,
     fontWeight: '800',
-    letterSpacing: 1.8,
-    marginBottom: 10,
   },
-  subtitle: {
-    color: '#667269',
+  description: {
+    marginBottom: 28,
+    color: '#5d6b63',
     fontSize: 16,
     lineHeight: 23,
-    marginBottom: 18,
-    maxWidth: 310,
-    textAlign: 'center',
   },
-  statusRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 30,
-  },
-  statusText: {
-    color: '#6b756d',
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
-  sectionLabel: {
-    alignSelf: 'flex-start',
-    color: '#819087',
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 1.4,
-    marginBottom: 12,
-  },
-  openButton: {
+  button: {
     alignItems: 'center',
+    marginTop: 12,
+    padding: 16,
+    borderRadius: 12,
     backgroundColor: '#17211b',
-    borderRadius: 14,
-    minWidth: 250,
-    paddingHorizontal: 22,
-    paddingVertical: 15,
   },
-  openButtonText: {
-    color: '#f6faf5',
-    fontSize: 15,
-    fontWeight: '700',
+  buttonText: { color: '#fff', fontSize: 15, fontWeight: '700' },
+  secondaryButton: { backgroundColor: '#dcebe6' },
+  secondaryButtonText: { color: '#18594f', fontSize: 15, fontWeight: '700' },
+  card: {
+    width: '86%',
+    padding: 24,
+    borderRadius: 20,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOpacity: 0.18,
+    shadowRadius: 20,
+    elevation: 8,
   },
-  spacer: { height: 20 },
+  cardEyebrow: {
+    marginBottom: 8,
+    color: '#16796f',
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 1,
+  },
+  cardTitle: {
+    marginBottom: 10,
+    color: '#17211b',
+    fontSize: 26,
+    fontWeight: '800',
+  },
+  cardDescription: { color: '#5d6b63', fontSize: 15, lineHeight: 22 },
 });
