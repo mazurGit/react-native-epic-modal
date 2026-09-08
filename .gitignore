@@ -96,3 +96,6 @@ nitrogen/
 
 # Local Codex context
 .codex/context/
+
+# Local architecture 
+internal-docs/

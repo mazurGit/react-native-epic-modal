@@ -1,24 +1,22 @@
-import { Fragment, type PropsWithChildren, type ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { FullWindowOverlay } from 'react-native-screens';
+import { modalManager } from '../../store/external/modal-manager';
+import { useModalEntries } from '../../store/hooks/use-modal-entries';
 import type { ModalEntry } from '../../store/modal-entry';
 
 export type ModalHostProps = {
-  entries?: readonly ModalEntry[];
-  renderEntry?: (entry: ModalEntry) => ReactNode;
-} & PropsWithChildren;
+  renderEntry: (entry: ModalEntry) => ReactNode;
+};
 
 /** Root layer for content rendered by the modal system. */
-export const ModalHost = ({
-  children,
-  entries = [],
-  renderEntry,
-}: ModalHostProps) => {
+export const ModalHost = ({ renderEntry }: ModalHostProps) => {
+  const entries = useModalEntries(modalManager);
+
   const content = (
     <>
-      {children}
       {entries.map((entry) => (
-        <Fragment key={entry.id}>{renderEntry?.(entry)}</Fragment>
+        <Fragment key={entry.id}>{renderEntry(entry)}</Fragment>
       ))}
     </>
   );
