@@ -12,9 +12,6 @@ type ModalRegistration = {
   render: () => ReactNode;
 };
 
-type ModalRegistrationUpdate = ModalEntryUpdate &
-  Partial<Pick<ModalRegistration, 'render'>>;
-
 type StoredEntry = ModalEntry & {
   visible: boolean;
   presentationOrder: number;
@@ -79,12 +76,15 @@ export class ModalManager {
     this.renderers.set(registration.id, registration.render);
     this.updateSnapshot();
 
-    return () => {
-      if (this.renderers.get(registration.id) !== registration.render) return;
-      this.renderers.delete(registration.id);
-      this.entries.delete(registration.id);
-      this.updateSnapshot();
-    };
+    return () => this.unregister(registration.id, registration.render);
+  };
+
+  unregister = (id: string, render?: () => ReactNode) => {
+    if (render && this.renderers.get(id) !== render) return;
+
+    const rendererRemoved = this.renderers.delete(id);
+    const entryRemoved = this.entries.delete(id);
+    if (rendererRemoved || entryRemoved) this.updateSnapshot();
   };
 
   present = (entry: ModalEntry) => {
@@ -102,19 +102,12 @@ export class ModalManager {
     this.updateSnapshot();
   };
 
-  update = (id: string, changes: ModalRegistrationUpdate) => {
+  update = (id: string, changes: ModalEntryUpdate) => {
     const entry = this.entries.get(id);
     if (!entry) return;
 
-    if (
-      ('priority' in changes && entry.priority !== changes.priority) ||
-      ('render' in changes && this.renderers.get(id) !== changes.render)
-    ) {
-      const { render, ...entryChanges } = changes;
-      Object.assign(entry, entryChanges);
-      if (render) this.renderers.set(id, render);
-      this.updateSnapshot();
-    }
+    Object.assign(entry, changes);
+    this.updateSnapshot();
   };
 
   dismiss = (id: string) => {

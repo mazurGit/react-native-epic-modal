@@ -3,6 +3,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   type PropsWithChildren,
 } from 'react';
@@ -15,33 +16,43 @@ export interface ModalRef {
   dismiss: () => void;
 }
 
-export type ModalProxyProps = PropsWithChildren<{
+export type ModalBridgeProps = PropsWithChildren<{
   id: string;
   priority?: number;
   style?: StyleProp<ViewStyle>;
   backdropStyle?: StyleProp<ViewStyle>;
 }>;
 
-/** Connects a modal component to the external modal manager. */
-export const ModalProxy = forwardRef<ModalRef, ModalProxyProps>(
+/** Bridges React modal props and ref actions to the external modal manager. */
+export const ModalBridge = forwardRef<ModalRef, ModalBridgeProps>(
   ({ id, priority, style, backdropStyle, children }, ref) => {
-    const latestProps = useRef({ priority });
-    latestProps.current = { priority };
-
-    const render = useCallback(
-      () => (
-        <ModalView style={style} backdropStyle={backdropStyle}>
-          {children}
-        </ModalView>
-      ),
-      [backdropStyle, children, style]
+    const modalProps = useMemo(
+      () => ({ priority, style, backdropStyle, children }),
+      [backdropStyle, children, priority, style]
     );
+
+    const latestProps = useRef(modalProps);
+    latestProps.current = modalProps;
+
+    const render = useCallback(() => {
+      const {
+        children: currentChildren,
+        style: currentStyle,
+        backdropStyle: currentBackdropStyle,
+      } = latestProps.current;
+
+      return (
+        <ModalView style={currentStyle} backdropStyle={currentBackdropStyle}>
+          {currentChildren}
+        </ModalView>
+      );
+    }, []);
 
     useEffect(() => modalManager.register({ id, render }), [id, render]);
 
     useEffect(() => {
-      modalManager.update(id, { priority });
-    }, [id, priority]);
+      modalManager.update(id, { priority: modalProps.priority });
+    }, [id, modalProps]);
 
     useImperativeHandle(
       ref,
@@ -61,4 +72,4 @@ export const ModalProxy = forwardRef<ModalRef, ModalProxyProps>(
   }
 );
 
-ModalProxy.displayName = 'ModalProxy';
+ModalBridge.displayName = 'ModalBridge';
