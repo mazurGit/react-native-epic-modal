@@ -1,23 +1,21 @@
+import { Fragment, type PropsWithChildren } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { FullWindowOverlay } from 'react-native-screens';
-import { useModalsContext } from '../../hooks/hooks';
-import { Fragment } from 'react/jsx-runtime';
-import { ModalContent } from '../modal/modal';
+import type { ModalEntry } from '../../store/modal-entry';
 
-export const ModalHost = () => {
-  const context = useModalsContext();
-  const modals = context.order
-    .map((id) => context.byId[id])
-    .filter((modal): modal is NonNullable<typeof modal> => Boolean(modal));
+export type ModalHostProps = {
+  entries?: readonly ModalEntry[];
+} & PropsWithChildren;
 
+/** Root layer for content rendered by the modal system. */
+export const ModalHost = ({ children, entries = [] }: ModalHostProps) => {
   const content = (
-    <Fragment>
-      {modals.map((modal) => (
-        <Fragment key={modal.id}>
-          <ModalContent id={modal.id} ref={modal.ref} {...modal.props} />
-        </Fragment>
+    <>
+      {children}
+      {entries.map((entry) => (
+        <Fragment key={entry.id}>{entry.render()}</Fragment>
       ))}
-    </Fragment>
+    </>
   );
 
   if (Platform.OS === 'ios') {
