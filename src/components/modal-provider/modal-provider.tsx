@@ -1,20 +1,14 @@
-import type { PropsWithChildren, ReactNode } from 'react';
-import type { ModalEntry } from '../../store/modal-entry';
+import type { PropsWithChildren } from 'react';
 import { ModalHost } from '../modal-host/modal-host';
 
-export type ModalProviderProps = PropsWithChildren<{
-  renderEntry: (entry: ModalEntry) => ReactNode;
-}>;
+export type ModalProviderProps = PropsWithChildren;
 
 /** Provides the app-level modal integration point and mounts the modal host. */
-export const ModalProvider = ({
-  children,
-  renderEntry,
-}: ModalProviderProps) => {
+export const ModalProvider = ({ children }: ModalProviderProps) => {
   return (
     <>
       {children}
-      <ModalHost renderEntry={renderEntry} />
+      <ModalHost />
     </>
   );
 };

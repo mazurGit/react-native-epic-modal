@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type {
   ModalEntry,
   ModalEntryUpdate,
@@ -5,6 +6,14 @@ import type {
 } from '../modal-entry';
 
 type Listener = () => void;
+
+type ModalRegistration = {
+  id: string;
+  render: () => ReactNode;
+};
+
+type ModalRegistrationUpdate = ModalEntryUpdate &
+  Partial<Pick<ModalRegistration, 'render'>>;
 
 type StoredEntry = ModalEntry & {
   visible: boolean;
@@ -16,6 +25,7 @@ export class ModalManager {
   private static instance: ModalManager | undefined;
 
   private readonly entries = new Map<string, StoredEntry>();
+  private readonly renderers = new Map<string, () => ReactNode>();
   private readonly listeners = new Set<Listener>();
   private nextPresentationOrder = 0;
   private snapshot: readonly ModalEntry[] = [];
@@ -36,6 +46,8 @@ export class ModalManager {
   };
 
   getSnapshot = () => this.snapshot;
+
+  getRenderer = (id: string) => this.renderers.get(id);
 
   serialize = (): PersistedModalState => ({
     version: 1,
@@ -63,40 +75,44 @@ export class ModalManager {
     this.updateSnapshot();
   };
 
-  register = (entry: ModalEntry) => {
-    const storedEntry: StoredEntry = {
-      ...entry,
-      visible: false,
-      presentationOrder: 0,
-    };
-    this.entries.set(entry.id, storedEntry);
+  register = (registration: ModalRegistration) => {
+    this.renderers.set(registration.id, registration.render);
     this.updateSnapshot();
 
     return () => {
-      if (this.entries.get(entry.id) !== storedEntry) return;
-      this.entries.delete(entry.id);
+      if (this.renderers.get(registration.id) !== registration.render) return;
+      this.renderers.delete(registration.id);
+      this.entries.delete(registration.id);
       this.updateSnapshot();
     };
   };
 
-  present = (id: string) => {
-    const entry = this.entries.get(id);
-    if (!entry || entry.visible) return;
-
-    entry.visible = true;
-    entry.presentationOrder = this.nextPresentationOrder++;
+  present = (entry: ModalEntry) => {
+    const existingEntry = this.entries.get(entry.id);
+    const storedEntry: StoredEntry = existingEntry ?? {
+      ...entry,
+      visible: false,
+      presentationOrder: 0,
+    };
+    Object.assign(storedEntry, entry, {
+      visible: true,
+      presentationOrder: this.nextPresentationOrder++,
+    });
+    this.entries.set(entry.id, storedEntry);
     this.updateSnapshot();
   };
 
-  update = (id: string, changes: ModalEntryUpdate) => {
+  update = (id: string, changes: ModalRegistrationUpdate) => {
     const entry = this.entries.get(id);
     if (!entry) return;
 
     if (
       ('priority' in changes && entry.priority !== changes.priority) ||
-      ('params' in changes && entry.params !== changes.params)
+      ('render' in changes && this.renderers.get(id) !== changes.render)
     ) {
-      Object.assign(entry, changes);
+      const { render, ...entryChanges } = changes;
+      Object.assign(entry, entryChanges);
+      if (render) this.renderers.set(id, render);
       this.updateSnapshot();
     }
   };
@@ -120,8 +136,8 @@ export class ModalManager {
       .filter((entry) => entry.visible)
       .sort(
         (a, b) =>
-          (b.priority ?? 0) - (a.priority ?? 0) ||
-          b.presentationOrder - a.presentationOrder
+          (a.priority ?? 0) - (b.priority ?? 0) ||
+          a.presentationOrder - b.presentationOrder
       )
       .map(
         ({
