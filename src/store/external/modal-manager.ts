@@ -1,4 +1,8 @@
-import type { ModalEntry, PersistedModalState } from '../modal-entry';
+import type {
+  ModalEntry,
+  ModalEntryUpdate,
+  PersistedModalState,
+} from '../modal-entry';
 
 type Listener = () => void;
 
@@ -82,6 +86,19 @@ export class ModalManager {
     entry.visible = true;
     entry.presentationOrder = this.nextPresentationOrder++;
     this.updateSnapshot();
+  };
+
+  update = (id: string, changes: ModalEntryUpdate) => {
+    const entry = this.entries.get(id);
+    if (!entry) return;
+
+    if (
+      ('priority' in changes && entry.priority !== changes.priority) ||
+      ('params' in changes && entry.params !== changes.params)
+    ) {
+      Object.assign(entry, changes);
+      this.updateSnapshot();
+    }
   };
 
   dismiss = (id: string) => {

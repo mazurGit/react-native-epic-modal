@@ -11,6 +11,8 @@ export interface ModalEntry {
   params?: { [key: string]: JsonValue };
 }
 
+export type ModalEntryUpdate = Partial<Omit<ModalEntry, 'id'>>;
+
 export interface PersistedModalState {
   version: 1;
   entries: Array<ModalEntry & { presentationOrder: number }>;

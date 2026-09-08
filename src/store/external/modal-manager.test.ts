@@ -34,6 +34,19 @@ describe('ModalManager', () => {
     expect(listener).toHaveBeenCalledTimes(3);
   });
 
+  it('updates visible entry data without resetting its presentation order', () => {
+    const manager = modalManager;
+    manager.clear();
+    manager.register({ id: 'modal', priority: 1, params: { step: 1 } });
+    manager.present('modal');
+
+    manager.update('modal', { params: { step: 2 }, priority: 2 });
+
+    expect(manager.getSnapshot()).toEqual([
+      { id: 'modal', priority: 2, params: { step: 2 } },
+    ]);
+  });
+
   it('serializes and restores visible entries', () => {
     const manager = modalManager;
     manager.clear();
