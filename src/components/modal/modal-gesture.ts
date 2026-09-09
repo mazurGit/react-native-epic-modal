@@ -1,8 +1,10 @@
 export type ModalGestureEdge = 'left' | 'right' | 'top' | 'bottom';
+export type ModalGestureDismissBehavior = 'settle' | 'followGesture';
 
 export type ModalGestureConfig = {
   enabled?: boolean;
   immersive?: boolean;
+  dismissBehavior?: ModalGestureDismissBehavior;
   edges?: Partial<Record<ModalGestureEdge, number>>;
   swipeVelocityThreshold?: number;
   swipeProgressToClose?: number;
@@ -22,6 +24,7 @@ export const DEFAULT_MODAL_GESTURE: Required<
 } = {
   enabled: true,
   immersive: false,
+  dismissBehavior: 'settle',
   edges: {
     left: 50,
     right: 50,

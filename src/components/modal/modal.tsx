@@ -62,8 +62,7 @@ export const ModalView = ({
     translationY,
   } = useModalGesture({
     config: resolvedGesture,
-    freeSwipe: resolvedAnimation.exiting === 'slideFree',
-    onDismissRequest: onDismissRequest ?? (() => undefined),
+    onDismissRequest: onDismissRequest,
     progress,
   });
 

@@ -13,6 +13,7 @@ export type {
 } from './components/modal/modal-animation';
 export type {
   ModalGestureConfig,
+  ModalGestureDismissBehavior,
   ModalGestureEdge,
 } from './components/modal/modal-gesture';
 export { ModalProvider } from './components/modal-provider/modal-provider';

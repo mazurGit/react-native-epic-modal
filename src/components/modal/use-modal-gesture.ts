@@ -16,8 +16,7 @@ import {
 type UseModalGestureOptions = {
   progress: SharedValue<number>;
   config?: ModalGestureConfig;
-  onDismissRequest: () => void;
-  freeSwipe?: boolean;
+  onDismissRequest?: () => void;
 };
 
 type ModalGestureState = {
@@ -27,11 +26,24 @@ type ModalGestureState = {
   translationY: SharedValue<number>;
 };
 
+const animateGestureBack = (
+  progress: SharedValue<number>,
+  gestureActive: SharedValue<boolean>,
+  translationX: SharedValue<number>,
+  translationY: SharedValue<number>
+) => {
+  'worklet';
+  translationX.value = withTiming(0, { duration: 180 });
+  translationY.value = withTiming(0, { duration: 180 });
+  progress.value = withTiming(1, { duration: 180 }, (finished) => {
+    if (finished) gestureActive.value = false;
+  });
+};
+
 export const useModalGesture = ({
   progress,
   config,
   onDismissRequest,
-  freeSwipe = false,
 }: UseModalGestureOptions): ModalGestureState => {
   const { width, height } = useWindowDimensions();
   const resolvedConfig = useMemo(
@@ -44,6 +56,8 @@ export const useModalGesture = ({
   const translationX = useSharedValue(0);
   const translationY = useSharedValue(0);
   const gestureActive = useSharedValue(false);
+  const gestureCompleted = useSharedValue(false);
+  const dismissRequested = useSharedValue(false);
 
   const gesture = useMemo(() => {
     const {
@@ -65,6 +79,8 @@ export const useModalGesture = ({
         'worklet';
         activeEdge.value = null;
         gestureActive.value = false;
+        gestureCompleted.value = false;
+        dismissRequested.value = false;
         translationX.value = 0;
         translationY.value = 0;
 
@@ -124,7 +140,10 @@ export const useModalGesture = ({
         'worklet';
         const edge = activeEdge.value;
         activeEdge.value = null;
-        if (!edge) return;
+        if (!edge) {
+          gestureCompleted.value = true;
+          return;
+        }
 
         if (edge === 'immersive') {
           const isHorizontal =
@@ -135,7 +154,8 @@ export const useModalGesture = ({
             Math.abs(velocity) > swipeVelocityThreshold;
 
           if (shouldDismiss) {
-            if (freeSwipe) {
+            dismissRequested.value = true;
+            if (resolvedConfig.dismissBehavior === 'followGesture') {
               const signedDirection = isHorizontal
                 ? event.translationX || event.velocityX
                 : event.translationY || event.velocityY;
@@ -150,14 +170,16 @@ export const useModalGesture = ({
                 translationY.value = withTiming(target, { duration: 250 });
               }
             }
-            scheduleOnRN(onDismissRequest);
+            onDismissRequest && scheduleOnRN(onDismissRequest);
           } else {
-            translationX.value = withTiming(0, { duration: 180 });
-            translationY.value = withTiming(0, { duration: 180 });
-            progress.value = withTiming(1, { duration: 180 }, (finished) => {
-              if (finished) gestureActive.value = false;
-            });
+            animateGestureBack(
+              progress,
+              gestureActive,
+              translationX,
+              translationY
+            );
           }
+          gestureCompleted.value = true;
           return;
         }
 
@@ -170,7 +192,8 @@ export const useModalGesture = ({
           signedVelocity > swipeVelocityThreshold;
 
         if (shouldDismiss) {
-          if (freeSwipe) {
+          dismissRequested.value = true;
+          if (resolvedConfig.dismissBehavior === 'followGesture') {
             const isHorizontal =
               Math.abs(event.translationX) >= Math.abs(event.translationY);
             const signedDirection = isHorizontal
@@ -187,18 +210,33 @@ export const useModalGesture = ({
               translationY.value = withTiming(target, { duration: 250 });
             }
           }
-          scheduleOnRN(onDismissRequest);
+          onDismissRequest && scheduleOnRN(onDismissRequest);
         } else {
-          translationX.value = withTiming(0, { duration: 180 });
-          translationY.value = withTiming(0, { duration: 180 });
-          progress.value = withTiming(1, { duration: 180 }, (finished) => {
-            if (finished) gestureActive.value = false;
-          });
+          animateGestureBack(
+            progress,
+            gestureActive,
+            translationX,
+            translationY
+          );
+        }
+        gestureCompleted.value = true;
+      })
+      .onFinalize(() => {
+        'worklet';
+        activeEdge.value = null;
+        if (!gestureCompleted.value && !dismissRequested.value) {
+          animateGestureBack(
+            progress,
+            gestureActive,
+            translationX,
+            translationY
+          );
         }
       });
   }, [
     activeEdge,
-    freeSwipe,
+    dismissRequested,
+    gestureCompleted,
     gestureActive,
     height,
     onDismissRequest,

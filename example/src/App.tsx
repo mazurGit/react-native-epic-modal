@@ -67,7 +67,7 @@ const FilterModal = forwardRef<ModalRef, { onPresentNext: () => void }>(
     return (
       <Modal
         animation={{ entering: 'slideLeft', exiting: 'slideFree' }}
-        gestureConfig={{ immersive: true }}
+        gestureConfig={{ immersive: true, dismissBehavior: 'followGesture' }}
         ref={modalRef}
       >
         <ModalCard title="Filters" eyebrow="FILTER MODAL">
