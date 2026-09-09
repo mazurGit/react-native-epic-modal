@@ -16,6 +16,7 @@ import {
 } from './modal-animation';
 import { getModalAnimationStyle } from './modal-animation-utils';
 import type { ModalGestureConfig } from './modal-gesture';
+import { resolveModalGestureConfig } from './modal-gesture';
 import { useModalAnimation } from './use-modal-animation';
 import { useModalGesture } from './use-modal-gesture';
 
@@ -45,6 +46,10 @@ export const ModalView = ({
     () => ({ ...DEFAULT_MODAL_ANIMATION, ...animation }),
     [animation]
   );
+  const resolvedGesture = useMemo(
+    () => resolveModalGestureConfig(gestureConfig),
+    [gestureConfig]
+  );
   const progress = useModalAnimation({
     duration: resolvedAnimation.duration,
     exiting,
@@ -56,7 +61,7 @@ export const ModalView = ({
     translationX,
     translationY,
   } = useModalGesture({
-    config: gestureConfig,
+    config: resolvedGesture,
     freeSwipe: resolvedAnimation.exiting === 'slideFree',
     onDismissRequest: onDismissRequest ?? (() => undefined),
     progress,
@@ -80,7 +85,7 @@ export const ModalView = ({
     )
   );
 
-  const immersive = gestureConfig?.immersive ?? false;
+  const immersive = resolvedGesture.immersive;
   const backdrop = (
     <Animated.View
       pointerEvents={immersive ? 'auto' : 'none'}
@@ -97,19 +102,12 @@ export const ModalView = ({
 
   return (
     <View style={styles.container}>
-      {immersive ? (
-        <>
-          <GestureDetector gesture={gestureHandler}>{backdrop}</GestureDetector>
+      <GestureDetector gesture={gestureHandler}>
+        <View style={styles.gestureSurface}>
+          {backdrop}
           {content}
-        </>
-      ) : (
-        <GestureDetector gesture={gestureHandler}>
-          <View style={styles.gestureSurface}>
-            {backdrop}
-            {content}
-          </View>
-        </GestureDetector>
-      )}
+        </View>
+      </GestureDetector>
     </View>
   );
 };

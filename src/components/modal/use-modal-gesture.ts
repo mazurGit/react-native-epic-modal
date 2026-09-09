@@ -8,9 +8,9 @@ import {
   type SharedValue,
 } from 'react-native-reanimated';
 import {
-  DEFAULT_MODAL_GESTURE,
   type ModalGestureConfig,
   type ModalGestureEdge,
+  resolveModalGestureConfig,
 } from './modal-gesture';
 
 type UseModalGestureOptions = {
@@ -35,18 +35,7 @@ export const useModalGesture = ({
 }: UseModalGestureOptions): ModalGestureState => {
   const { width, height } = useWindowDimensions();
   const resolvedConfig = useMemo(
-    () => ({
-      ...DEFAULT_MODAL_GESTURE,
-      ...config,
-      edges: {
-        ...DEFAULT_MODAL_GESTURE.edges,
-        ...config?.edges,
-        offset: {
-          ...DEFAULT_MODAL_GESTURE.edges.offset,
-          ...config?.edges?.offset,
-        },
-      },
-    }),
+    () => resolveModalGestureConfig(config),
     [config]
   );
   const activeEdge = useSharedValue<ModalGestureEdge | 'immersive' | null>(

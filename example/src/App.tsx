@@ -103,7 +103,8 @@ const ConfirmationModal = forwardRef<ModalRef, { onPresentNext: () => void }>(
     return (
       <Modal
         ref={modalRef}
-        animation={{ entering: 'slideBottom', exiting: 'slideFree' }}
+        gestureConfig={MODAL_GESTURE_PRESETS.immersive}
+        animation={{ entering: 'slideBottom', exiting: 'slideBottom' }}
       >
         <ModalCard title="Confirmation" eyebrow="SECOND MODAL">
           <Text style={styles.cardDescription}>
