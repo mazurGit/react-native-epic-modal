@@ -1,12 +1,9 @@
 export type ModalGestureEdge = 'left' | 'right' | 'top' | 'bottom';
 
-type ModalGesturePresetKind = 'immersive';
-
-type InternalModalGestureConfig = ModalGestureConfig & {
-  preset?: ModalGesturePresetKind;
-};
+export type ModalGesturePreset = 'immersive';
 
 export type ModalGestureConfig = {
+  preset?: ModalGesturePreset;
   enabled?: boolean;
   edges?: {
     offset?: Partial<Record<ModalGestureEdge, number>>;
@@ -16,14 +13,14 @@ export type ModalGestureConfig = {
 };
 
 export type ResolvedModalGestureConfig = Required<
-  Omit<ModalGestureConfig, 'edges'>
+  Omit<ModalGestureConfig, 'edges' | 'preset'>
 > & {
   edges: Required<NonNullable<ModalGestureConfig['edges']>>;
   immersive: boolean;
 };
 
 export const DEFAULT_MODAL_GESTURE: Required<
-  Omit<ModalGestureConfig, 'edges'>
+  Omit<ModalGestureConfig, 'edges' | 'preset'>
 > & {
   edges: Required<NonNullable<ModalGestureConfig['edges']>>;
 } = {
@@ -40,19 +37,9 @@ export const DEFAULT_MODAL_GESTURE: Required<
   swipeProgressToClose: 0.6,
 };
 
-const createModalGesturePreset = (
-  preset?: ModalGesturePresetKind,
-  config?: ModalGestureConfig
-): ModalGestureConfig => ({
-  ...config,
-  ...(preset ? { preset } : {}),
-});
-
 export const resolveModalGestureConfig = (
   config?: ModalGestureConfig
 ): ResolvedModalGestureConfig => {
-  const internalConfig = config as InternalModalGestureConfig | undefined;
-
   return {
     ...DEFAULT_MODAL_GESTURE,
     ...config,
@@ -64,12 +51,12 @@ export const resolveModalGestureConfig = (
         ...config?.edges?.offset,
       },
     },
-    immersive: internalConfig?.preset === 'immersive',
+    immersive: config?.preset === 'immersive',
   };
 };
 
 export const MODAL_GESTURE_PRESETS = {
-  immersive: createModalGesturePreset('immersive'),
+  immersive: { preset: 'immersive' },
   horizontal: {
     edges: { offset: { left: 50, right: 50, top: 0, bottom: 0 } },
   },
