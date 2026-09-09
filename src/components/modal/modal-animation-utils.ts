@@ -32,7 +32,6 @@ export const getModalAnimationStyle = (
 
   if (preset === 'slideFree') {
     return {
-      opacity: progress.value,
       transform: [
         { translateX: translationX.value },
         { translateY: translationY.value },

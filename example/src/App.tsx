@@ -5,12 +5,7 @@ import {
   type ReactNode,
   type RefObject,
 } from 'react';
-import {
-  MODAL_GESTURE_PRESETS,
-  Modal,
-  ModalProvider,
-  type ModalRef,
-} from 'react-native-epic-modal';
+import { Modal, ModalProvider, type ModalRef } from 'react-native-epic-modal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
@@ -72,7 +67,7 @@ const FilterModal = forwardRef<ModalRef, { onPresentNext: () => void }>(
     return (
       <Modal
         animation={{ entering: 'slideLeft', exiting: 'slideFree' }}
-        gestureConfig={MODAL_GESTURE_PRESETS.immersive}
+        gestureConfig={{ immersive: true }}
         ref={modalRef}
       >
         <ModalCard title="Filters" eyebrow="FILTER MODAL">
@@ -103,7 +98,7 @@ const ConfirmationModal = forwardRef<ModalRef, { onPresentNext: () => void }>(
     return (
       <Modal
         ref={modalRef}
-        gestureConfig={MODAL_GESTURE_PRESETS.immersive}
+        gestureConfig={{ edges: { top: 300 } }}
         animation={{ entering: 'slideBottom', exiting: 'slideBottom' }}
       >
         <ModalCard title="Confirmation" eyebrow="SECOND MODAL">
@@ -133,7 +128,7 @@ const DetailsModal = forwardRef<ModalRef>(
     }));
 
     return (
-      <Modal ref={modalRef} gestureConfig={MODAL_GESTURE_PRESETS.immersive}>
+      <Modal ref={modalRef} gestureConfig={{ immersive: true }}>
         <ModalCard title="Details" eyebrow="THIRD MODAL">
           <Text style={styles.cardDescription}>
             This is the top layer. Dismiss it to reveal the modal below.

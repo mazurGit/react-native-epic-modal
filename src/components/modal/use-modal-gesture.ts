@@ -53,10 +53,10 @@ export const useModalGesture = ({
       swipeProgressToClose,
       swipeVelocityThreshold,
     } = resolvedConfig;
-    const leftOffset = edges.offset.left ?? 0;
-    const rightOffset = edges.offset.right ?? 0;
-    const topOffset = edges.offset.top ?? 0;
-    const bottomOffset = edges.offset.bottom ?? 0;
+    const leftOffset = edges.left ?? 0;
+    const rightOffset = edges.right ?? 0;
+    const topOffset = edges.top ?? 0;
+    const bottomOffset = edges.bottom ?? 0;
 
     return Gesture.Pan()
       .enabled(enabled)
