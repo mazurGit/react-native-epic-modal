@@ -38,13 +38,20 @@ export const DEFAULT_MODAL_GESTURE: Required<
 export const resolveModalGestureConfig = (
   config?: ModalGestureConfig
 ): ResolvedModalGestureConfig => {
+  const edges = config?.edges
+    ? {
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        ...config.edges,
+      }
+    : DEFAULT_MODAL_GESTURE.edges;
+
   return {
     ...DEFAULT_MODAL_GESTURE,
     ...config,
-    edges: {
-      ...DEFAULT_MODAL_GESTURE.edges,
-      ...config?.edges,
-    },
+    edges,
     immersive: config?.immersive ?? false,
   };
 };
