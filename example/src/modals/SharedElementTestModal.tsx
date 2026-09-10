@@ -70,7 +70,14 @@ function Stat({ value, label }: { value: string; label: string }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { width: '100%', padding: 24, backgroundColor: '#f4f7f5' },
+  screen: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+    backgroundColor: '#f4f7f5',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'flex-start',
