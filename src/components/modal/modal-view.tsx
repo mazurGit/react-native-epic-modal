@@ -19,12 +19,15 @@ import type { ModalGestureConfig } from './gesture/modal-gesture';
 import { resolveModalGestureConfig } from './gesture/modal-gesture';
 import { useModalAnimation } from './animation/use-modal-animation';
 import { useModalGesture } from './gesture/use-modal-gesture';
+import { ModalTransitionLayer } from './modal-transition-layer';
+import { SharedElementHost } from '../shared-element/shared-element-host';
 
 export type ModalViewProps = PropsWithChildren<{
   style?: StyleProp<ViewStyle>;
   backdropStyle?: StyleProp<ViewStyle>;
   animation?: ModalAnimationConfig;
   gestureConfig?: ModalGestureConfig;
+  visible?: boolean;
   exiting?: boolean;
   onExitComplete?: () => void;
   onDismissRequest?: () => void;
@@ -39,6 +42,7 @@ export const ModalView = ({
   backdropStyle,
   animation,
   gestureConfig,
+  visible = true,
   exiting = false,
   onExitComplete,
   onDismissRequest,
@@ -55,6 +59,7 @@ export const ModalView = ({
     [gestureConfig]
   );
   const progress = useModalAnimation({
+    enabled: visible || exiting,
     duration: resolvedAnimation.duration,
     exiting,
     onExitComplete,
@@ -96,19 +101,26 @@ export const ModalView = ({
       style={[StyleSheet.absoluteFill, hidden && styles.hidden]}
     >
       <GestureDetector gesture={gestureHandler}>
-        <View style={StyleSheet.absoluteFill}>
-          <Animated.View
-            style={[styles.backdrop, backdropStyle, backdropAnimatedStyle]}
-          />
-          <Animated.View
-            onLayout={onLayout}
-            style={[styles.content, style, contentAnimatedStyle]}
-          >
-            <ModalProgressContext.Provider value={progress}>
-              {children}
-            </ModalProgressContext.Provider>
-          </Animated.View>
-        </View>
+        <SharedElementHost
+          pointerEvents={hidden ? 'none' : 'auto'}
+          style={StyleSheet.absoluteFill}
+        >
+          <View style={StyleSheet.absoluteFill}>
+            <Animated.View
+              style={[styles.backdrop, backdropStyle, backdropAnimatedStyle]}
+            />
+            <ModalTransitionLayer>
+              <Animated.View
+                onLayout={onLayout}
+                style={[styles.content, style, contentAnimatedStyle]}
+              >
+                <ModalProgressContext.Provider value={progress}>
+                  {children}
+                </ModalProgressContext.Provider>
+              </Animated.View>
+            </ModalTransitionLayer>
+          </View>
+        </SharedElementHost>
       </GestureDetector>
     </View>
   );

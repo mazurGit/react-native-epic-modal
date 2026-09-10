@@ -9,11 +9,13 @@ import {
 import { StyleSheet, type LayoutChangeEvent } from 'react-native';
 import { ModalBridge as Modal } from '../modal-bridge/modal-bridge';
 import type { ModalBridgeProps, ModalRef } from '../modal-bridge/modal-bridge';
-import { SharedElementHost } from './shared-element-host';
+import { SharedElementTransition } from './shared-element-transition';
+import type { SharedElementTransitionConfig } from './types';
 
 export type SharedElementModalProps = PropsWithChildren<
   Omit<ModalBridgeProps, 'hidden' | 'onLayout'> & {
     onLayout?: (event: LayoutChangeEvent) => void;
+    transitions?: readonly SharedElementTransitionConfig[];
   }
 >;
 
@@ -21,7 +23,7 @@ export type SharedElementModalRef = ModalRef;
 
 /** Measures its content once before the modal is presented to the user. */
 export const SharedElementModal = forwardRef<ModalRef, SharedElementModalProps>(
-  ({ children, onLayout, style, ...props }, ref) => {
+  ({ children, onLayout, style, transitions = [], ...props }, ref) => {
     const modalRef = useRef<ModalRef>(null);
     const hasMeasured = useRef(false);
     const [measuring, setMeasuring] = useState(true);
@@ -57,10 +59,50 @@ export const SharedElementModal = forwardRef<ModalRef, SharedElementModalProps>(
         onLayout={handleLayout}
         ref={modalRef}
       >
-        <SharedElementHost>{children}</SharedElementHost>
+        <SharedElementModalContent transitions={transitions}>
+          {children}
+        </SharedElementModalContent>
       </Modal>
     );
   }
 );
+
+function SharedElementModalContent({
+  children,
+  transitions,
+}: PropsWithChildren<{
+  transitions: readonly SharedElementTransitionConfig[];
+}>) {
+  return (
+    <>
+      {children}
+      {transitions.map(({ key, startId, endId, element, clip, mode }) => {
+        if (!element) {
+          return (
+            <SharedElementTransition
+              key={key}
+              startId={startId}
+              endId={endId}
+              clip={clip}
+              mode={mode}
+            />
+          );
+        }
+
+        return (
+          <SharedElementTransition
+            key={key}
+            startId={startId}
+            endId={endId}
+            clip={clip}
+            mode={mode}
+          >
+            {element}
+          </SharedElementTransition>
+        );
+      })}
+    </>
+  );
+}
 
 SharedElementModal.displayName = 'SharedElementModal';

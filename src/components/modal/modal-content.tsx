@@ -47,6 +47,7 @@ export const ModalContent = forwardRef<ModalContentRef, ModalContentProps>(
       <ModalView
         animation={animation}
         gestureConfig={gestureConfig}
+        visible={visible}
         exiting={exiting}
         onExitComplete={completeDismiss}
         onDismissRequest={dismiss}

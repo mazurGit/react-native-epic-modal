@@ -17,9 +17,19 @@ const config = getConfig(getDefaultConfig(__dirname), {
   project: __dirname,
 });
 
-config.resolver.unstable_conditionNames = [
-  ...(config.resolver.unstable_conditionNames ?? []),
-  'react-native-epic-modal-source',
-];
+const defaultResolveRequest = config.resolver.resolveRequest;
+
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+  if (moduleName === 'react-native-epic-modal') {
+    return {
+      filePath: path.resolve(root, 'src/index.tsx'),
+      type: 'sourceFile',
+    };
+  }
+
+  return defaultResolveRequest
+    ? defaultResolveRequest(context, moduleName, platform)
+    : context.resolveRequest(context, moduleName, platform);
+};
 
 module.exports = config;

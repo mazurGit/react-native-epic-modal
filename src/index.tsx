@@ -4,6 +4,7 @@ export { ModalBridge as Modal } from './components/modal-bridge/modal-bridge';
 export { SharedElementModal } from './components/shared-element/shared-element-modal';
 export { SharedElementHost } from './components/shared-element/shared-element-host';
 export { SharedElement } from './components/shared-element/shared-element';
+export { SharedElementTransition } from './components/shared-element/shared-element-transition';
 export type {
   ModalBridgeProps as ModalProps,
   ModalRef,
@@ -12,6 +13,8 @@ export type { SharedElementModalProps } from './components/shared-element/shared
 export type { SharedElementModalRef } from './components/shared-element/shared-element-modal';
 export type { SharedElementHostProps } from './components/shared-element/shared-element-host';
 export type { SharedElementProps } from './components/shared-element/shared-element';
+export type { SharedElementTransitionProps } from './components/shared-element/types';
+export type { SharedElementTransitionConfig } from './components/shared-element/types';
 export type {
   SharedElementNode,
   SharedElementRect,

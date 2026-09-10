@@ -11,6 +11,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { SharedElementHostContext } from '../../context/shared-element-host-context';
+import { ModalTransitionContext } from '../../context/modal-transition-context';
 import { useSharedElementRegistry } from '../../hooks/use-shared-element-registry';
 import { NativeSharedElement } from '../../native/epic-shared-element';
 import type { SharedElementNode, SharedElementRect } from './types';
@@ -33,7 +34,63 @@ export function SharedElement({
   style,
   children,
 }: PropsWithChildren<SharedElementProps & { children: ReactElement }>) {
-  const { register, updateRect, unregister } = useSharedElementRegistry();
+  const transitionContext = useContext(ModalTransitionContext);
+  const measurementKey = useRef(`measurement-${Math.random()}`);
+
+  useEffect(() => {
+    if (!measurementOnly || !transitionContext) return;
+
+    const key = measurementKey.current;
+    transitionContext.registerMeasurement({
+      key,
+      id,
+      measurementOnly,
+      throttle,
+      trackFrame,
+      pointerEvents,
+      style,
+      children,
+    });
+
+    return () => transitionContext.unregisterMeasurement(key);
+  }, [
+    children,
+    id,
+    measurementOnly,
+    pointerEvents,
+    style,
+    throttle,
+    trackFrame,
+    transitionContext,
+  ]);
+
+  if (measurementOnly && transitionContext) return null;
+
+  return (
+    <SharedElementView
+      id={id}
+      measurementOnly={measurementOnly}
+      throttle={throttle}
+      trackFrame={trackFrame}
+      pointerEvents={pointerEvents}
+      style={style}
+    >
+      {children}
+    </SharedElementView>
+  );
+}
+
+export function SharedElementView({
+  id,
+  measurementOnly = false,
+  throttle = 16,
+  trackFrame = false,
+  pointerEvents,
+  style,
+  children,
+}: PropsWithChildren<SharedElementProps & { children: ReactElement }>) {
+  const { register, updateElement, updateRect, unregister } =
+    useSharedElementRegistry();
   const ancestorTag = useContext(SharedElementHostContext);
   const rect = useSharedValue<SharedElementRect | null>(null);
   const visibility = useSharedValue(1);
@@ -50,7 +107,7 @@ export function SharedElement({
       visibility,
     };
     nodeRef.current = node;
-    register(node);
+    register(node, children);
 
     return () => {
       if (nodeRef.current === node) {
@@ -59,6 +116,11 @@ export function SharedElement({
       unregister(node);
     };
   }, [id, measurementOnly, rect, register, unregister, visibility]);
+
+  useEffect(() => {
+    const node = nodeRef.current;
+    if (node) updateElement(node, children);
+  }, [children, updateElement]);
 
   return (
     <AnimatedNativeSharedElement

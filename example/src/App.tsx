@@ -1,11 +1,12 @@
 import { useRef } from 'react';
 import {
   ModalProvider,
+  SharedElement,
   type ModalRef,
   type SharedElementModalRef,
 } from 'react-native-epic-modal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaView, StyleSheet, Text } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { ActionButton } from './components/ActionButton';
 import { ConfirmationModal } from './modals/ConfirmationModal';
 import { DetailsModal } from './modals/DetailsModal';
@@ -22,6 +23,17 @@ export default function App() {
     <GestureHandlerRootView style={styles.root}>
       <ModalProvider>
         <SafeAreaView style={styles.screen}>
+          <View style={styles.sourceCard}>
+            <SharedElement id="project-icon-source">
+              <View style={styles.sourceIcon}>
+                <Text style={styles.sourceIconText}>EP</Text>
+              </View>
+            </SharedElement>
+            <View style={styles.sourceCopy}>
+              <Text style={styles.sourceLabel}>Shared element source</Text>
+              <Text style={styles.sourceTitle}>Open project overview</Text>
+            </View>
+          </View>
           <Text style={styles.eyebrow}>REACT NATIVE EPIC MODAL</Text>
           <Text style={styles.title}>Current architecture</Text>
           <Text style={styles.description}>
@@ -75,6 +87,31 @@ const styles = StyleSheet.create({
     padding: 24,
     backgroundColor: '#f4f7f5',
   },
+  sourceCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 28,
+    padding: 16,
+    borderRadius: 20,
+    backgroundColor: '#fff',
+  },
+  sourceIcon: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    backgroundColor: '#b9e4d8',
+  },
+  sourceIconText: { color: '#18594f', fontSize: 18, fontWeight: '800' },
+  sourceCopy: { flex: 1, marginLeft: 14 },
+  sourceLabel: {
+    marginBottom: 4,
+    color: '#16796f',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  sourceTitle: { color: '#17211b', fontSize: 16, fontWeight: '700' },
   eyebrow: {
     marginBottom: 12,
     color: '#16796f',

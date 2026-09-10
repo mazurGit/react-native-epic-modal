@@ -16,7 +16,18 @@ export const SharedElementTestModal = forwardRef<SharedElementModalRef>(
     }));
 
     return (
-      <SharedElementModal ref={modalRef} gestureConfig={{ immersive: true }}>
+      <SharedElementModal
+        ref={modalRef}
+        gestureConfig={{ immersive: true }}
+        transitions={[
+          {
+            key: 'project-icon',
+            startId: 'project-icon-source',
+            endId: 'project-icon-destination',
+            clip: false,
+          },
+        ]}
+      >
         <View style={styles.screen}>
           <View style={styles.header}>
             <View>
@@ -33,7 +44,7 @@ export const SharedElementTestModal = forwardRef<SharedElementModalRef>(
             </Pressable>
           </View>
           <View style={styles.hero}>
-            <SharedElement id="project-icon">
+            <SharedElement id="project-icon-destination">
               <View style={styles.icon}>
                 <Text style={styles.iconText}>EP</Text>
               </View>
@@ -117,12 +128,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 64,
     height: 64,
-    marginRight: 16,
     borderRadius: 18,
     backgroundColor: '#b9e4d8',
   },
   iconText: { color: '#18594f', fontSize: 20, fontWeight: '800' },
-  heroCopy: { flex: 1 },
+  transitionIcon: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+    borderRadius: 18,
+    backgroundColor: '#b9e4d8',
+  },
+  heroCopy: { flex: 1, marginLeft: 16 },
   heroTitle: {
     marginBottom: 6,
     color: '#fff',
