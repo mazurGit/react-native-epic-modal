@@ -26,13 +26,20 @@ export const SharedElementTestModal = forwardRef<SharedElementModalRef>(
             endId: 'project-icon-destination',
             clip: false,
           },
+          {
+            key: 'project-title',
+            startId: 'project-title-source',
+            endId: 'project-title-destination',
+          },
         ]}
       >
         <View style={styles.screen}>
           <View style={styles.header}>
             <View>
               <Text style={styles.eyebrow}>SHARED ELEMENT</Text>
-              <Text style={styles.title}>Project overview</Text>
+              <SharedElement id="project-title-destination">
+                <Text style={styles.title}>Project overview</Text>
+              </SharedElement>
             </View>
             <Pressable
               accessibilityRole="button"

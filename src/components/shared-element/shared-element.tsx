@@ -115,7 +115,7 @@ export function SharedElementView({
       }
       unregister(node);
     };
-  }, [id, measurementOnly, rect, register, unregister, visibility]);
+  }, [children, id, measurementOnly, rect, register, unregister, visibility]);
 
   useEffect(() => {
     const node = nodeRef.current;

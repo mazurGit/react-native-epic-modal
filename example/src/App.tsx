@@ -31,7 +31,9 @@ export default function App() {
             </SharedElement>
             <View style={styles.sourceCopy}>
               <Text style={styles.sourceLabel}>Shared element source</Text>
-              <Text style={styles.sourceTitle}>Open project overview</Text>
+              <SharedElement id="project-title-source">
+                <Text style={styles.sourceTitle}>Project overview</Text>
+              </SharedElement>
             </View>
           </View>
           <Text style={styles.eyebrow}>REACT NATIVE EPIC MODAL</Text>

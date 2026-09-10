@@ -92,7 +92,7 @@ export function SharedElementTransitionView({
       if (startNode?.visibility) {
         startNode.visibility.value = interpolate(
           value,
-          [0, 0.02, 0.029],
+          [0, 0.01, 0.015],
           [1, 1, 0],
           Extrapolation.CLAMP
         );
@@ -100,8 +100,8 @@ export function SharedElementTransitionView({
       if (endNode?.visibility) {
         endNode.visibility.value = interpolate(
           value,
-          [0.95, 0.999, 1],
-          [0, 1, 1],
+          [0, 0.95, 0.99],
+          [0, 0, 1],
           Extrapolation.CLAMP
         );
       }

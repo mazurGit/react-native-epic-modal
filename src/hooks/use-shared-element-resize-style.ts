@@ -18,7 +18,11 @@ export function useSharedElementResizeStyle(
     if (!startRect || !endRect) return { opacity: 0 };
 
     return {
-      opacity: interpolate(progress.value, [0, 0.001, 0.999, 1], [0, 1, 1, 0]),
+      opacity: interpolate(
+        progress.value,
+        [0, 0.001, 0.999, 1],
+        [-1, 1, 1, -1]
+      ),
       left: interpolate(progress.value, [0, 1], [startRect.x, endRect.x]),
       top: interpolate(progress.value, [0, 1], [startRect.y, endRect.y]),
       width: interpolate(

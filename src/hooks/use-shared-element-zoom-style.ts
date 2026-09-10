@@ -17,34 +17,22 @@ export function useSharedElementZoomStyle(
 
     if (!startRect || !endRect) return { opacity: 0 };
 
+    const scale = endRect.height / startRect.height;
+
     return {
-      opacity: interpolate(progress.value, [0, 0.001, 0.999, 1], [0, 1, 1, 0]),
-      left: interpolate(
+      opacity: interpolate(
         progress.value,
-        [0, 1],
-        [startRect.x, endRect.x + (endRect.width - startRect.width) / 2]
+        [0, 0.001, 0.999, 1],
+        [-1, 1, 1, -1]
       ),
-      top: interpolate(
-        progress.value,
-        [0, 1],
-        [startRect.y, endRect.y + (endRect.height - startRect.height) / 2]
-      ),
+      left: interpolate(progress.value, [0, 1], [startRect.x, endRect.x]),
+      top: interpolate(progress.value, [0, 1], [startRect.y, endRect.y]),
       width: startRect.width,
       height: startRect.height,
+      transformOrigin: 'top left',
       transform: [
         {
-          scaleX: interpolate(
-            progress.value,
-            [0, 1],
-            [1, endRect.width / startRect.width]
-          ),
-        },
-        {
-          scaleY: interpolate(
-            progress.value,
-            [0, 1],
-            [1, endRect.height / startRect.height]
-          ),
+          scale: interpolate(progress.value, [0, 1], [1, scale]),
         },
       ],
     };
