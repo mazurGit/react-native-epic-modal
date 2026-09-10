@@ -7,7 +7,7 @@ import {
   useRef,
   type PropsWithChildren,
 } from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
 import type { ModalContentRef } from '../modal/modal-content';
 import type { ModalAnimationConfig } from '../modal/animation/modal-animation';
 import type { ModalGestureConfig } from '../modal/gesture/modal-gesture';
@@ -23,15 +23,44 @@ export type ModalBridgeProps = PropsWithChildren<{
   backdropStyle?: StyleProp<ViewStyle>;
   animation?: ModalAnimationConfig;
   gestureConfig?: ModalGestureConfig;
+  hidden?: boolean;
+  onLayout?: (event: LayoutChangeEvent) => void;
 }>;
 
 /** Bridges React modal props and ref actions to the external modal manager. */
 export const ModalBridge = forwardRef<ModalRef, ModalBridgeProps>(
-  ({ style, backdropStyle, animation, gestureConfig, children }, ref) => {
+  (
+    {
+      style,
+      backdropStyle,
+      animation,
+      gestureConfig,
+      hidden,
+      onLayout,
+      children,
+    },
+    ref
+  ) => {
     const id = useId();
     const modalProps = useMemo(
-      () => ({ style, backdropStyle, animation, gestureConfig, children }),
-      [animation, backdropStyle, children, gestureConfig, style]
+      () => ({
+        style,
+        backdropStyle,
+        animation,
+        gestureConfig,
+        hidden,
+        onLayout,
+        children,
+      }),
+      [
+        animation,
+        backdropStyle,
+        children,
+        gestureConfig,
+        hidden,
+        onLayout,
+        style,
+      ]
     );
 
     const contentRef = useRef<ModalContentRef>(null);

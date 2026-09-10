@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle, type PropsWithChildren } from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
 import { ModalView } from './modal-view';
 import type { ModalAnimationConfig } from './animation/modal-animation';
 import type { ModalGestureConfig } from './gesture/modal-gesture';
@@ -11,6 +11,8 @@ export type ModalContentProps = PropsWithChildren<{
   backdropStyle?: StyleProp<ViewStyle>;
   animation?: ModalAnimationConfig;
   gestureConfig?: ModalGestureConfig;
+  hidden?: boolean;
+  onLayout?: (event: LayoutChangeEvent) => void;
 }>;
 
 export interface ModalContentRef {
@@ -19,7 +21,19 @@ export interface ModalContentRef {
 }
 
 export const ModalContent = forwardRef<ModalContentRef, ModalContentProps>(
-  ({ id, children, style, backdropStyle, animation, gestureConfig }, ref) => {
+  (
+    {
+      id,
+      children,
+      style,
+      backdropStyle,
+      animation,
+      gestureConfig,
+      hidden,
+      onLayout,
+    },
+    ref
+  ) => {
     const { visible, exiting, present, dismiss, completeDismiss } =
       useModalController(id);
 
@@ -34,6 +48,8 @@ export const ModalContent = forwardRef<ModalContentRef, ModalContentProps>(
         exiting={exiting}
         onExitComplete={completeDismiss}
         onDismissRequest={dismiss}
+        hidden={hidden}
+        onLayout={onLayout}
         style={style}
         backdropStyle={backdropStyle}
       >

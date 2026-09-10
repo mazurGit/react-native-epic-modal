@@ -1,8 +1,9 @@
-import { useCallback, useMemo, type PropsWithChildren } from 'react';
+import { useMemo, type PropsWithChildren } from 'react';
 import {
   StyleSheet,
   useWindowDimensions,
   View,
+  type LayoutChangeEvent,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
@@ -27,6 +28,8 @@ export type ModalViewProps = PropsWithChildren<{
   exiting?: boolean;
   onExitComplete?: () => void;
   onDismissRequest?: () => void;
+  hidden?: boolean;
+  onLayout?: (event: LayoutChangeEvent) => void;
 }>;
 
 /** Modal surface. Its progress is shared with modal content and future gestures. */
@@ -39,6 +42,8 @@ export const ModalView = ({
   exiting = false,
   onExitComplete,
   onDismissRequest,
+  hidden = false,
+  onLayout,
 }: ModalViewProps) => {
   const { width, height } = useWindowDimensions();
   const resolvedAnimation = useMemo(
@@ -83,25 +88,26 @@ export const ModalView = ({
     )
   );
 
-  const Content = useCallback(
-    () => (
-      <ModalProgressContext.Provider value={progress}>
-        <Animated.View style={[styles.content, style, contentAnimatedStyle]}>
-          {children}
-        </Animated.View>
-      </ModalProgressContext.Provider>
-    ),
-    [children, contentAnimatedStyle, progress, style]
-  );
-
   return (
-    <View style={StyleSheet.absoluteFill}>
+    <View
+      accessibilityElementsHidden={hidden}
+      importantForAccessibility={hidden ? 'no-hide-descendants' : 'auto'}
+      pointerEvents={hidden ? 'none' : 'auto'}
+      style={[StyleSheet.absoluteFill, hidden && styles.hidden]}
+    >
       <GestureDetector gesture={gestureHandler}>
         <View style={StyleSheet.absoluteFill}>
           <Animated.View
             style={[styles.backdrop, backdropStyle, backdropAnimatedStyle]}
           />
-          <Content />
+          <Animated.View
+            onLayout={onLayout}
+            style={[styles.content, style, contentAnimatedStyle]}
+          >
+            <ModalProgressContext.Provider value={progress}>
+              {children}
+            </ModalProgressContext.Provider>
+          </Animated.View>
         </View>
       </GestureDetector>
     </View>
@@ -115,5 +121,8 @@ const styles = StyleSheet.create({
   },
   content: {
     zIndex: 1,
+  },
+  hidden: {
+    opacity: 0,
   },
 });
