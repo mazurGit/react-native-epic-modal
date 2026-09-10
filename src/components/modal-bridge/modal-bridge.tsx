@@ -1,6 +1,5 @@
 import {
   forwardRef,
-  useCallback,
   useEffect,
   useImperativeHandle,
   useId,
@@ -9,9 +8,9 @@ import {
   type PropsWithChildren,
 } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { ModalView } from '../modal/modal';
-import type { ModalAnimationConfig } from '../modal/modal-animation';
-import type { ModalGestureConfig } from '../modal/modal-gesture';
+import type { ModalContentRef } from '../modal/modal-content';
+import type { ModalAnimationConfig } from '../modal/animation/modal-animation';
+import type { ModalGestureConfig } from '../modal/gesture/modal-gesture';
 import { modalManager } from '../../store/external/modal-manager';
 
 export interface ModalRef {
@@ -35,56 +34,22 @@ export const ModalBridge = forwardRef<ModalRef, ModalBridgeProps>(
       [animation, backdropStyle, children, gestureConfig, style]
     );
 
-    const latestProps = useRef(modalProps);
-    latestProps.current = modalProps;
+    const contentRef = useRef<ModalContentRef>(null);
 
-    const dismiss = useCallback(() => modalManager.dismiss(id), [id]);
-    const completeDismiss = useCallback(
-      () => modalManager.completeDismiss(id),
-      [id]
+    useEffect(
+      () => modalManager.register({ id, props: modalProps, ref: contentRef }),
+      [id, modalProps]
     );
-
-    const render = useCallback(() => {
-      const {
-        children: currentChildren,
-        style: currentStyle,
-        backdropStyle: currentBackdropStyle,
-        animation: currentAnimation,
-        gestureConfig: currentGestureConfig,
-      } = latestProps.current;
-
-      return (
-        <ModalView
-          animation={currentAnimation}
-          gestureConfig={currentGestureConfig}
-          exiting={modalManager.isExiting(id)}
-          onExitComplete={completeDismiss}
-          onDismissRequest={dismiss}
-          style={currentStyle}
-          backdropStyle={currentBackdropStyle}
-        >
-          {currentChildren}
-        </ModalView>
-      );
-    }, [completeDismiss, dismiss, id]);
-
-    useEffect(() => modalManager.register({ id, render }), [id, render]);
-
-    useEffect(() => {
-      modalManager.notify(id);
-    }, [id, modalProps]);
 
     useImperativeHandle(
       ref,
       () => ({
         present: () => {
-          modalManager.present({
-            id,
-          });
+          contentRef.current?.present();
         },
-        dismiss: () => modalManager.dismiss(id),
+        dismiss: () => contentRef.current?.dismiss(),
       }),
-      [id]
+      []
     );
 
     return null;

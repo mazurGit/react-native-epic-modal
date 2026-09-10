@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import { ModalManager } from '../external/modal-manager';
 
-/** Subscribes a React component to the visible modal entries. */
+/** Subscribes a React component to registered modal entries. */
 export const useModalEntries = (
   manager: ModalManager = ModalManager.getInstance()
 ) =>

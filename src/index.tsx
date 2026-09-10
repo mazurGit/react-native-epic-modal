@@ -10,12 +10,12 @@ export type {
   ModalEnteringAnimationPreset,
   ModalExitingAnimationPreset,
   ModalAnimationPreset,
-} from './components/modal/modal-animation';
+} from './components/modal/animation/modal-animation';
 export type {
   ModalGestureConfig,
   ModalGestureDismissBehavior,
   ModalGestureEdge,
-} from './components/modal/modal-gesture';
+} from './components/modal/gesture/modal-gesture';
 export { ModalProvider } from './components/modal-provider/modal-provider';
 export type { ModalProviderProps } from './components/modal-provider/modal-provider';
 export type { ModalEntry } from './store/modal-entry';

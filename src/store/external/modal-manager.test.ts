@@ -1,22 +1,24 @@
 import { modalManager } from './modal-manager';
+import { createRef } from 'react';
+import type { ModalRef } from '../../components/modal-bridge/modal-bridge';
+
+const registration = (id: string) => ({
+  id,
+  props: {},
+  ref: createRef<ModalRef>(),
+});
 
 describe('ModalManager', () => {
   it('orders entries by presentation order', () => {
     const manager = modalManager;
     manager.clear();
 
-    manager.register({ id: 'low', render: () => null });
-    manager.register({
-      id: 'latest',
-      render: () => null,
-    });
-    manager.register({
-      id: 'same-priority',
-      render: () => null,
-    });
-    manager.present({ id: 'low' });
-    manager.present({ id: 'latest' });
-    manager.present({ id: 'same-priority' });
+    manager.register(registration('low'));
+    manager.register(registration('latest'));
+    manager.register(registration('same-priority'));
+    manager.present('low');
+    manager.present('latest');
+    manager.present('same-priority');
 
     expect(manager.getSnapshot().map(({ id }) => id)).toEqual([
       'low',
@@ -31,13 +33,11 @@ describe('ModalManager', () => {
     const listener = jest.fn();
     const unsubscribe = manager.subscribe(listener);
 
-    manager.register({ id: 'modal', render: () => null });
-    manager.present({ id: 'modal' });
-    manager.notify('modal');
-    manager.dismiss('modal');
+    manager.register(registration('modal'));
+    manager.present('modal');
     unsubscribe();
     manager.clear();
 
-    expect(listener).toHaveBeenCalledTimes(4);
+    expect(listener).toHaveBeenCalledTimes(2);
   });
 });

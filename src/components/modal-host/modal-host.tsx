@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { FullWindowOverlay } from 'react-native-screens';
+import { ModalContent } from '../modal/modal-content';
 import { modalManager } from '../../store/external/modal-manager';
 import { useModalEntries } from '../../store/hooks/use-modal-entries';
 
@@ -14,7 +15,7 @@ export const ModalHost = (_props: ModalHostProps) => {
     <>
       {entries.map((entry) => (
         <Fragment key={entry.id}>
-          {modalManager.getRenderer(entry.id)?.()}
+          <ModalContent {...entry.props} id={entry.id} ref={entry.ref} />
         </Fragment>
       ))}
     </>

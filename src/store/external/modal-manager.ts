@@ -1,28 +1,28 @@
-import type { ReactNode } from 'react';
+import type { RefObject } from 'react';
+import type {
+  ModalBridgeProps,
+  ModalRef,
+} from '../../components/modal-bridge/modal-bridge';
 import type { ModalEntry } from '../modal-entry';
 
 type Listener = () => void;
 
-type ModalRegistration = {
-  id: string;
-  render: () => ReactNode;
-};
-
-type StoredEntry = ModalEntry & {
-  visible: boolean;
-  exiting: boolean;
+export type StoredModalEntry = ModalEntry & {
+  props: ModalBridgeProps;
+  ref: RefObject<ModalRef | null>;
   presentationOrder: number;
 };
+
+type ModalRegistration = Pick<StoredModalEntry, 'id' | 'props' | 'ref'>;
 
 /** External store responsible for the modal collection and its ordering. */
 export class ModalManager {
   private static instance: ModalManager | undefined;
 
-  private readonly entries = new Map<string, StoredEntry>();
-  private readonly renderers = new Map<string, () => ReactNode>();
+  private readonly entries = new Map<string, StoredModalEntry>();
   private readonly listeners = new Set<Listener>();
   private nextPresentationOrder = 0;
-  private snapshot: readonly ModalEntry[] = [];
+  private snapshot: readonly StoredModalEntry[] = [];
 
   private constructor() {}
 
@@ -41,60 +41,27 @@ export class ModalManager {
 
   getSnapshot = () => this.snapshot;
 
-  getRenderer = (id: string) => this.renderers.get(id);
-
-  isExiting = (id: string) => this.entries.get(id)?.exiting ?? false;
-
   register = (registration: ModalRegistration) => {
-    this.renderers.set(registration.id, registration.render);
-    this.updateSnapshot();
-
-    return () => this.unregister(registration.id, registration.render);
-  };
-
-  unregister = (id: string, render?: () => ReactNode) => {
-    if (render && this.renderers.get(id) !== render) return;
-
-    const rendererRemoved = this.renderers.delete(id);
-    const entryRemoved = this.entries.delete(id);
-    if (rendererRemoved || entryRemoved) this.updateSnapshot();
-  };
-
-  present = (entry: ModalEntry) => {
-    const existingEntry = this.entries.get(entry.id);
-    const storedEntry: StoredEntry = existingEntry ?? {
-      ...entry,
-      visible: false,
-      exiting: false,
-      presentationOrder: 0,
-    };
-    Object.assign(storedEntry, entry, {
-      visible: true,
-      exiting: false,
-      presentationOrder: this.nextPresentationOrder++,
+    const existingEntry = this.entries.get(registration.id);
+    this.entries.set(registration.id, {
+      ...(existingEntry ?? { id: registration.id, presentationOrder: 0 }),
+      ...registration,
     });
-    this.entries.set(entry.id, storedEntry);
     this.updateSnapshot();
+
+    return () => this.unregister(registration.id, registration.ref);
   };
 
-  notify = (id: string) => {
-    if (!this.entries.has(id) && !this.renderers.has(id)) return;
-    this.updateSnapshot();
+  unregister = (id: string, ref?: RefObject<ModalRef | null>) => {
+    if (ref && this.entries.get(id)?.ref !== ref) return;
+
+    if (this.entries.delete(id)) this.updateSnapshot();
   };
 
-  dismiss = (id: string) => {
+  present = (id: string) => {
     const entry = this.entries.get(id);
-    if (!entry || !entry.visible || entry.exiting) return;
-
-    entry.exiting = true;
-    this.updateSnapshot();
-  };
-
-  completeDismiss = (id: string) => {
-    const entry = this.entries.get(id);
-    if (!entry || !entry.exiting) return;
-
-    this.entries.delete(id);
+    if (!entry) return;
+    entry.presentationOrder = this.nextPresentationOrder++;
     this.updateSnapshot();
   };
 
@@ -105,17 +72,9 @@ export class ModalManager {
   };
 
   private updateSnapshot() {
-    this.snapshot = [...this.entries.values()]
-      .filter((entry) => entry.visible)
-      .sort((a, b) => a.presentationOrder - b.presentationOrder)
-      .map(
-        ({
-          visible: _visible,
-          exiting: _exiting,
-          presentationOrder: _presentationOrder,
-          ...entry
-        }) => entry
-      );
+    this.snapshot = [...this.entries.values()].sort(
+      (a, b) => a.presentationOrder - b.presentationOrder
+    );
 
     this.listeners.forEach((listener) => listener());
   }

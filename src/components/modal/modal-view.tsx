@@ -1,5 +1,4 @@
-import { useMemo } from 'react';
-import type { PropsWithChildren } from 'react';
+import { useCallback, useMemo, type PropsWithChildren } from 'react';
 import {
   StyleSheet,
   useWindowDimensions,
@@ -13,12 +12,12 @@ import { ModalProgressContext } from '../../context/modal-progress-context';
 import {
   DEFAULT_MODAL_ANIMATION,
   type ModalAnimationConfig,
-} from './modal-animation';
-import { getModalAnimationStyle } from './modal-animation-utils';
-import type { ModalGestureConfig } from './modal-gesture';
-import { resolveModalGestureConfig } from './modal-gesture';
-import { useModalAnimation } from './use-modal-animation';
-import { useModalGesture } from './use-modal-gesture';
+} from './animation/modal-animation';
+import { getModalAnimationStyle } from './animation/modal-animation-utils';
+import type { ModalGestureConfig } from './gesture/modal-gesture';
+import { resolveModalGestureConfig } from './gesture/modal-gesture';
+import { useModalAnimation } from './animation/use-modal-animation';
+import { useModalGesture } from './gesture/use-modal-gesture';
 
 export type ModalViewProps = PropsWithChildren<{
   style?: StyleProp<ViewStyle>;
@@ -84,27 +83,25 @@ export const ModalView = ({
     )
   );
 
-  const immersive = resolvedGesture.immersive;
-  const backdrop = (
-    <Animated.View
-      pointerEvents={immersive ? 'auto' : 'none'}
-      style={[styles.backdrop, backdropStyle, backdropAnimatedStyle]}
-    />
-  );
-  const content = (
-    <ModalProgressContext.Provider value={progress}>
-      <Animated.View style={[styles.content, style, contentAnimatedStyle]}>
-        {children}
-      </Animated.View>
-    </ModalProgressContext.Provider>
+  const Content = useCallback(
+    () => (
+      <ModalProgressContext.Provider value={progress}>
+        <Animated.View style={[styles.content, style, contentAnimatedStyle]}>
+          {children}
+        </Animated.View>
+      </ModalProgressContext.Provider>
+    ),
+    [children, contentAnimatedStyle, progress, style]
   );
 
   return (
     <View style={styles.container}>
       <GestureDetector gesture={gestureHandler}>
         <View style={styles.gestureSurface}>
-          {backdrop}
-          {content}
+          <Animated.View
+            style={[styles.backdrop, backdropStyle, backdropAnimatedStyle]}
+          />
+          <Content />
         </View>
       </GestureDetector>
     </View>
