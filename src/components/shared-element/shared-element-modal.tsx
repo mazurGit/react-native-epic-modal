@@ -10,6 +10,7 @@ import {
 import type { LayoutChangeEvent } from 'react-native';
 import { ModalBridge as Modal } from '../modal-bridge/modal-bridge';
 import type { ModalBridgeProps, ModalRef } from '../modal-bridge/modal-bridge';
+import { SharedElementHost } from './shared-element-host';
 
 export type SharedElementModalProps = PropsWithChildren<
   Omit<ModalBridgeProps, 'hidden' | 'onLayout'> & {
@@ -21,7 +22,7 @@ export type SharedElementModalRef = ModalRef;
 
 /** Measures its content once before the modal is presented to the user. */
 export const SharedElementModal = forwardRef<ModalRef, SharedElementModalProps>(
-  ({ onLayout, ...props }, ref) => {
+  ({ children, onLayout, ...props }, ref) => {
     const modalRef = useRef<ModalRef>(null);
     const hasMeasured = useRef(false);
     const [measuring, setMeasuring] = useState(true);
@@ -59,7 +60,9 @@ export const SharedElementModal = forwardRef<ModalRef, SharedElementModalProps>(
         hidden={measuring}
         onLayout={handleLayout}
         ref={modalRef}
-      />
+      >
+        <SharedElementHost>{children}</SharedElementHost>
+      </Modal>
     );
   }
 );

@@ -2,12 +2,14 @@ export { ModalHost } from './components/modal-host/modal-host';
 export type { ModalHostProps } from './components/modal-host/modal-host';
 export { ModalBridge as Modal } from './components/modal-bridge/modal-bridge';
 export { SharedElementModal } from './components/shared-element/shared-element-modal';
+export { SharedElementHost } from './components/shared-element/shared-element-host';
 export type {
   ModalBridgeProps as ModalProps,
   ModalRef,
 } from './components/modal-bridge/modal-bridge';
 export type { SharedElementModalProps } from './components/shared-element/shared-element-modal';
 export type { SharedElementModalRef } from './components/shared-element/shared-element-modal';
+export type { SharedElementHostProps } from './components/shared-element/shared-element-host';
 export type {
   ModalAnimationConfig,
   ModalEnteringAnimationPreset,
