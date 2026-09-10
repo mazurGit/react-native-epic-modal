@@ -3,10 +3,15 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "expo start",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
-    "web": "expo start --web"
+    "start": "react-native start",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start:expo": "expo start",
+    "android:expo": "expo run:android",
+    "ios:expo": "expo run:ios",
+    "web:expo": "expo start --web",
+    "prebuild": "expo prebuild",
+    "prebuild:clean": "expo prebuild --clean"
   },
   "dependencies": {
     "@expo/metro-runtime": "~57.0.15",
@@ -15,6 +20,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.3",
+    "react-native-epic-modal": "file:../react-native-epic-modal-shared-element.tgz",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-reanimated": "4.5.1",
     "react-native-screens": "~4.26.0",
@@ -23,6 +29,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
+    "@react-native/metro-config": "0.86.3",
     "react-native-builder-bob": "^0.40.6"
   },
   "private": true

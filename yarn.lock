@@ -3773,6 +3773,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native/metro-babel-transformer@npm:0.86.3":
+  version: 0.86.3
+  resolution: "@react-native/metro-babel-transformer@npm:0.86.3"
+  dependencies:
+    "@babel/core": ^7.25.2
+    "@react-native/babel-preset": 0.86.3
+    hermes-parser: 0.36.0
+    nullthrows: ^1.1.1
+  peerDependencies:
+    "@babel/core": "*"
+  checksum: c5ec402b763c30792eefffc0acd01ab13ed772f9b87cf83da39904a2e594e8c530b0e147c85de0be8d6eabb653049d14a692e68deef7171c3979c493f3844a3e
+  languageName: node
+  linkType: hard
+
+"@react-native/metro-config@npm:0.86.3":
+  version: 0.86.3
+  resolution: "@react-native/metro-config@npm:0.86.3"
+  dependencies:
+    "@react-native/js-polyfills": 0.86.3
+    "@react-native/metro-babel-transformer": 0.86.3
+    metro-config: ^0.84.3
+    metro-runtime: ^0.84.3
+  checksum: 37ec651b2e197b2e3d7cea7d324c9820171b79c0ad01ef918b3f359955684db12ea34138dffcbb64969217214d4a409ec35294c5b0c579b7d9acc9279ed1e55a
+  languageName: node
+  linkType: hard
+
 "@react-native/normalize-colors@npm:0.86.3":
   version: 0.86.3
   resolution: "@react-native/normalize-colors@npm:0.86.3"
@@ -12851,12 +12877,14 @@ __metadata:
   dependencies:
     "@babel/core": ^7.29.0
     "@expo/metro-runtime": ~57.0.15
+    "@react-native/metro-config": 0.86.3
     expo: ^57.0.0
     expo-status-bar: ~57.0.1
     react: 19.2.3
     react-dom: 19.2.3
     react-native: 0.86.3
     react-native-builder-bob: ^0.40.6
+    react-native-epic-modal: "file:../react-native-epic-modal-shared-element.tgz"
     react-native-gesture-handler: ~2.32.0
     react-native-reanimated: 4.5.1
     react-native-screens: ~4.26.0
@@ -12864,6 +12892,20 @@ __metadata:
     react-native-worklets: 0.10.1
   languageName: unknown
   linkType: soft
+
+"react-native-epic-modal@file:../react-native-epic-modal-shared-element.tgz::locator=react-native-epic-modal-example%40workspace%3Aexample":
+  version: 0.1.0
+  resolution: "react-native-epic-modal@file:../react-native-epic-modal-shared-element.tgz::locator=react-native-epic-modal-example%40workspace%3Aexample"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-gesture-handler: ">=2.0.0"
+    react-native-reanimated: ">=3.16.0"
+    react-native-screens: ">=3.0.0"
+    react-native-worklets: ">=0.5.0"
+  checksum: 68e32422504ae519a857611a1605da16dbb7ca447bf202ce9eeaeb2657dff7bb150b9550f8ef6bfce6297e4bf0db3f26612f737684b945f5b25641ffb0941998
+  languageName: node
+  linkType: hard
 
 "react-native-epic-modal@workspace:.":
   version: 0.0.0-use.local
