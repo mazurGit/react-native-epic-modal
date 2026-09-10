@@ -18,6 +18,5 @@ export type {
 } from './components/modal/gesture/modal-gesture';
 export { ModalProvider } from './components/modal-provider/modal-provider';
 export type { ModalProviderProps } from './components/modal-provider/modal-provider';
-export type { ModalEntry } from './store/modal-entry';
-export { modalManager } from './store/external/modal-manager';
+export { modalManager } from './store/modal-manager';
 export { useModalProgress } from './hooks/use-modal-progress';

@@ -11,7 +11,7 @@ import type { StyleProp, ViewStyle } from 'react-native';
 import type { ModalContentRef } from '../modal/modal-content';
 import type { ModalAnimationConfig } from '../modal/animation/modal-animation';
 import type { ModalGestureConfig } from '../modal/gesture/modal-gesture';
-import { modalManager } from '../../store/external/modal-manager';
+import { modalManager } from '../../store/modal-manager';
 
 export interface ModalRef {
   present: () => void;

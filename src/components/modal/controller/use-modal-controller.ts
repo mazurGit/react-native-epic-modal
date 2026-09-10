@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { modalManager } from '../../../store/external/modal-manager';
+import { modalManager } from '../../../store/modal-manager';
 
 export const useModalController = (id: string) => {
   const [visible, setVisible] = useState(false);

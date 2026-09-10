@@ -2,8 +2,8 @@ import { Fragment } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { FullWindowOverlay } from 'react-native-screens';
 import { ModalContent } from '../modal/modal-content';
-import { modalManager } from '../../store/external/modal-manager';
-import { useModalEntries } from '../../store/hooks/use-modal-entries';
+import { modalManager } from '../../store/modal-manager';
+import { useModalEntries } from '../../hooks/use-modal-entries';
 
 export type ModalHostProps = Record<never, never>;
 

@@ -1,6 +1,6 @@
 import { modalManager } from './modal-manager';
 import { createRef } from 'react';
-import type { ModalRef } from '../../components/modal-bridge/modal-bridge';
+import type { ModalRef } from '../components/modal-bridge/modal-bridge';
 
 const registration = (id: string) => ({
   id,

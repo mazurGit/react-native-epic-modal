@@ -2,12 +2,12 @@ import type { RefObject } from 'react';
 import type {
   ModalBridgeProps,
   ModalRef,
-} from '../../components/modal-bridge/modal-bridge';
-import type { ModalEntry } from '../modal-entry';
+} from '../components/modal-bridge/modal-bridge';
 
 type Listener = () => void;
 
-export type StoredModalEntry = ModalEntry & {
+export type StoredModalEntry = {
+  id: string;
   props: ModalBridgeProps;
   ref: RefObject<ModalRef | null>;
   presentationOrder: number;
