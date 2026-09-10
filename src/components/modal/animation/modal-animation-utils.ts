@@ -19,9 +19,7 @@ export const getModalAnimationStyle = (
   'worklet';
 
   const preset =
-    exiting || (gestureActive.value && exitingPreset === 'slideFree')
-      ? exitingPreset
-      : enteringPreset;
+    exiting || gestureActive.value ? exitingPreset : enteringPreset;
 
   if (preset === 'zoom') {
     return {

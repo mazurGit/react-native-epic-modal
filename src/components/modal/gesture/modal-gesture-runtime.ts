@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import {
+  useAnimatedReaction,
   useDerivedValue,
   useSharedValue,
   type SharedValue,
@@ -27,6 +28,15 @@ export const useModalGestureRuntime = (
   const translationX = useSharedValue(0);
   const translationY = useSharedValue(0);
   const gestureActive = useDerivedValue(() => phase.value !== 'idle');
+
+  useAnimatedReaction(
+    () => progress.value,
+    (value) => {
+      if (value <= 0 && phase.value === 'dismissing') {
+        phase.value = 'idle';
+      }
+    }
+  );
 
   return useMemo(
     () => ({

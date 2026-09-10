@@ -25,7 +25,7 @@ export const SharedElementTestModal = forwardRef<
     <SharedElementModal
       ref={modalRef}
       gestureConfig={{ immersive: true }}
-      animation={{ entering: 'slideLeft', exiting: 'slideLeft' }}
+      animation={{ entering: 'slideLeft', exiting: 'slideBottom' }}
       transitions={[
         {
           key: 'project-icon',
