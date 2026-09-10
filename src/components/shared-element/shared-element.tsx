@@ -38,8 +38,6 @@ export function SharedElement({
   const rect = useSharedValue<SharedElementRect | null>(null);
   const visibility = useSharedValue(1);
   const nodeRef = useRef<SharedElementNode | null>(null);
-  const frameCount = useRef(0);
-  const lastFrame = useRef<SharedElementRect | null>(null);
   const visibilityStyle = useAnimatedStyle(() => ({
     opacity: visibility.value,
   }));
@@ -74,28 +72,7 @@ export function SharedElement({
         const node = nodeRef.current;
         if (!node) return;
 
-        const frame = event.nativeEvent;
-        const previousFrame = lastFrame.current;
-        const hasChanged =
-          !previousFrame ||
-          previousFrame.x !== frame.x ||
-          previousFrame.y !== frame.y ||
-          previousFrame.width !== frame.width ||
-          previousFrame.height !== frame.height;
-
-        if (__DEV__ && hasChanged) {
-          frameCount.current += 1;
-          lastFrame.current = frame;
-          console.log('[SharedElement] measured frame', {
-            id,
-            measurementOnly,
-            ancestorTag,
-            frameNumber: frameCount.current,
-            ...frame,
-          });
-        }
-
-        updateRect(node, frame);
+        updateRect(node, event.nativeEvent);
       }}
     >
       {children}

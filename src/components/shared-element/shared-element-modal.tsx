@@ -29,21 +29,9 @@ export const SharedElementModal = forwardRef<ModalRef, SharedElementModalProps>(
     const handleLayout = useCallback(
       (event: LayoutChangeEvent) => {
         onLayout?.(event);
-        if (__DEV__) {
-          console.log('[SharedElementModal] layout event', {
-            hasMeasured: hasMeasured.current,
-            layout: event.nativeEvent.layout,
-          });
-        }
         if (hasMeasured.current) return;
 
         hasMeasured.current = true;
-        if (__DEV__) {
-          console.log('[SharedElementModal] measured content', {
-            ...event.nativeEvent.layout,
-            action: 'hidden measurement complete',
-          });
-        }
       },
       [onLayout]
     );
@@ -52,11 +40,6 @@ export const SharedElementModal = forwardRef<ModalRef, SharedElementModalProps>(
       ref,
       () => ({
         present: () => {
-          if (__DEV__) {
-            console.log('[SharedElementModal] present requested', {
-              hasMeasured: hasMeasured.current,
-            });
-          }
           setMeasuring(false);
           modalRef.current?.present();
         },
