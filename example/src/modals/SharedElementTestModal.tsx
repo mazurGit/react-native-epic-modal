@@ -1,5 +1,6 @@
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import {
+  SharedElement,
   SharedElementModal,
   type SharedElementModalRef,
 } from 'react-native-epic-modal';
@@ -32,9 +33,11 @@ export const SharedElementTestModal = forwardRef<SharedElementModalRef>(
             </Pressable>
           </View>
           <View style={styles.hero}>
-            <View style={styles.icon}>
-              <Text style={styles.iconText}>EP</Text>
-            </View>
+            <SharedElement id="project-icon">
+              <View style={styles.icon}>
+                <Text style={styles.iconText}>EP</Text>
+              </View>
+            </SharedElement>
             <View style={styles.heroCopy}>
               <Text style={styles.heroTitle}>Epic workspace</Text>
               <Text style={styles.heroDescription}>

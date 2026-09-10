@@ -24,6 +24,7 @@ export type ModalBridgeProps = PropsWithChildren<{
   animation?: ModalAnimationConfig;
   gestureConfig?: ModalGestureConfig;
   hidden?: boolean;
+  keepMounted?: boolean;
   onLayout?: (event: LayoutChangeEvent) => void;
 }>;
 
@@ -36,6 +37,7 @@ export const ModalBridge = forwardRef<ModalRef, ModalBridgeProps>(
       animation,
       gestureConfig,
       hidden,
+      keepMounted,
       onLayout,
       children,
     },
@@ -49,6 +51,7 @@ export const ModalBridge = forwardRef<ModalRef, ModalBridgeProps>(
         animation,
         gestureConfig,
         hidden,
+        keepMounted,
         onLayout,
         children,
       }),
@@ -58,6 +61,7 @@ export const ModalBridge = forwardRef<ModalRef, ModalBridgeProps>(
         children,
         gestureConfig,
         hidden,
+        keepMounted,
         onLayout,
         style,
       ]

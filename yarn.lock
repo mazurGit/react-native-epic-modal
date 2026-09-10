@@ -12903,7 +12903,7 @@ __metadata:
     react-native-reanimated: ">=3.16.0"
     react-native-screens: ">=3.0.0"
     react-native-worklets: ">=0.5.0"
-  checksum: c8978fd8867ae506a88ebe6bf02786e7e2cfe9d06d59972fa466a9ad81dc1e6b1e78ff8414057a530c71642d85d3b4a6c5284d94edaeaca62b63e96bb0c13e82
+  checksum: 4a5e10e1d10cf0dcc7852b3d100377a4fc1db5e99cb9fd83e070f70b48df251fd8184d3e952587beed1d5e55575edae4a1c0aefd50e90a324472c20c3e811fed
   languageName: node
   linkType: hard
 

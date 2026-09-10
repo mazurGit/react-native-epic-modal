@@ -31,6 +31,9 @@ export const SharedElementHost = forwardRef<
   useLayoutEffect(() => {
     const tag = findNodeHandle(hostRef.current);
     if (tag !== null) {
+      if (__DEV__) {
+        console.log('[SharedElementHost] resolved native tag', tag);
+      }
       setHostTag(tag);
     }
   }, []);

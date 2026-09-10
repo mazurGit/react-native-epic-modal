@@ -11,8 +11,15 @@ const root = path.resolve(__dirname, '..');
  *
  * @type {import('metro-config').MetroConfig}
  */
-module.exports = getConfig(getDefaultConfig(__dirname), {
+const config = getConfig(getDefaultConfig(__dirname), {
   root,
   pkg,
   project: __dirname,
 });
+
+config.resolver.unstable_conditionNames = [
+  ...(config.resolver.unstable_conditionNames ?? []),
+  'react-native-epic-modal-source',
+];
+
+module.exports = config;
