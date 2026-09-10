@@ -17,6 +17,8 @@ export type SharedElementModalProps = PropsWithChildren<
   }
 >;
 
+export type SharedElementModalRef = ModalRef;
+
 /** Measures its content once before the modal is presented to the user. */
 export const SharedElementModal = forwardRef<ModalRef, SharedElementModalProps>(
   ({ onLayout, ...props }, ref) => {
