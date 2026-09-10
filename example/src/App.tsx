@@ -12,12 +12,14 @@ import { ConfirmationModal } from './modals/ConfirmationModal';
 import { DetailsModal } from './modals/DetailsModal';
 import { FilterModal } from './modals/FilterModal';
 import { SharedElementTestModal } from './modals/SharedElementTestModal';
+import { SharedElementTestModalTwo } from './modals/SharedElementTestModalTwo';
 
 export default function App() {
   const filterRef = useRef<ModalRef>(null);
   const confirmationRef = useRef<ModalRef>(null);
   const detailsRef = useRef<ModalRef>(null);
   const sharedElementRef = useRef<SharedElementModalRef>(null);
+  const sharedElementTwoRef = useRef<SharedElementModalRef>(null);
 
   return (
     <GestureHandlerRootView style={styles.root}>
@@ -75,7 +77,11 @@ export default function App() {
           onPresentNext={() => detailsRef.current?.present()}
         />
         <DetailsModal ref={detailsRef} />
-        <SharedElementTestModal ref={sharedElementRef} />
+        <SharedElementTestModal
+          ref={sharedElementRef}
+          onPresentNext={() => sharedElementTwoRef.current?.present()}
+        />
+        <SharedElementTestModalTwo ref={sharedElementTwoRef} />
       </ModalProvider>
     </GestureHandlerRootView>
   );

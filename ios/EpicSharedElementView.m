@@ -68,7 +68,7 @@
   }
 
   UIView *ancestor = [self ancestorView];
-  CGRect frame = [self convertRect:self.bounds toView:ancestor];
+  CGRect frame = [self layoutFrameInAncestor:ancestor];
   if (CGRectEqualToRect(frame, self.lastFrame)) return;
 
   CFTimeInterval now = CACurrentMediaTime();
@@ -84,6 +84,27 @@
     @"width": @(frame.size.width),
     @"height": @(frame.size.height),
   });
+}
+
+- (CGRect)layoutFrameInAncestor:(UIView *)ancestor {
+  CGRect frame = self.bounds;
+  UIView *view = self;
+
+  while (view && view != ancestor) {
+    UIView *superview = view.superview;
+    if (!superview) {
+      return [self convertRect:self.bounds toView:ancestor];
+    }
+
+    CGPoint origin = CGPointMake(
+        view.layer.position.x - view.layer.anchorPoint.x * view.bounds.size.width,
+        view.layer.position.y - view.layer.anchorPoint.y * view.bounds.size.height);
+    frame.origin.x += origin.x - view.bounds.origin.x;
+    frame.origin.y += origin.y - view.bounds.origin.y;
+    view = superview;
+  }
+
+  return frame;
 }
 
 - (UIView<RCTComponent> *)ancestorView {
