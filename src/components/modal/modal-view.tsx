@@ -95,9 +95,9 @@ export const ModalView = ({
   );
 
   return (
-    <View style={styles.container}>
+    <View style={StyleSheet.absoluteFill}>
       <GestureDetector gesture={gestureHandler}>
-        <View style={styles.gestureSurface}>
+        <View style={StyleSheet.absoluteFill}>
           <Animated.View
             style={[styles.backdrop, backdropStyle, backdropAnimatedStyle]}
           />
@@ -109,21 +109,11 @@ export const ModalView = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFill,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   backdrop: {
     ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(0, 0, 0, 0.45)',
   },
   content: {
     zIndex: 1,
-  },
-  gestureSurface: {
-    ...StyleSheet.absoluteFill,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
