@@ -33,7 +33,6 @@ The home screen has quick links to Layers and Motion Lab. Shared-element screens
 - `src/screens/showcase/showcase.tsx`: configuration, transitions and layered flow.
 - `src/screens/showcase/components/`: screen controls and the offline artwork.
 - `src/common/`: palette, motion presets and shared types.
-- `src/screens/architecture/architecture.tsx`: preserved earlier architecture example.
 
 ```sh
 yarn tsc -p example/tsconfig.json
