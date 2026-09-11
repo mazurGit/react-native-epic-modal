@@ -1,11 +1,13 @@
 import { useRef, useState } from 'react';
 import { ScrollView } from 'react-native';
 import { type ModalRef } from 'react-native-epic-modal';
-import type { MotionSettings } from '../../common/types/showcase/showcase.type';
-import { HomeScreen } from './components/home-screen/home-screen';
-import { MotionPreviewModal } from './components/motion-preview-modal/motion-preview-modal';
-import { SharedElementModals } from './components/shared-element-modals/shared-element-modals';
-import { StackModals } from './components/stack-modals/stack-modals';
+import type { MotionSettings } from './common/types/showcase.type';
+import {
+  HomeScreen,
+  MotionPreviewModal,
+  SharedElementModals,
+  StackModals,
+} from './components/components';
 
 export function Showcase() {
   const scroll = useRef<ScrollView>(null);

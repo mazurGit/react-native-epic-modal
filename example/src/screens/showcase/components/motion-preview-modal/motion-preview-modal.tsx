@@ -1,8 +1,8 @@
 import type { RefObject } from 'react';
 import { Text, View } from 'react-native';
 import { Modal, type ModalRef } from 'react-native-epic-modal';
-import { animationLabels } from '../../../../common/constants/motion.constants';
-import type { MotionSettings } from '../../../../common/types/showcase/showcase.type';
+import { animationLabels } from '../../common/constants/motion.constants';
+import type { MotionSettings } from '../../common/types/showcase.type';
 import { s } from '../../styles';
 import { Button } from '../button/button';
 import { Heading } from '../heading/heading';

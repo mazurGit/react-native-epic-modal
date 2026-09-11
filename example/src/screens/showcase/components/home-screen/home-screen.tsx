@@ -5,11 +5,11 @@ import { colors } from '../../../../common/constants/colors.constants';
 import {
   animationLabels,
   enteringPresets,
-} from '../../../../common/constants/motion.constants';
+} from '../../common/constants/motion.constants';
 import type {
   GestureMode,
   MotionSettings,
-} from '../../../../common/types/showcase/showcase.type';
+} from '../../common/types/showcase.type';
 import { s } from '../../styles';
 import { Artwork } from '../artwork/artwork';
 import { Button } from '../button/button';
