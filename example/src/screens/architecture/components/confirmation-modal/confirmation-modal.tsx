@@ -1,10 +1,10 @@
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { Modal, type ModalRef } from 'react-native-epic-modal';
 import { Text } from 'react-native';
-import { CloseButton } from '../components/CloseButton';
-import { ActionButton } from '../components/ActionButton';
-import { ModalCard } from '../components/ModalCard';
-import { styles } from '../styles';
+import { ActionButton } from '../../../../components/action-button/action-button';
+import { CloseButton } from '../../../../components/close-button/close-button';
+import { ModalCard } from '../../../../components/modal-card/modal-card';
+import { globalStyles } from '../../../../styles/styles';
 
 export const ConfirmationModal = forwardRef<
   ModalRef,
@@ -23,7 +23,7 @@ export const ConfirmationModal = forwardRef<
       animation={{ entering: 'slideBottom', exiting: 'slideBottom' }}
     >
       <ModalCard title="Confirmation" eyebrow="SECOND MODAL">
-        <Text style={styles.cardDescription}>
+        <Text style={globalStyles.cardDescription}>
           This modal is rendered above FilterModal because it was opened later.
         </Text>
         <ActionButton

@@ -1,0 +1,60 @@
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+  screen: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+    backgroundColor: '#eef4f1',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 28,
+  },
+  eyebrow: {
+    marginBottom: 8,
+    color: '#16796f',
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 1.2,
+  },
+  title: { color: '#17211b', fontSize: 30, fontWeight: '800' },
+  closeButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#dcebe6',
+  },
+  closeText: { marginTop: -3, color: '#18594f', fontSize: 28 },
+  hero: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    padding: 20,
+    borderRadius: 24,
+    backgroundColor: '#18594f',
+  },
+  icon: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 88,
+    height: 88,
+    borderRadius: 24,
+    backgroundColor: '#b9e4d8',
+  },
+  iconText: { color: '#18594f', fontSize: 26, fontWeight: '800' },
+  heroCopy: { flex: 1, marginLeft: 16 },
+  heroTitle: {
+    marginBottom: 6,
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  heroDescription: { color: '#d9f3ec', fontSize: 14, lineHeight: 20 },
+});

@@ -1,10 +1,10 @@
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { Modal, type ModalRef } from 'react-native-epic-modal';
 import { Text } from 'react-native';
-import { ActionButton } from '../components/ActionButton';
-import { CloseButton } from '../components/CloseButton';
-import { ModalCard } from '../components/ModalCard';
-import { styles } from '../styles';
+import { ActionButton } from '../../../../components/action-button/action-button';
+import { CloseButton } from '../../../../components/close-button/close-button';
+import { ModalCard } from '../../../../components/modal-card/modal-card';
+import { globalStyles } from '../../../../styles/styles';
 
 export const FilterModal = forwardRef<ModalRef, { onPresentNext: () => void }>(
   function FilterModalImpl({ onPresentNext }, forwardedRef) {
@@ -21,7 +21,7 @@ export const FilterModal = forwardRef<ModalRef, { onPresentNext: () => void }>(
         ref={modalRef}
       >
         <ModalCard title="Filters" eyebrow="FILTER MODAL">
-          <Text style={styles.cardDescription}>
+          <Text style={globalStyles.cardDescription}>
             A concrete modal built on top of the generic Modal container.
           </Text>
           <ActionButton

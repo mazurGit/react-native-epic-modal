@@ -1,6 +1,12 @@
-describe('Epic Modal', () => {
-  const expectModalToClose = async (modalText) => {
-    await waitFor(element(by.text(modalText)))
+describe('Epic Studio', () => {
+  const tap = async (id) => {
+    await waitFor(element(by.id(id)))
+      .toBeVisible()
+      .withTimeout(5000);
+    await element(by.id(id)).tap();
+  };
+  const closed = async (id) => {
+    await waitFor(element(by.id(id)))
       .not.toBeVisible()
       .withTimeout(5000);
   };
@@ -9,54 +15,61 @@ describe('Epic Modal', () => {
     await device.launchApp({ newInstance: true });
   });
 
-  it('opens and closes a modal', async () => {
-    await element(by.id('open-basic-modal')).tap();
-    await expect(element(by.text('Basic Modal'))).toBeVisible();
-
-    await element(by.id('close-basic-modal')).tap();
-    await expectModalToClose('Basic Modal');
+  it('travels through two shared-element destinations and back', async () => {
+    await tap('open-player');
+    await tap('open-album');
+    await expect(element(by.text('First light'))).toBeVisible();
+    await tap('close-album');
+    await closed('close-album');
+    await tap('close-player');
+    await closed('close-player');
+    await tap('open-player');
+    await tap('close-player');
+    await closed('close-player');
   });
 
-  it('closes only the top modal in a stack', async () => {
-    await element(by.id('open-stacked-modals')).tap();
-    await expect(
-      element(by.text('Third Stacked Modal (Priority 3)'))
-    ).toBeVisible();
-
-    await element(by.id('close-stacked-third')).tap();
-    await expectModalToClose('Third Stacked Modal (Priority 3)');
-    await expect(
-      element(by.text('Second Stacked Modal (Priority 2)'))
-    ).toBeVisible();
-  });
-
-  it('accepts repeated close taps during the exit animation', async () => {
-    await element(by.id('open-basic-modal')).tap();
-    await element(by.id('close-basic-modal')).multiTap(3);
-    await expectModalToClose('Basic Modal');
-  });
-
-  it('calls lifecycle callbacks once per presentation', async () => {
-    await expect(element(by.id('enter-count'))).toHaveText('Enter count: 0');
-    await expect(element(by.id('dismiss-count'))).toHaveText(
-      'Dismiss count: 0'
-    );
-
-    await element(by.id('open-basic-modal')).tap();
-    await expect(element(by.id('enter-count'))).toHaveText('Enter count: 1');
-
-    await element(by.id('close-basic-modal')).multiTap(3);
-    await expectModalToClose('Basic Modal');
-    await expect(element(by.id('dismiss-count'))).toHaveText(
-      'Dismiss count: 1'
+  it('retains selection and dismisses only the top layer', async () => {
+    await tap('jump-layers');
+    await tap('open-collection');
+    await element(by.text('Deep focus')).tap();
+    await tap('open-confirmation');
+    await tap('confirm-save');
+    await tap('close-success');
+    await closed('close-success');
+    await tap('close-confirmation');
+    await closed('close-confirmation');
+    await expect(element(by.text('Save to Deep focus →'))).toBeVisible();
+    await tap('close-collection');
+    await closed('close-collection');
+    await expect(element(by.id('saved-collection'))).toHaveText(
+      '✓ Orbit saved to Deep focus'
     );
   });
 
-  it('dismisses a vertical modal by swiping down', async () => {
-    await element(by.id('open-vertical-modal')).tap();
-    await expect(element(by.text('Swipe down to dismiss'))).toBeVisible();
+  it('dismisses all three layers and can reopen the flow', async () => {
+    await tap('jump-layers');
+    await tap('open-collection');
+    await tap('open-confirmation');
+    await tap('confirm-save');
+    await tap('close-all-layers');
+    await closed('close-all-layers');
+    await closed('close-confirmation');
+    await closed('close-collection');
+    await tap('open-collection');
+    await tap('close-collection');
+  });
 
-    await element(by.text('Swipe down to dismiss')).swipe('down', 'fast', 0.8);
-    await expectModalToClose('Swipe down to dismiss');
+  it('previews a transition and dismisses it with a gesture', async () => {
+    await tap('jump-motion');
+    await waitFor(element(by.id('open-motion-preview')))
+      .toBeVisible()
+      .whileElement(by.id('showcase-scroll'))
+      .scroll(200, 'down');
+    await tap('open-motion-preview');
+    await element(by.id('motion-preview')).swipe('down', 'fast', 0.8);
+    await closed('motion-preview');
+    await tap('open-motion-preview');
+    await tap('close-motion-preview');
+    await closed('motion-preview');
   });
 });

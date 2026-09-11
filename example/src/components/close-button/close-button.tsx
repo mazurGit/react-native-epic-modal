@@ -1,6 +1,6 @@
 import type { RefObject } from 'react';
 import type { ModalRef } from 'react-native-epic-modal';
-import { ActionButton } from './ActionButton';
+import { ActionButton } from '../action-button/action-button';
 
 export function CloseButton({
   modalRef,

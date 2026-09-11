@@ -5,6 +5,14 @@ Supports **stacking**, **custom animations**, **gesture dismissals**, and **port
 
 ---
 
+## Epic Studio example
+
+Explore shared-element transitions from an album card through two modal screens, a three-layer collection flow, and a Motion Lab with configurable entrance/exit animations, timing, gestures, and progress-driven artwork.
+
+See the [example walkthrough and native launch instructions](example/README.md).
+
+---
+
 ## ✨ Features
 
 - 🎯 Portal-based rendering (modals independent of navigation tree)

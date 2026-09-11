@@ -4,8 +4,9 @@ import {
   SharedElementModal,
   type SharedElementModalRef,
 } from 'react-native-epic-modal';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { ActionButton } from '../components/ActionButton';
+import { Pressable, Text, View } from 'react-native';
+import { ActionButton } from '../../../../components/action-button/action-button';
+import { styles } from './styles';
 
 export interface SharedElementTestModalProps {
   onPresentNext: () => void;
@@ -84,6 +85,7 @@ export const SharedElementTestModal = forwardRef<
         />
         <ActionButton
           label="Open next screen"
+          testID="open-next-shared-element-modal"
           secondary
           onPress={onPresentNext}
         />
@@ -100,83 +102,3 @@ function Stat({ value, label }: { value: string; label: string }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-    backgroundColor: '#f4f7f5',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    marginBottom: 28,
-  },
-  eyebrow: {
-    marginBottom: 8,
-    color: '#16796f',
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 1.2,
-  },
-  title: { color: '#17211b', fontSize: 30, fontWeight: '800' },
-  closeButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#dcebe6',
-  },
-  closeText: { marginTop: -3, color: '#18594f', fontSize: 28 },
-  hero: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-    padding: 20,
-    borderRadius: 24,
-    backgroundColor: '#16796f',
-  },
-  icon: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 64,
-    height: 64,
-    borderRadius: 18,
-    backgroundColor: '#b9e4d8',
-  },
-  iconText: { color: '#18594f', fontSize: 20, fontWeight: '800' },
-  transitionIcon: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%',
-    borderRadius: 18,
-    backgroundColor: '#b9e4d8',
-  },
-  heroCopy: { flex: 1, marginLeft: 16 },
-  heroTitle: {
-    marginBottom: 6,
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: '800',
-  },
-  heroDescription: { color: '#d9f3ec', fontSize: 14, lineHeight: 20 },
-  stats: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    marginBottom: 12,
-    paddingVertical: 20,
-    borderRadius: 20,
-    backgroundColor: '#fff',
-  },
-  stat: { alignItems: 'center', flex: 1 },
-  statValue: { color: '#17211b', fontSize: 22, fontWeight: '800' },
-  statLabel: { marginTop: 4, color: '#7b8981', fontSize: 12 },
-  divider: { width: 1, height: 32, backgroundColor: '#e1e9e4' },
-});

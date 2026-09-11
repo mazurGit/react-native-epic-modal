@@ -1,4 +1,8 @@
-import { interpolate, type SharedValue } from 'react-native-reanimated';
+import {
+  Extrapolation,
+  interpolate,
+  type SharedValue,
+} from 'react-native-reanimated';
 import type { ViewStyle } from 'react-native';
 import type {
   ModalEnteringAnimationPreset,
@@ -18,13 +22,24 @@ export const getModalAnimationStyle = (
 ): ViewStyle => {
   'worklet';
 
+  const upper_bound = 0.95;
+
   const preset =
     exiting || gestureActive.value ? exitingPreset : enteringPreset;
 
   if (preset === 'zoom') {
     return {
       opacity: progress.value,
-      transform: [{ scale: interpolate(progress.value, [0, 1], [0.92, 1]) }],
+      transform: [
+        {
+          scale: interpolate(
+            progress.value,
+            [0, upper_bound],
+            [0.92, 1],
+            Extrapolation.CLAMP
+          ),
+        },
+      ],
     };
   }
 
@@ -42,7 +57,14 @@ export const getModalAnimationStyle = (
 
     return {
       transform: [
-        { translateX: interpolate(progress.value, [0, 1], [distance, 0]) },
+        {
+          translateX: interpolate(
+            progress.value,
+            [0, upper_bound],
+            [distance, 0],
+            Extrapolation.CLAMP
+          ),
+        },
       ],
     };
   }
@@ -52,7 +74,14 @@ export const getModalAnimationStyle = (
 
     return {
       transform: [
-        { translateY: interpolate(progress.value, [0, 1], [distance, 0]) },
+        {
+          translateY: interpolate(
+            progress.value,
+            [0, upper_bound],
+            [distance, 0],
+            Extrapolation.CLAMP
+          ),
+        },
       ],
     };
   }
