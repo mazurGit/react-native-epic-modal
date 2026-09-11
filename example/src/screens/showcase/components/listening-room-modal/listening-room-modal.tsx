@@ -1,5 +1,5 @@
 import type { RefObject } from 'react';
-import { SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import {
   SharedElement,
   SharedElementModal,
@@ -22,8 +22,8 @@ export function ListeningRoomModal({
     <SharedElementModal
       ref={player}
       animation={{
-        entering: 'slideTop',
-        exiting: 'slideTop',
+        entering: 'slideBottom',
+        exiting: 'slideBottom',
         duration: 500,
       }}
       gestureConfig={{ edges: { top: 100 } }}
@@ -42,7 +42,7 @@ export function ListeningRoomModal({
         },
       ]}
     >
-      <SafeAreaView style={s.root}>
+      <View style={s.root}>
         <ScrollView contentContainerStyle={s.page}>
           <View style={s.nav}>
             <Text style={s.eyebrow}>THE LISTENING ROOM</Text>
@@ -54,7 +54,7 @@ export function ListeningRoomModal({
             />
           </View>
           <View style={s.centered}>
-            <SharedElement id="orbit-player-art" trackFrame>
+            <SharedElement id="orbit-player-art">
               <Artwork size={artworkSize} />
             </SharedElement>
             <SharedElement id="orbit-player-title">
@@ -79,7 +79,7 @@ export function ListeningRoomModal({
             onPress={() => album.current?.present()}
           />
         </ScrollView>
-      </SafeAreaView>
+      </View>
     </SharedElementModal>
   );
 }

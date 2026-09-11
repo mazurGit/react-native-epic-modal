@@ -1,6 +1,7 @@
 import {
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -11,6 +12,7 @@ import { ModalBridge as Modal } from '../modal-bridge/modal-bridge';
 import type { ModalBridgeProps, ModalRef } from '../modal-bridge/modal-bridge';
 import { SharedElementTransition } from './shared-element-transition';
 import type { SharedElementTransitionConfig } from './types';
+import { useSharedElementRegistry } from '../../hooks/use-shared-element-registry';
 
 export type SharedElementModalProps = PropsWithChildren<
   Omit<ModalBridgeProps, 'hidden' | 'onLayout'> & {
@@ -25,25 +27,58 @@ export type SharedElementModalRef = ModalRef;
 export const SharedElementModal = forwardRef<ModalRef, SharedElementModalProps>(
   ({ children, onLayout, style, transitions = [], ...props }, ref) => {
     const modalRef = useRef<ModalRef>(null);
-    const hasMeasured = useRef(false);
-    const [measuring, setMeasuring] = useState(true);
+    const { waitForStableRects } = useSharedElementRegistry();
+    const presentationRequested = useRef(false);
+    const [measuring, setMeasuring] = useState(false);
+
+    useEffect(() => {
+      if (!measuring || !presentationRequested.current) return;
+
+      const releaseWhenReady = () => {
+        if (!presentationRequested.current) return;
+        presentationRequested.current = false;
+        setMeasuring(false);
+      };
+
+      const unsubscribe = waitForStableRects(
+        transitions.map(({ endId }) => endId),
+        releaseWhenReady
+      );
+
+      const frame = requestAnimationFrame(() => {
+        modalRef.current?.present();
+      });
+
+      return () => {
+        cancelAnimationFrame(frame);
+        unsubscribe();
+      };
+    }, [measuring, transitions, waitForStableRects]);
 
     const handleLayout = useCallback(
       (event: LayoutChangeEvent) => {
         onLayout?.(event);
-        if (hasMeasured.current) return;
+        if (
+          !presentationRequested.current ||
+          !measuring ||
+          transitions.length > 0
+        )
+          return;
 
-        hasMeasured.current = true;
+        requestAnimationFrame(() => {
+          presentationRequested.current = false;
+          setMeasuring(false);
+        });
       },
-      [onLayout]
+      [measuring, onLayout, transitions.length]
     );
 
     useImperativeHandle(
       ref,
       () => ({
         present: () => {
-          setMeasuring(false);
-          modalRef.current?.present();
+          presentationRequested.current = true;
+          setMeasuring(true);
         },
         dismiss: () => modalRef.current?.dismiss(),
       }),
@@ -55,7 +90,7 @@ export const SharedElementModal = forwardRef<ModalRef, SharedElementModalProps>(
         {...props}
         style={[StyleSheet.absoluteFill, style]}
         hidden={measuring}
-        keepMounted
+        animationEnabled={!measuring}
         onLayout={handleLayout}
         ref={modalRef}
       >

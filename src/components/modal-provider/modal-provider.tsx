@@ -12,6 +12,15 @@ import type {
   SharedElementNode,
   SharedElementRect,
 } from '../shared-element/types';
+import type { SharedElementReadyCallback } from '../../context/shared-element-context';
+
+interface SharedElementRectWaiter {
+  ids: Set<string>;
+  rects: Map<string, SharedElementRect>;
+  revision: number;
+  stabilityFrame?: number;
+  callback: SharedElementReadyCallback;
+}
 
 export type ModalProviderProps = PropsWithChildren;
 
@@ -22,9 +31,10 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
   }));
   const sharedElementNodes = useRef(new Map<string, SharedElementNode>());
   const sharedElementElements = useRef(new Map<string, ReactElement>());
+  const sharedElementRectWaiters = useRef(new Set<SharedElementRectWaiter>());
   const registerSharedElement = useCallback(
     (node: SharedElementNode, element: ReactElement) => {
-      const nodeKey = `${node.id}:${node.measurementOnly ? 'measurement' : 'content'}`;
+      const nodeKey = node.id;
       const existing = sharedElementNodes.current.get(nodeKey);
       if (existing && existing !== node) return;
 
@@ -36,7 +46,7 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
   );
   const updateSharedElement = useCallback(
     (node: SharedElementNode, element: ReactElement) => {
-      const nodeKey = `${node.id}:${node.measurementOnly ? 'measurement' : 'content'}`;
+      const nodeKey = node.id;
       if (sharedElementNodes.current.get(nodeKey) === node) {
         sharedElementElements.current.set(nodeKey, element);
       }
@@ -45,14 +55,61 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
   );
   const updateSharedElementRect = useCallback(
     (node: SharedElementNode, rect: SharedElementRect) => {
-      const nodeKey = `${node.id}:${node.measurementOnly ? 'measurement' : 'content'}`;
+      const nodeKey = node.id;
       if (sharedElementNodes.current.get(nodeKey) === node)
         node.rect.value = rect;
+      sharedElementRectWaiters.current.forEach((waiter) => {
+        if (!waiter.ids.has(node.id)) return;
+
+        const previous = waiter.rects.get(node.id);
+        waiter.rects.set(node.id, rect);
+        if (
+          previous?.x !== rect.x ||
+          previous.y !== rect.y ||
+          previous.width !== rect.width ||
+          previous.height !== rect.height
+        ) {
+          waiter.revision += 1;
+        }
+
+        if (![...waiter.ids].every((id) => waiter.rects.has(id))) return;
+        if (waiter.stabilityFrame !== undefined) {
+          cancelAnimationFrame(waiter.stabilityFrame);
+        }
+
+        const revision = waiter.revision;
+        waiter.stabilityFrame = requestAnimationFrame(() => {
+          waiter.stabilityFrame = requestAnimationFrame(() => {
+            waiter.stabilityFrame = undefined;
+            if (revision !== waiter.revision) return;
+            sharedElementRectWaiters.current.delete(waiter);
+            waiter.callback();
+          });
+        });
+      });
+    },
+    []
+  );
+  const waitForStableRects = useCallback(
+    (ids: readonly string[], callback: SharedElementReadyCallback) => {
+      const waiter: SharedElementRectWaiter = {
+        ids: new Set(ids),
+        rects: new Map(),
+        revision: 0,
+        callback,
+      };
+      sharedElementRectWaiters.current.add(waiter);
+      return () => {
+        sharedElementRectWaiters.current.delete(waiter);
+        if (waiter.stabilityFrame !== undefined) {
+          cancelAnimationFrame(waiter.stabilityFrame);
+        }
+      };
     },
     []
   );
   const unregisterSharedElement = useCallback((node: SharedElementNode) => {
-    const nodeKey = `${node.id}:${node.measurementOnly ? 'measurement' : 'content'}`;
+    const nodeKey = node.id;
     if (sharedElementNodes.current.get(nodeKey) !== node) return;
 
     sharedElementNodes.current.delete(nodeKey);
@@ -61,17 +118,12 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
   }, []);
   const sharedElementContext = useMemo(
     () => ({
-      get: (id: string, measurementOnly = false) =>
-        sharedElementNodes.current.get(
-          `${id}:${measurementOnly ? 'measurement' : 'content'}`
-        ),
-      getElement: (id: string, measurementOnly = false) =>
-        sharedElementElements.current.get(
-          `${id}:${measurementOnly ? 'measurement' : 'content'}`
-        ),
+      get: (id: string) => sharedElementNodes.current.get(id),
+      getElement: (id: string) => sharedElementElements.current.get(id),
       register: registerSharedElement,
       updateElement: updateSharedElement,
       updateRect: updateSharedElementRect,
+      waitForStableRects,
       unregister: unregisterSharedElement,
       revision: sharedElementState.revision,
     }),
@@ -81,6 +133,7 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
       unregisterSharedElement,
       updateSharedElement,
       updateSharedElementRect,
+      waitForStableRects,
     ]
   );
 

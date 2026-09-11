@@ -27,6 +27,7 @@ export type ModalViewProps = PropsWithChildren<{
   backdropStyle?: StyleProp<ViewStyle>;
   animation?: ModalAnimationConfig;
   gestureConfig?: ModalGestureConfig;
+  animationEnabled?: boolean;
   visible?: boolean;
   exiting?: boolean;
   onExitComplete?: () => void;
@@ -42,6 +43,7 @@ export const ModalView = ({
   backdropStyle,
   animation,
   gestureConfig,
+  animationEnabled = true,
   visible = true,
   exiting = false,
   onExitComplete,
@@ -59,7 +61,7 @@ export const ModalView = ({
     [gestureConfig]
   );
   const progress = useModalAnimation({
-    enabled: visible || exiting,
+    enabled: animationEnabled && (visible || exiting),
     duration: resolvedAnimation.duration,
     exiting,
     onExitComplete,

@@ -10,7 +10,6 @@ export interface SharedElementRect {
 
 export interface SharedElementNode {
   id: string;
-  measurementOnly: boolean;
   rect: SharedValue<SharedElementRect | null>;
   visibility: SharedValue<number>;
 }

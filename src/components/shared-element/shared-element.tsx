@@ -1,24 +1,17 @@
 import { useContext, useEffect, useRef, type PropsWithChildren } from 'react';
 import type { ReactElement } from 'react';
-import {
-  StyleSheet,
-  type StyleProp,
-  type ViewProps,
-  type ViewStyle,
-} from 'react-native';
+import { type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
 import { SharedElementHostContext } from '../../context/shared-element-host-context';
-import { ModalTransitionContext } from '../../context/modal-transition-context';
 import { useSharedElementRegistry } from '../../hooks/use-shared-element-registry';
 import { NativeSharedElement } from '../../native/epic-shared-element';
 import type { SharedElementNode, SharedElementRect } from './types';
 
 export interface SharedElementProps {
   id: string;
-  measurementOnly?: boolean;
   throttle?: number;
   trackFrame?: boolean;
   pointerEvents?: ViewProps['pointerEvents'];
@@ -27,49 +20,15 @@ export interface SharedElementProps {
 
 export function SharedElement({
   id,
-  measurementOnly = false,
   throttle = 16,
   trackFrame = false,
   pointerEvents,
   style,
   children,
 }: PropsWithChildren<SharedElementProps & { children: ReactElement }>) {
-  const transitionContext = useContext(ModalTransitionContext);
-  const measurementKey = useRef(`measurement-${Math.random()}`);
-
-  useEffect(() => {
-    if (!measurementOnly || !transitionContext) return;
-
-    const key = measurementKey.current;
-    transitionContext.registerMeasurement({
-      key,
-      id,
-      measurementOnly,
-      throttle,
-      trackFrame,
-      pointerEvents,
-      style,
-      children,
-    });
-
-    return () => transitionContext.unregisterMeasurement(key);
-  }, [
-    children,
-    id,
-    measurementOnly,
-    pointerEvents,
-    style,
-    throttle,
-    trackFrame,
-    transitionContext,
-  ]);
-
-  if (measurementOnly && transitionContext) return null;
-
   return (
     <SharedElementView
       id={id}
-      measurementOnly={measurementOnly}
       throttle={throttle}
       trackFrame={trackFrame}
       pointerEvents={pointerEvents}
@@ -82,7 +41,6 @@ export function SharedElement({
 
 export function SharedElementView({
   id,
-  measurementOnly = false,
   throttle = 16,
   trackFrame = false,
   pointerEvents,
@@ -102,7 +60,6 @@ export function SharedElementView({
   useEffect(() => {
     const node: SharedElementNode = {
       id,
-      measurementOnly,
       rect,
       visibility,
     };
@@ -115,7 +72,7 @@ export function SharedElementView({
       }
       unregister(node);
     };
-  }, [children, id, measurementOnly, rect, register, unregister, visibility]);
+  }, [children, id, rect, register, unregister, visibility]);
 
   useEffect(() => {
     const node = nodeRef.current;
@@ -125,16 +82,24 @@ export function SharedElementView({
   return (
     <AnimatedNativeSharedElement
       collapsable={false}
-      pointerEvents={pointerEvents ?? (measurementOnly ? 'none' : 'auto')}
+      pointerEvents={pointerEvents}
       ancestorTag={ancestorTag ?? undefined}
       throttle={throttle}
       trackFrame={trackFrame}
-      style={[visibilityStyle, style, measurementOnly && styles.hidden]}
+      style={[visibilityStyle, style]}
       onFrame={(event) => {
         const node = nodeRef.current;
         if (!node) return;
 
-        updateRect(node, event.nativeEvent);
+        const nextRect = event.nativeEvent;
+        if (__DEV__) {
+          console.info('[EpicModal][shared-element:frame]', {
+            id,
+            ancestorTag,
+            rect: nextRect,
+          });
+        }
+        updateRect(node, nextRect);
       }}
     >
       {children}
@@ -144,7 +109,3 @@ export function SharedElementView({
 
 const AnimatedNativeSharedElement =
   Animated.createAnimatedComponent(NativeSharedElement);
-
-const styles = StyleSheet.create({
-  hidden: { opacity: 0 },
-});

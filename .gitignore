@@ -99,3 +99,6 @@ nitrogen/
 
 # Local architecture 
 internal-docs/
+
+# Logs
+metro.log
