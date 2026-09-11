@@ -4,10 +4,8 @@ import Animated, {
   Extrapolation,
   interpolate,
   useAnimatedReaction,
-  useSharedValue,
   type SharedValue,
 } from 'react-native-reanimated';
-import { scheduleOnRN } from 'react-native-worklets';
 import { ModalProgressContext } from '../../context/modal-progress-context';
 import { ModalTransitionContext } from '../../context/modal-transition-context';
 import { useSharedElementRegistry } from '../../hooks/use-shared-element-registry';
@@ -17,28 +15,6 @@ import type { SharedElementTransitionProps } from './types';
 
 const source_fade_start = 0.01;
 const shared_element_motion_start = 0.015;
-
-function logSharedElementProgress({
-  startId,
-  endId,
-  progress,
-  startRect,
-  endRect,
-}: {
-  startId: string;
-  endId: string;
-  progress: number;
-  startRect: unknown;
-  endRect: unknown;
-}) {
-  console.info('[EpicModal][shared-element:progress]', {
-    startId,
-    endId,
-    progress,
-    startRect,
-    endRect,
-  });
-}
 
 /** Renders an element between the measured start and end frames. */
 export function SharedElementTransition({
@@ -102,7 +78,6 @@ export function SharedElementTransitionView({
   const endNode = get(endId);
   const start = startNode?.rect;
   const end = endNode?.rect;
-  const lastProgressBucket = useSharedValue(-1);
   const transitionElement = children ?? getElement(startId) ?? null;
 
   const resizeStyle = useSharedElementResizeStyle(
@@ -117,22 +92,8 @@ export function SharedElementTransitionView({
   useAnimatedReaction(
     () => ({
       value: progress.value,
-      bucket: Math.floor(progress.value * 20),
-      startRect: start?.value,
-      endRect: end?.value,
     }),
-    ({ value, bucket, startRect, endRect }) => {
-      if (__DEV__ && bucket !== lastProgressBucket.value) {
-        lastProgressBucket.value = bucket;
-        scheduleOnRN(logSharedElementProgress, {
-          startId,
-          endId,
-          progress: value,
-          startRect,
-          endRect,
-        });
-      }
-
+    ({ value }) => {
       if (startNode?.visibility) {
         startNode.visibility.value = interpolate(
           value,

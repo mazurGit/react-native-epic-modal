@@ -64,22 +64,20 @@ export default function App() {
 ### 2. Use `Modal` anywhere in your app
 
 ```tsx
-import { Modal } from 'react-native-epic-modal';
+import { Modal, type ModalRef } from 'react-native-epic-modal';
 import { useRef } from 'react';
 import { Button, Text } from 'react-native';
 
 export default function Screen() {
-  const modalRef = useRef(null);
+  const modalRef = useRef<ModalRef>(null);
 
   return (
     <>
-      <Button title="Open Modal" onPress={() => modalRef.current?.show()} />
+      <Button title="Open Modal" onPress={() => modalRef.current?.present()} />
 
       <Modal
         ref={modalRef}
-        name="example-modal"
-        animation="zoom"
-        gestureEnabled
+        animation={{ entering: 'zoom', exiting: 'zoom', duration: 250 }}
       >
         <Text>Modal Content Here!</Text>
       </Modal>
@@ -94,17 +92,13 @@ export default function Screen() {
 
 | Prop | Type | Default | Description |
 |:-----|:-----|:--------|:------------|
-| `name` | `string` | — | Unique registry name within the provider |
-| `id` | `string` | `name` | Optional explicit registry ID |
-| `animation` | `"fade"` / `"slide"` / `"zoom"` | `"fade"` | Modal entrance and exit animation |
-| `gestureEnabled` | `boolean` | `true` | Enable swipe-to-dismiss gestures |
-| `gestureDirection` | `"horizontal"` / `"vertical"` | `"horizontal"` | Direction allowed for swipe dismiss |
-| `gestureConfig.edgeTarget` | `"screen"` / `"content"` | `"screen"` | Whether the gesture edge is measured from the screen or modal content |
-| `priority` | `number` | `1` | Stacking priority between multiple modals |
-| `onEnter` | `() => void` | — | Callback when modal appears |
-| `onDismiss` | `() => void` | — | Callback when modal is dismissed |
-| `animationConfig` | `SpringConfig` (Reanimated) | — | Customize entrance/exit spring behavior |
-| `gestureConfig` | `IGestureConfig` | — | Customize gesture sensitive areas and thresholds |
+| `animation` | `ModalAnimationConfig` | `{ entering: 'fade', exiting: 'fade', duration: 250 }` | Configure entering and exiting presets |
+| `gestureConfig` | `ModalGestureConfig` | — | Configure swipe dismissal and active edges |
+| `style` | `StyleProp<ViewStyle>` | — | Style the modal content container |
+| `backdropStyle` | `StyleProp<ViewStyle>` | — | Style the backdrop |
+| `keepMounted` | `boolean` | `false` | Keep content mounted after dismissal |
+| `ref.present()` | `() => void` | — | Present the modal |
+| `ref.dismiss()` | `() => void` | — | Dismiss the modal |
 
 ---
 
@@ -112,25 +106,24 @@ export default function Screen() {
 
 ```tsx
 gestureConfig={{
-  edgeTarget: "content",
-  leftGestureAreaOffset: 50,
-  topGestureAreaOffset: 100,
+  edges: { left: 50, top: 100 },
   swipeVelocityThreshold: 800,
-  swipeProgressToClose: "0.6"
+  swipeProgressToClose: 0.6,
+  dismissBehavior: 'settle',
 }}
 ```
 
 ## Animate Custom Content
 
-Use `useProgress` inside a modal child to build an animation that follows the
+Use `useModalProgress` inside a modal child to build an animation that follows the
 modal presentation progress on the UI thread:
 
 ```tsx
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { useProgress } from 'react-native-epic-modal';
+import { useModalProgress } from 'react-native-epic-modal';
 
 function ModalContent() {
-  const progress = useProgress();
+  const progress = useModalProgress();
   const style = useAnimatedStyle(() => ({
     transform: [{ translateY: (1 - progress.value) * 24 }],
     opacity: progress.value,
@@ -140,7 +133,7 @@ function ModalContent() {
 }
 ```
 
-`useProgress` must be called from a component rendered inside `Modal`.
+`useModalProgress` must be called from a component rendered inside `Modal`.
 
 ---
 

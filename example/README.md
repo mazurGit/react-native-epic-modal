@@ -22,7 +22,7 @@ Use a native build with the library's `EpicSharedElementView` installed. Expo Go
 
 ## Demo walkthrough
 
-1. **Shared elements:** open the listening room, then the album. Artwork and title use `resize`, which keeps the artwork sharp while each destination has its own layout. Return through both screens to see the reverse transitions. These are visual demo screens, not an audio player.
+1. **Shared elements:** open the listening room, then the album. Artwork uses `resize`, while title uses the default `zoom` mode. Return through both screens to see the reverse transitions. These are visual demo screens, not an audio player.
 2. **Layers:** choose a collection, open confirmation, and save. Three modals remain stacked; dismiss them individually to see the retained selection, or return to the studio in one action. The saved collection lives in memory for the current app session.
 3. **Motion lab:** independently choose all six entering presets, all seven exiting presets, a duration, and anywhere/left-edge/button-only dismissal. Open the preview and drag it: the orbit and meter subscribe to `useModalProgress` on the UI thread. A short drag returns; a longer drag dismisses.
 

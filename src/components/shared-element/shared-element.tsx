@@ -92,13 +92,6 @@ export function SharedElementView({
         if (!node) return;
 
         const nextRect = event.nativeEvent;
-        if (__DEV__) {
-          console.info('[EpicModal][shared-element:frame]', {
-            id,
-            ancestorTag,
-            rect: nextRect,
-          });
-        }
         updateRect(node, nextRect);
       }}
     >
