@@ -92,7 +92,6 @@ export default function Screen() {
 | `gestureConfig` | `ModalGestureConfig`   | —                                                      | Configure swipe dismissal and active edges |
 | `style`         | `StyleProp<ViewStyle>` | —                                                      | Style the modal content container          |
 | `backdropStyle` | `StyleProp<ViewStyle>` | —                                                      | Style the backdrop                         |
-| `keepMounted`   | `boolean`              | `false`                                                | Keep content mounted after dismissal       |
 | `ref.present()` | `() => void`           | —                                                      | Present the modal                          |
 | `ref.dismiss()` | `() => void`           | —                                                      | Dismiss the modal                          |
 

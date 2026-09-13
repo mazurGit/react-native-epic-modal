@@ -4,7 +4,7 @@ import {
   ModalTransitionContext,
   type ModalTransitionDescriptor,
 } from '../../context/modal-transition-context';
-import { SharedElementTransitionView } from '../shared-element/shared-element-transition';
+import { SharedElementTransitionView } from '../shared-element-modal/shared-element-transition';
 
 export function ModalTransitionLayer({ children }: PropsWithChildren) {
   const [transitions, setTransitions] = useState<ModalTransitionDescriptor[]>(

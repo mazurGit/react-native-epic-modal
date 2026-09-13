@@ -12,8 +12,6 @@ export type ModalContentProps = PropsWithChildren<{
   animation?: ModalAnimationConfig;
   gestureConfig?: ModalGestureConfig;
   animationEnabled?: boolean;
-  hidden?: boolean;
-  keepMounted?: boolean;
   onLayout?: (event: LayoutChangeEvent) => void;
 }>;
 
@@ -32,8 +30,6 @@ export const ModalContent = forwardRef<ModalContentRef, ModalContentProps>(
       animation,
       gestureConfig,
       animationEnabled,
-      hidden,
-      keepMounted = false,
       onLayout,
     },
     ref
@@ -43,7 +39,7 @@ export const ModalContent = forwardRef<ModalContentRef, ModalContentProps>(
 
     useImperativeHandle(ref, () => ({ present, dismiss }), [dismiss, present]);
 
-    if (!visible && !keepMounted) return null;
+    if (!visible) return null;
 
     return (
       <ModalView
@@ -54,7 +50,6 @@ export const ModalContent = forwardRef<ModalContentRef, ModalContentProps>(
         exiting={exiting}
         onExitComplete={completeDismiss}
         onDismissRequest={dismiss}
-        hidden={hidden || !visible}
         onLayout={onLayout}
         style={style}
         backdropStyle={backdropStyle}
