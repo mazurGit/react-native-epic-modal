@@ -8,11 +8,15 @@ import {
   type PropsWithChildren,
 } from 'react';
 import { StyleSheet, type LayoutChangeEvent } from 'react-native';
+import type { SharedElementTransitionProps } from 'react-native-epic-shared-element';
 import { ModalBridge as Modal } from '../modal-bridge/modal-bridge';
 import type { ModalBridgeProps, ModalRef } from '../modal-bridge/modal-bridge';
 import { SharedElementTransition } from './shared-element-transition';
-import type { SharedElementTransitionConfig } from './types';
-import { useSharedElementRegistry } from '../../hooks/use-shared-element-registry';
+
+export type SharedElementTransitionConfig = Omit<
+  SharedElementTransitionProps,
+  'children' | 'progress'
+> & { key: string };
 
 export type SharedElementModalProps = PropsWithChildren<
   Omit<ModalBridgeProps, 'hidden' | 'onLayout'> & {
@@ -27,7 +31,6 @@ export type SharedElementModalRef = ModalRef;
 export const SharedElementModal = forwardRef<ModalRef, SharedElementModalProps>(
   ({ children, onLayout, style, transitions = [], ...props }, ref) => {
     const modalRef = useRef<ModalRef>(null);
-    const { waitForStableRects } = useSharedElementRegistry();
     const presentationRequested = useRef(false);
     const [measuring, setMeasuring] = useState(false);
 
@@ -40,20 +43,15 @@ export const SharedElementModal = forwardRef<ModalRef, SharedElementModalProps>(
         setMeasuring(false);
       };
 
-      const unsubscribe = waitForStableRects(
-        transitions.map(({ endId }) => endId),
-        releaseWhenReady
-      );
-
       const frame = requestAnimationFrame(() => {
         modalRef.current?.present();
+        requestAnimationFrame(releaseWhenReady);
       });
 
       return () => {
         cancelAnimationFrame(frame);
-        unsubscribe();
       };
-    }, [measuring, transitions, waitForStableRects]);
+    }, [measuring]);
 
     const handleLayout = useCallback(
       (event: LayoutChangeEvent) => {
@@ -111,31 +109,21 @@ function SharedElementModalContent({
   return (
     <>
       {children}
-      {transitions.map(({ key, startId, endId, element, clip, mode }) => {
-        if (!element) {
+      {transitions.map(
+        ({ key, startId, endId, element, clip, mode, transition }) => {
           return (
             <SharedElementTransition
               key={key}
               startId={startId}
+              element={element}
               endId={endId}
               clip={clip}
               mode={mode}
+              transition={transition}
             />
           );
         }
-
-        return (
-          <SharedElementTransition
-            key={key}
-            startId={startId}
-            endId={endId}
-            clip={clip}
-            mode={mode}
-          >
-            {element}
-          </SharedElementTransition>
-        );
-      })}
+      )}
     </>
   );
 }

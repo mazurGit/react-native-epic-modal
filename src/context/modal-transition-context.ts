@@ -1,12 +1,14 @@
 import { createContext } from 'react';
 import type { SharedValue } from 'react-native-reanimated';
-import type { SharedElementTransitionProps } from '../components/shared-element/types';
+import type { SharedElementTransitionProps } from 'react-native-epic-shared-element';
 
-export interface ModalTransitionDescriptor
-  extends SharedElementTransitionProps {
+export type ModalTransitionDescriptor = Omit<
+  SharedElementTransitionProps,
+  'progress'
+> & {
   key: string;
   progress: SharedValue<number>;
-}
+};
 
 export interface ModalTransitionContextValue {
   register: (transition: ModalTransitionDescriptor) => void;

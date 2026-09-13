@@ -51,11 +51,7 @@ yarn add react-native-epic-modal react-native-gesture-handler react-native-reani
 import { ModalProvider } from 'react-native-epic-modal';
 
 export default function App() {
-  return (
-    <ModalProvider>
-      {/* Your App Content */}
-    </ModalProvider>
-  );
+  return <ModalProvider>{/* Your App Content */}</ModalProvider>;
 }
 ```
 
@@ -90,15 +86,15 @@ export default function Screen() {
 
 ## ⚙️ Modal Props
 
-| Prop | Type | Default | Description |
-|:-----|:-----|:--------|:------------|
-| `animation` | `ModalAnimationConfig` | `{ entering: 'fade', exiting: 'fade', duration: 250 }` | Configure entering and exiting presets |
-| `gestureConfig` | `ModalGestureConfig` | — | Configure swipe dismissal and active edges |
-| `style` | `StyleProp<ViewStyle>` | — | Style the modal content container |
-| `backdropStyle` | `StyleProp<ViewStyle>` | — | Style the backdrop |
-| `keepMounted` | `boolean` | `false` | Keep content mounted after dismissal |
-| `ref.present()` | `() => void` | — | Present the modal |
-| `ref.dismiss()` | `() => void` | — | Dismiss the modal |
+| Prop            | Type                   | Default                                                | Description                                |
+| :-------------- | :--------------------- | :----------------------------------------------------- | :----------------------------------------- |
+| `animation`     | `ModalAnimationConfig` | `{ entering: 'fade', exiting: 'fade', duration: 250 }` | Configure entering and exiting presets     |
+| `gestureConfig` | `ModalGestureConfig`   | —                                                      | Configure swipe dismissal and active edges |
+| `style`         | `StyleProp<ViewStyle>` | —                                                      | Style the modal content container          |
+| `backdropStyle` | `StyleProp<ViewStyle>` | —                                                      | Style the backdrop                         |
+| `keepMounted`   | `boolean`              | `false`                                                | Keep content mounted after dismissal       |
+| `ref.present()` | `() => void`           | —                                                      | Present the modal                          |
+| `ref.dismiss()` | `() => void`           | —                                                      | Dismiss the modal                          |
 
 ---
 
@@ -134,6 +130,43 @@ function ModalContent() {
 ```
 
 `useModalProgress` must be called from a component rendered inside `Modal`.
+
+## Custom Shared-Element Transitions
+
+Use `transition` when a transition needs a custom path. The callback runs as a
+Reanimated worklet and receives normalized progress plus the measured start and
+end rectangles:
+
+```tsx
+const spiral = ({ progress, start, end }) => {
+  'worklet';
+
+  const angle = progress * Math.PI * 2;
+  const radius = 40 * (1 - progress);
+  const x = start.x + (end.x - start.x) * progress;
+  const y = start.y + (end.y - start.y) * progress;
+
+  return {
+    left: x + Math.cos(angle) * radius,
+    top: y + Math.sin(angle) * radius,
+    transform: [{ rotate: `${angle}rad` }],
+  };
+};
+
+<SharedElementModal
+  transitions={[
+    {
+      key: 'art',
+      startId: 'home-art',
+      endId: 'player-art',
+      transition: spiral,
+    },
+  ]}
+/>;
+```
+
+When `transition` is provided, it controls the element's position and transform;
+the package's built-in `mode` still controls size interpolation.
 
 ---
 

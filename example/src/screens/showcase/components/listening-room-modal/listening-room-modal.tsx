@@ -3,6 +3,7 @@ import { ScrollView, Text, View } from 'react-native';
 import {
   SharedElement,
   SharedElementModal,
+  SharedElementPresets,
   type ModalRef,
 } from 'react-native-epic-modal';
 import { useArtworkSize } from '../../../../hooks/use-artwork-size/use-artwork-size.hook';
@@ -22,8 +23,8 @@ export function ListeningRoomModal({
     <SharedElementModal
       ref={player}
       animation={{
-        entering: 'slideBottom',
-        exiting: 'slideBottom',
+        entering: 'slideLeft',
+        exiting: 'slideLeft',
         duration: 500,
       }}
       gestureConfig={{ edges: { top: 100 } }}
@@ -33,6 +34,7 @@ export function ListeningRoomModal({
           startId: 'orbit-home-art',
           endId: 'orbit-player-art',
           mode: 'zoom',
+          transition: SharedElementPresets.swoosh,
           element: <Artwork fill />,
         },
         {

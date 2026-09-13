@@ -20,7 +20,7 @@ import { resolveModalGestureConfig } from './gesture/modal-gesture';
 import { useModalAnimation } from './animation/use-modal-animation';
 import { useModalGesture } from './gesture/use-modal-gesture';
 import { ModalTransitionLayer } from './modal-transition-layer';
-import { SharedElementHost } from '../shared-element/shared-element-host';
+import { SharedElementHost } from 'react-native-epic-shared-element';
 
 export type ModalViewProps = PropsWithChildren<{
   style?: StyleProp<ViewStyle>;

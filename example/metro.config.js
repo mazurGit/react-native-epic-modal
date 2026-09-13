@@ -27,6 +27,16 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     };
   }
 
+  if (moduleName === 'react-native-epic-shared-element') {
+    return {
+      filePath: path.resolve(
+        root,
+        'node_modules/react-native-epic-shared-element/src/index.tsx'
+      ),
+      type: 'sourceFile',
+    };
+  }
+
   return defaultResolveRequest
     ? defaultResolveRequest(context, moduleName, platform)
     : context.resolveRequest(context, moduleName, platform);

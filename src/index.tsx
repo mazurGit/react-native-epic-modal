@@ -2,8 +2,12 @@ export { ModalHost } from './components/modal-host/modal-host';
 export type { ModalHostProps } from './components/modal-host/modal-host';
 export { ModalBridge as Modal } from './components/modal-bridge/modal-bridge';
 export { SharedElementModal } from './components/shared-element/shared-element-modal';
-export { SharedElementHost } from './components/shared-element/shared-element-host';
-export { SharedElement } from './components/shared-element/shared-element';
+export {
+  SharedElementProvider,
+  SharedElementHost,
+  SharedElement,
+  SharedElementPresets,
+} from 'react-native-epic-shared-element';
 export { SharedElementTransition } from './components/shared-element/shared-element-transition';
 export type {
   ModalBridgeProps as ModalProps,
@@ -11,14 +15,16 @@ export type {
 } from './components/modal-bridge/modal-bridge';
 export type { SharedElementModalProps } from './components/shared-element/shared-element-modal';
 export type { SharedElementModalRef } from './components/shared-element/shared-element-modal';
-export type { SharedElementHostProps } from './components/shared-element/shared-element-host';
-export type { SharedElementProps } from './components/shared-element/shared-element';
-export type { SharedElementTransitionProps } from './components/shared-element/types';
-export type { SharedElementTransitionConfig } from './components/shared-element/types';
 export type {
+  SharedElementHostProps,
+  SharedElementProps,
+  SharedElementProviderProps,
   SharedElementNode,
   SharedElementRect,
-} from './components/shared-element/types';
+  SharedElementTransitionConfig as SharedElementPackageTransitionConfig,
+} from 'react-native-epic-shared-element';
+export type { SharedElementTransitionConfig } from './components/shared-element/shared-element-modal';
+export type { SharedElementTransitionProps } from './components/shared-element/shared-element-transition';
 export type {
   ModalAnimationConfig,
   ModalEnteringAnimationPreset,

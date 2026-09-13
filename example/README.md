@@ -18,7 +18,7 @@ yarn workspace react-native-epic-modal-example ios
 yarn workspace react-native-epic-modal-example android
 ```
 
-Use a native build with the library's `EpicSharedElementView` installed. Expo Go and web cannot demonstrate this native shared-element implementation. Metro resolves the library directly to `../src/index.tsx`, so local source changes appear in the example.
+Use a native build with `react-native-epic-shared-element` installed. Expo Go and web cannot demonstrate this native shared-element implementation. Metro resolves both libraries directly to their source files, so local source changes appear in the example.
 
 ## Demo walkthrough
 
