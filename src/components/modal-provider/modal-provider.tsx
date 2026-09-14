@@ -1,5 +1,8 @@
 import type { PropsWithChildren } from 'react';
-import { SharedElementProvider } from 'react-native-epic-shared-element';
+import {
+  SharedElementHost,
+  SharedElementProvider,
+} from 'react-native-epic-shared-element';
 import { ModalHost } from '../modal-host/modal-host';
 
 export type ModalProviderProps = PropsWithChildren;
@@ -8,7 +11,7 @@ export type ModalProviderProps = PropsWithChildren;
 export const ModalProvider = ({ children }: ModalProviderProps) => {
   return (
     <SharedElementProvider>
-      {children}
+      <SharedElementHost>{children}</SharedElementHost>
       <ModalHost />
     </SharedElementProvider>
   );

@@ -12,6 +12,7 @@ export type ModalContentProps = PropsWithChildren<{
   animation?: ModalAnimationConfig;
   gestureConfig?: ModalGestureConfig;
   animationEnabled?: boolean;
+  hidden?: boolean;
   onLayout?: (event: LayoutChangeEvent) => void;
 }>;
 
@@ -30,6 +31,7 @@ export const ModalContent = forwardRef<ModalContentRef, ModalContentProps>(
       animation,
       gestureConfig,
       animationEnabled,
+      hidden,
       onLayout,
     },
     ref
@@ -45,6 +47,7 @@ export const ModalContent = forwardRef<ModalContentRef, ModalContentProps>(
       <ModalView
         animation={animation}
         animationEnabled={animationEnabled}
+        hidden={hidden}
         gestureConfig={gestureConfig}
         visible={visible}
         exiting={exiting}

@@ -28,6 +28,7 @@ export type ModalViewProps = PropsWithChildren<{
   animation?: ModalAnimationConfig;
   gestureConfig?: ModalGestureConfig;
   animationEnabled?: boolean;
+  hidden?: boolean;
   visible?: boolean;
   exiting?: boolean;
   onExitComplete?: () => void;
@@ -43,6 +44,7 @@ export const ModalView = ({
   animation,
   gestureConfig,
   animationEnabled = true,
+  hidden = false,
   visible = true,
   exiting = false,
   onExitComplete,
@@ -94,7 +96,12 @@ export const ModalView = ({
   );
 
   return (
-    <View style={StyleSheet.absoluteFill}>
+    <View
+      accessibilityElementsHidden={hidden}
+      importantForAccessibility={hidden ? 'no-hide-descendants' : 'auto'}
+      pointerEvents={hidden ? 'none' : 'auto'}
+      style={[StyleSheet.absoluteFill, hidden && styles.hidden]}
+    >
       <GestureDetector gesture={gestureHandler}>
         <SharedElementHost style={StyleSheet.absoluteFill}>
           <View style={StyleSheet.absoluteFill}>
@@ -119,6 +126,7 @@ export const ModalView = ({
 };
 
 const styles = StyleSheet.create({
+  hidden: { opacity: 0 },
   backdrop: {
     ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(0, 0, 0, 0.45)',

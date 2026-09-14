@@ -6,8 +6,10 @@ describe('Epic Studio', () => {
     await element(by.id(id)).tap();
   };
   const closed = async (id) => {
+    // Offscreen content can still have a mounted backdrop during dismissal.
+    // Wait for unmount before attempting to interact with the screen below.
     await waitFor(element(by.id(id)))
-      .not.toBeVisible()
+      .not.toExist()
       .withTimeout(5000);
   };
 

@@ -1,6 +1,6 @@
 import type { RefObject } from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   SharedElement,
   SharedElementModal,
@@ -12,6 +12,9 @@ import { Button } from '../button/button';
 import { TrackList } from '../track-list/track-list';
 
 export function AlbumModal({ album }: { album: RefObject<ModalRef | null> }) {
+  // FullWindowOverlay reparents native views. Read the app's insets before
+  // entering the overlay instead of measuring safe area on the sliding view.
+  const insets = useSafeAreaInsets();
   return (
     <SharedElementModal
       ref={album}
@@ -36,7 +39,17 @@ export function AlbumModal({ album }: { album: RefObject<ModalRef | null> }) {
         },
       ]}
     >
-      <SafeAreaView style={s.root}>
+      <View
+        style={[
+          s.root,
+          {
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom,
+            paddingLeft: insets.left,
+            paddingRight: insets.right,
+          },
+        ]}
+      >
         <ScrollView contentContainerStyle={s.page}>
           <Button
             testID="close-album"
@@ -50,7 +63,7 @@ export function AlbumModal({ album }: { album: RefObject<ModalRef | null> }) {
               <Artwork size={112} />
             </SharedElement>
             <View style={s.flexCopy}>
-              <SharedElement id="orbit-album-title">
+              <SharedElement id="orbit-album-title" contentType="text">
                 <Text style={s.trackTitle}>Orbit</Text>
               </SharedElement>
               <Text style={s.body}>
@@ -64,7 +77,7 @@ export function AlbumModal({ album }: { album: RefObject<ModalRef | null> }) {
             player, then back to their original card when you close it.
           </Text>
         </ScrollView>
-      </SafeAreaView>
+      </View>
     </SharedElementModal>
   );
 }

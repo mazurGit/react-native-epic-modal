@@ -24,6 +24,8 @@ export type ModalBridgeProps = PropsWithChildren<{
   animation?: ModalAnimationConfig;
   gestureConfig?: ModalGestureConfig;
   animationEnabled?: boolean;
+  /** @internal Mount for measurement without presenting the surface. */
+  hidden?: boolean;
   onLayout?: (event: LayoutChangeEvent) => void;
 }>;
 
@@ -36,6 +38,7 @@ export const ModalBridge = forwardRef<ModalRef, ModalBridgeProps>(
       animation,
       gestureConfig,
       animationEnabled,
+      hidden,
       onLayout,
       children,
     },
@@ -49,12 +52,14 @@ export const ModalBridge = forwardRef<ModalRef, ModalBridgeProps>(
         animation,
         gestureConfig,
         animationEnabled,
+        hidden,
         onLayout,
         children,
       }),
       [
         animation,
         animationEnabled,
+        hidden,
         backdropStyle,
         children,
         gestureConfig,

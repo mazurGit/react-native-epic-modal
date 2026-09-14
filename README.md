@@ -167,6 +167,12 @@ const spiral = ({ progress, start, end }) => {
 When `transition` is provided, it controls the element's position and transform;
 the package's built-in `mode` still controls size interpolation.
 
+`SharedElementModal.present()` mounts the destination invisibly and calls
+`waitForStableRects` before starting the animation. Every configured `startId`
+and `endId` must be mounted and report finite coordinates with positive dimensions.
+Measurements must remain unchanged for two animation frames; dismissing the
+modal cancels the pending wait.
+
 ---
 
 ## 🛠 Requirements

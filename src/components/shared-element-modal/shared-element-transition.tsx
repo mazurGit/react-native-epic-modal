@@ -24,6 +24,7 @@ export function SharedElementTransition({
   element,
   clip = true,
   mode = 'zoom',
+  contentType,
   transition,
 }: PropsWithChildren<SharedElementTransitionProps>) {
   const progress = useContext(ModalProgressContext);
@@ -47,6 +48,7 @@ export function SharedElementTransition({
       children: element ?? children,
       clip,
       mode,
+      contentType,
       transition,
       progress,
     });
@@ -58,6 +60,7 @@ export function SharedElementTransition({
     element,
     endId,
     mode,
+    contentType,
     progress,
     startId,
     transition,
@@ -67,17 +70,18 @@ export function SharedElementTransition({
   if (transitionContext) return null;
 
   return (
-    <SharedElementTransitionPrimitive
+    <SharedElementTransitionView
       startId={startId}
       endId={endId}
       element={element}
       clip={clip}
       mode={mode}
+      contentType={contentType}
       transition={transition}
       progress={progress}
     >
       {children}
-    </SharedElementTransitionPrimitive>
+    </SharedElementTransitionView>
   );
 }
 
@@ -95,10 +99,10 @@ export function SharedElementTransitionView(
     element,
     clip = true,
     mode = 'zoom',
+    contentType,
     transition,
     progress,
   } = props;
-
   return (
     <SharedElementTransitionPrimitive
       startId={startId}
@@ -106,6 +110,7 @@ export function SharedElementTransitionView(
       element={element}
       clip={clip}
       mode={mode}
+      contentType={contentType}
       transition={transition}
       progress={progress}
     >

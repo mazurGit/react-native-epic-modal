@@ -59,7 +59,7 @@ export function ListeningRoomModal({
             <SharedElement id="orbit-player-art">
               <Artwork size={artworkSize} />
             </SharedElement>
-            <SharedElement id="orbit-player-title">
+            <SharedElement id="orbit-player-title" contentType="text">
               <Text style={[s.trackTitle, s.playerTitle]}>Orbit</Text>
             </SharedElement>
             <Text style={s.body}>Kairo Collective / Vol. 01</Text>

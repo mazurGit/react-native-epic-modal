@@ -18,6 +18,7 @@ export type { SharedElementModalRef } from './components/shared-element-modal/sh
 export type {
   SharedElementHostProps,
   SharedElementProps,
+  SharedElementContentType,
   SharedElementProviderProps,
   SharedElementNode,
   SharedElementRect,

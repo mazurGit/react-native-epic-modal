@@ -1,6 +1,6 @@
 import type { RefObject } from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SharedElement, type ModalRef } from 'react-native-epic-modal';
 import { colors } from '../../../../common/constants/colors.constants';
 import {
@@ -37,8 +37,19 @@ export function HomeScreen({
   motion: MotionSettings;
   onMotionChange: (changes: Partial<MotionSettings>) => void;
 }) {
+  const insets = useSafeAreaInsets();
   return (
-    <SafeAreaView style={s.root}>
+    <View
+      style={[
+        s.root,
+        {
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        },
+      ]}
+    >
       <ScrollView
         ref={scroll}
         testID="showcase-scroll"
@@ -58,7 +69,7 @@ export function HomeScreen({
           No navigation dependency. Just motion.
         </Text>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -129,7 +140,7 @@ function SharedElementsCard({
           <Artwork size={104} />
         </SharedElement>
         <View style={s.sourceCopy}>
-          <SharedElement id="orbit-home-title">
+          <SharedElement id="orbit-home-title" contentType="text">
             <Text style={s.trackTitle}>Orbit</Text>
           </SharedElement>
           <Text style={s.body}>Kairo Collective</Text>
