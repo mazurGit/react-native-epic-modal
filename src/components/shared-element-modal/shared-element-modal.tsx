@@ -5,6 +5,7 @@ import { ModalBridge as Modal } from '../modal-bridge/modal-bridge';
 import type { ModalBridgeProps, ModalRef } from '../modal-bridge/modal-bridge';
 import { SharedElementTransition } from './shared-element-transition';
 import { useSharedElementPresentation } from './use-shared-element-presentation';
+import { DEFAULT_MEASUREMENT_TIMEOUT } from './use-shared-element-presentation';
 
 export type SharedElementTransitionConfig = Omit<
   SharedElementTransitionProps,
@@ -15,6 +16,8 @@ export type SharedElementModalProps = PropsWithChildren<
   Omit<ModalBridgeProps, 'hidden'> & {
     onLayout?: (event: LayoutChangeEvent) => void;
     transitions?: readonly SharedElementTransitionConfig[];
+    measurementTimeout?: number;
+    onMeasurementTimeout?: (ids: readonly string[]) => void;
   }
 >;
 
@@ -29,12 +32,18 @@ export const SharedElementModal = forwardRef<ModalRef, SharedElementModalProps>(
       style,
       transitions = [],
       animationEnabled = true,
+      measurementTimeout = DEFAULT_MEASUREMENT_TIMEOUT,
+      onMeasurementTimeout,
       ...props
     },
     ref
   ) => {
-    const { modalRef, measuring, present, dismiss } =
-      useSharedElementPresentation(transitions);
+    const { modalRef, measuring, transitionsEnabled, present, dismiss } =
+      useSharedElementPresentation(
+        transitions,
+        measurementTimeout,
+        onMeasurementTimeout
+      );
 
     useImperativeHandle(ref, () => ({ present, dismiss }), [dismiss, present]);
 
@@ -47,7 +56,9 @@ export const SharedElementModal = forwardRef<ModalRef, SharedElementModalProps>(
         onLayout={onLayout}
         ref={modalRef}
       >
-        <SharedElementModalContent transitions={transitions}>
+        <SharedElementModalContent
+          transitions={transitionsEnabled ? transitions : []}
+        >
           {children}
         </SharedElementModalContent>
       </Modal>

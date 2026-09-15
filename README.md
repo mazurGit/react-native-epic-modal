@@ -171,7 +171,9 @@ the package's built-in `mode` still controls size interpolation.
 `waitForStableRects` before starting the animation. Every configured `startId`
 and `endId` must be mounted and report finite coordinates with positive dimensions.
 Measurements must remain unchanged for two animation frames; dismissing the
-modal cancels the pending wait.
+modal cancels the pending wait. If an endpoint does not become ready within
+`measurementTimeout` (1000 ms by default), the modal opens without the shared
+transition. Use `onMeasurementTimeout` to report the affected element IDs.
 
 ---
 
