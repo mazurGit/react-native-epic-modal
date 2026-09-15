@@ -51,8 +51,29 @@ yarn add react-native-epic-modal react-native-gesture-handler react-native-reani
 import { ModalProvider } from 'react-native-epic-modal';
 
 export default function App() {
-  return <ModalProvider>{/* Your App Content */}</ModalProvider>;
+  return (
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ModalProvider>{/* Your App Content */}</ModalProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
+  );
 }
+```
+
+`ModalProvider` must be rendered inside every context provider whose value is
+used by modal content. Modal content is rendered by the provider's `ModalHost`,
+so it receives contexts placed above `ModalProvider`, but not contexts declared
+deeper in an individual screen.
+
+If a context belongs only to one modal, place its provider inside the modal:
+
+```tsx
+<Modal ref={modalRef}>
+  <FormProvider {...formMethods}>
+    <EditProfileForm />
+  </FormProvider>
+</Modal>
 ```
 
 ---
