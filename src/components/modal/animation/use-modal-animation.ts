@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import {
+  ReduceMotion,
   useSharedValue,
   withTiming,
   type SharedValue,
@@ -40,11 +41,15 @@ export const useModalAnimation = ({
       return;
     }
 
-    progress.value = withTiming(exiting ? 0 : 1, { duration }, (finished) => {
-      if (finished && exiting && onExitComplete) {
-        scheduleOnRN(onExitComplete);
+    progress.value = withTiming(
+      exiting ? 0 : 1,
+      { duration, reduceMotion: ReduceMotion.Never },
+      (finished) => {
+        if (finished && exiting && onExitComplete) {
+          scheduleOnRN(onExitComplete);
+        }
       }
-    });
+    );
   }, [duration, enabled, exiting, hidden, visible, onExitComplete, progress]);
 
   return progress;

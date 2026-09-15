@@ -5,6 +5,7 @@ import { useModalAnimation } from './use-modal-animation';
 
 jest.mock('react', () => ({ useEffect: jest.fn() }));
 jest.mock('react-native-reanimated', () => ({
+  ReduceMotion: { Never: 'never' },
   useSharedValue: jest.fn(),
   withTiming: jest.fn((value) => value),
 }));
@@ -62,7 +63,7 @@ describe('modal animation lifecycle', () => {
     render({ enabled: true });
     expect(withTiming).toHaveBeenCalledWith(
       1,
-      { duration: 250 },
+      { duration: 250, reduceMotion: 'never' },
       expect.any(Function)
     );
   });
