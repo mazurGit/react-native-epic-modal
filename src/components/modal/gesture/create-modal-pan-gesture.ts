@@ -1,8 +1,12 @@
 import { Gesture, type GestureType } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
-import { withTiming } from 'react-native-reanimated';
+import { ReduceMotion, withTiming } from 'react-native-reanimated';
 import type { ResolvedModalGestureConfig } from './modal-gesture';
 import type { ModalGestureRuntime } from './modal-gesture-runtime';
+import {
+  MODAL_GESTURE_FOLLOW_DURATION,
+  MODAL_GESTURE_SETTLE_DURATION,
+} from '../constants';
 import {
   getActiveEdge,
   getAxisForEdge,
@@ -30,11 +34,24 @@ const getOffsets = (config: ResolvedModalGestureConfig): EdgeOffsets => ({
 const animateBack = (runtime: ModalGestureRuntime) => {
   'worklet';
   runtime.phase.value = 'settling';
-  runtime.translationX.value = withTiming(0, { duration: 180 });
-  runtime.translationY.value = withTiming(0, { duration: 180 });
-  runtime.progress.value = withTiming(1, { duration: 180 }, (finished) => {
-    if (finished) runtime.phase.value = 'idle';
+  runtime.translationX.value = withTiming(0, {
+    duration: MODAL_GESTURE_SETTLE_DURATION,
+    reduceMotion: ReduceMotion.Never,
   });
+  runtime.translationY.value = withTiming(0, {
+    duration: MODAL_GESTURE_SETTLE_DURATION,
+    reduceMotion: ReduceMotion.Never,
+  });
+  runtime.progress.value = withTiming(
+    1,
+    {
+      duration: MODAL_GESTURE_SETTLE_DURATION,
+      reduceMotion: ReduceMotion.Never,
+    },
+    (finished) => {
+      if (finished) runtime.phase.value = 'idle';
+    }
+  );
 };
 
 const animateFollowGesture = (
@@ -47,11 +64,23 @@ const animateFollowGesture = (
   runtime.phase.value = 'dismissing';
   const target = direction * distance;
   if (axis === 'x') {
-    runtime.translationX.value = withTiming(target, { duration: 250 });
-    runtime.translationY.value = withTiming(0, { duration: 250 });
+    runtime.translationX.value = withTiming(target, {
+      duration: MODAL_GESTURE_FOLLOW_DURATION,
+      reduceMotion: ReduceMotion.Never,
+    });
+    runtime.translationY.value = withTiming(0, {
+      duration: MODAL_GESTURE_FOLLOW_DURATION,
+      reduceMotion: ReduceMotion.Never,
+    });
   } else {
-    runtime.translationX.value = withTiming(0, { duration: 250 });
-    runtime.translationY.value = withTiming(target, { duration: 250 });
+    runtime.translationX.value = withTiming(0, {
+      duration: MODAL_GESTURE_FOLLOW_DURATION,
+      reduceMotion: ReduceMotion.Never,
+    });
+    runtime.translationY.value = withTiming(target, {
+      duration: MODAL_GESTURE_FOLLOW_DURATION,
+      reduceMotion: ReduceMotion.Never,
+    });
   }
 };
 

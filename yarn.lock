@@ -13023,7 +13023,7 @@ __metadata:
     react-native: 0.86.3
     react-native-builder-bob: ^0.40.6
     react-native-epic-modal: "workspace:*"
-    react-native-epic-shared-element: "github:mazurGit/react-native-epic-shared-element#0389c4bb77b8c82cfa380c2c3f61acce23db3124"
+    react-native-epic-shared-element: "github:mazurGit/react-native-epic-shared-element#b7b8d8a0827778dfa4096c47255a74ab3f9ddbe6"
     react-native-gesture-handler: ~2.32.0
     react-native-reanimated: 4.5.1
     react-native-safe-area-context: ~5.7.0
@@ -13060,7 +13060,7 @@ __metadata:
     react: 19.2.3
     react-native: 0.86.3
     react-native-builder-bob: ^0.40.6
-    react-native-epic-shared-element: "github:mazurGit/react-native-epic-shared-element#0389c4bb77b8c82cfa380c2c3f61acce23db3124"
+    react-native-epic-shared-element: "github:mazurGit/react-native-epic-shared-element#b7b8d8a0827778dfa4096c47255a74ab3f9ddbe6"
     react-native-gesture-handler: ~2.32.0
     react-native-reanimated: 4.5.1
     react-native-screens: ~4.26.0
@@ -13077,15 +13077,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"react-native-epic-shared-element@github:mazurGit/react-native-epic-shared-element#0389c4bb77b8c82cfa380c2c3f61acce23db3124":
+"react-native-epic-shared-element@github:mazurGit/react-native-epic-shared-element#b7b8d8a0827778dfa4096c47255a74ab3f9ddbe6":
   version: 0.1.0
-  resolution: "react-native-epic-shared-element@https://github.com/mazurGit/react-native-epic-shared-element.git#commit=0389c4bb77b8c82cfa380c2c3f61acce23db3124"
+  resolution: "react-native-epic-shared-element@https://github.com/mazurGit/react-native-epic-shared-element.git#commit=b7b8d8a0827778dfa4096c47255a74ab3f9ddbe6"
   peerDependencies:
     react: "*"
     react-native: "*"
     react-native-reanimated: ">=3.16.0"
     react-native-worklets: ">=0.5.0"
-  checksum: 13cbbff0eef77d4e4450239e2bbe93717917b84fadeb0fc914ea44e5e7cdc904b43231106b4a253e8015d0b96a30e531724ba1121f22ffebe8700c9de4c0938f
+  checksum: f4dc3653184be871bb5292c0eb4d7667eca763fb45cacf60aeaba7e9a43a8af440b938f77b1dd589d8d95ee7374fe8b7df03bb8878e81b6d83817eee25a6bbde
   languageName: node
   linkType: hard
 

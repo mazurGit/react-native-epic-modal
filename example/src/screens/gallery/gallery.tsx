@@ -195,8 +195,6 @@ export function Gallery() {
             key: 'gallery-title',
             startId: titleSourceId(selected),
             endId: 'gallery-detail-title',
-            // Text needs glyph scaling; resizing only the wrapper does not
-            // change the font metrics during the shared transition.
             transition: mix(Geometry.text, Projection.linear),
           },
         ]}

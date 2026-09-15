@@ -25,7 +25,7 @@
     "react-dom": "19.2.3",
     "react-native": "0.86.3",
     "react-native-epic-modal": "workspace:*",
-    "react-native-epic-shared-element": "github:mazurGit/react-native-epic-shared-element#0389c4bb77b8c82cfa380c2c3f61acce23db3124",
+    "react-native-epic-shared-element": "github:mazurGit/react-native-epic-shared-element#b7b8d8a0827778dfa4096c47255a74ab3f9ddbe6",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
