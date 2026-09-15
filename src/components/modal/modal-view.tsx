@@ -1,4 +1,10 @@
-import { useMemo, type PropsWithChildren } from 'react';
+import {
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useState,
+  type PropsWithChildren,
+} from 'react';
 import {
   StyleSheet,
   useWindowDimensions,
@@ -7,8 +13,12 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedReaction,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 import { GestureDetector } from 'react-native-gesture-handler';
+import { scheduleOnRN } from 'react-native-worklets';
 import { ModalProgressContext } from '../../context/modal-progress-context';
 import {
   DEFAULT_MODAL_ANIMATION,
@@ -60,6 +70,16 @@ export const ModalView = ({
     () => resolveModalGestureConfig(gestureConfig),
     [gestureConfig]
   );
+  const [transitionActive, setTransitionActive] = useState(
+    animationEnabled && visible && !hidden
+  );
+  const completeTransition = useCallback(() => setTransitionActive(false), []);
+
+  // Mount the transition overlay before the passive effect starts animation.
+  useLayoutEffect(() => {
+    if (animationEnabled && visible && !hidden) setTransitionActive(true);
+  }, [animationEnabled, exiting, hidden, visible]);
+
   const progress = useModalAnimation({
     enabled: animationEnabled,
     hidden,
@@ -67,6 +87,7 @@ export const ModalView = ({
     duration: resolvedAnimation.duration,
     exiting,
     onExitComplete,
+    onAnimationComplete: completeTransition,
   });
   const {
     gesture: gestureHandler,
@@ -78,6 +99,16 @@ export const ModalView = ({
     onDismissRequest: onDismissRequest,
     progress,
   });
+
+  useAnimatedReaction(
+    () => gestureActive.value,
+    (active, previous) => {
+      if (previous !== null && active !== previous) {
+        scheduleOnRN(setTransitionActive, active);
+      }
+    },
+    [gestureActive]
+  );
 
   const backdropAnimatedStyle = useAnimatedStyle(() => ({
     opacity: progress.value,
@@ -110,7 +141,7 @@ export const ModalView = ({
             <Animated.View
               style={[styles.backdrop, backdropStyle, backdropAnimatedStyle]}
             />
-            <ModalTransitionLayer>
+            <ModalTransitionLayer active={transitionActive}>
               <Animated.View
                 onLayout={onLayout}
                 style={[styles.content, style, contentAnimatedStyle]}

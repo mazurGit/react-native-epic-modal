@@ -14,6 +14,7 @@ type UseModalAnimationOptions = {
   visible?: boolean;
   duration: number;
   onExitComplete?: () => void;
+  onAnimationComplete?: () => void;
 };
 
 export const useModalAnimation = ({
@@ -23,6 +24,7 @@ export const useModalAnimation = ({
   visible = true,
   duration,
   onExitComplete,
+  onAnimationComplete,
 }: UseModalAnimationOptions): SharedValue<number> => {
   const progress = useSharedValue(
     !enabled && visible && !hidden && !exiting ? 1 : 0
@@ -32,11 +34,13 @@ export const useModalAnimation = ({
     // Measurement must keep the transition at its source endpoint.
     if (!exiting && (hidden || !visible)) {
       progress.value = 0;
+      onAnimationComplete?.();
       return;
     }
 
     if (!enabled) {
       progress.value = exiting ? 0 : 1;
+      onAnimationComplete?.();
       if (exiting) onExitComplete?.();
       return;
     }
@@ -45,12 +49,21 @@ export const useModalAnimation = ({
       exiting ? 0 : 1,
       { duration, reduceMotion: ReduceMotion.Never },
       (finished) => {
-        if (finished && exiting && onExitComplete) {
-          scheduleOnRN(onExitComplete);
-        }
+        if (!finished) return;
+        if (onAnimationComplete) scheduleOnRN(onAnimationComplete);
+        if (exiting && onExitComplete) scheduleOnRN(onExitComplete);
       }
     );
-  }, [duration, enabled, exiting, hidden, visible, onExitComplete, progress]);
+  }, [
+    duration,
+    enabled,
+    exiting,
+    hidden,
+    visible,
+    onAnimationComplete,
+    onExitComplete,
+    progress,
+  ]);
 
   return progress;
 };

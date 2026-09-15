@@ -98,4 +98,16 @@ describe('modal animation lifecycle', () => {
     callback(true);
     expect(scheduleOnRN).toHaveBeenCalledWith(onExitComplete);
   });
+
+  it('reports when an entering animation has finished', () => {
+    const onAnimationComplete = jest.fn();
+    render({ enabled: true, onAnimationComplete });
+    const callback = jest.mocked(withTiming).mock.calls[0]![2]!;
+
+    callback(false);
+    expect(scheduleOnRN).not.toHaveBeenCalled();
+
+    callback(true);
+    expect(scheduleOnRN).toHaveBeenCalledWith(onAnimationComplete);
+  });
 });

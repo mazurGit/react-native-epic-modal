@@ -1,12 +1,15 @@
 import { useCallback, useMemo, useState, type PropsWithChildren } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { SharedElementTransitionLayer } from 'react-native-epic-shared-element';
 import {
   ModalTransitionContext,
   type ModalTransitionDescriptor,
 } from '../../context/modal-transition-context';
-import { SharedElementTransitionView } from '../shared-element-modal/shared-element-transition';
 
-export function ModalTransitionLayer({ children }: PropsWithChildren) {
+export function ModalTransitionLayer({
+  active,
+  children,
+}: PropsWithChildren<{ active: boolean }>) {
   const [transitions, setTransitions] = useState<ModalTransitionDescriptor[]>(
     []
   );
@@ -31,16 +34,17 @@ export function ModalTransitionLayer({ children }: PropsWithChildren) {
 
   return (
     <ModalTransitionContext.Provider value={context}>
-      {children}
-      <View pointerEvents="box-none" style={styles.overlay}>
-        {transitions.map(({ key, ...transition }) => (
-          <SharedElementTransitionView key={key} {...transition} />
-        ))}
-      </View>
+      <SharedElementTransitionLayer
+        active={active}
+        transitions={transitions}
+        style={styles.overlay}
+      >
+        {children}
+      </SharedElementTransitionLayer>
     </ModalTransitionContext.Provider>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: { ...StyleSheet.absoluteFill, zIndex: 1000 },
+  overlay: { zIndex: 1000 },
 });
