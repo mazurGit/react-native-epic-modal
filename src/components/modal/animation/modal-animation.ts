@@ -6,9 +6,7 @@ export type ModalEnteringAnimationPreset =
   | 'slideTop'
   | 'slideBottom';
 
-export type ModalExitingAnimationPreset =
-  | ModalEnteringAnimationPreset
-  | 'slideFree';
+export type ModalExitingAnimationPreset = ModalEnteringAnimationPreset;
 
 export type ModalAnimationPreset = ModalExitingAnimationPreset;
 

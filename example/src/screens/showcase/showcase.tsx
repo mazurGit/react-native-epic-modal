@@ -20,7 +20,7 @@ export function Showcase() {
   const preview = useRef<ModalRef>(null);
   const [motion, setMotion] = useState<MotionSettings>({
     entering: 'zoom',
-    exiting: 'slideFree',
+    exiting: 'slideBottom',
     duration: 450,
     gesture: 'free',
   });

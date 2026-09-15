@@ -89,12 +89,7 @@ export const ModalView = ({
     onExitComplete,
     onAnimationComplete: completeTransition,
   });
-  const {
-    gesture: gestureHandler,
-    gestureActive,
-    translationX,
-    translationY,
-  } = useModalGesture({
+  const { gesture: gestureHandler, gestureActive } = useModalGesture({
     config: resolvedGesture,
     onDismissRequest: onDismissRequest,
     progress,
@@ -122,9 +117,7 @@ export const ModalView = ({
       exiting,
       gestureActive,
       width,
-      height,
-      translationX,
-      translationY
+      height
     )
   );
 

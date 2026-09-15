@@ -35,8 +35,6 @@ export function MotionPreviewModal({
         enabled: motion.gesture !== 'off',
         immersive: motion.gesture === 'free',
         edges: { left: 36 },
-        dismissBehavior:
-          motion.exiting === 'slideFree' ? 'followGesture' : 'settle',
         swipeProgressToClose: 0.35,
       }}
     >

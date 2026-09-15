@@ -249,7 +249,7 @@ function MotionLab({
       />
       <OptionGroup
         label="EXIT ANIMATION"
-        values={[...enteringPresets, 'slideFree']}
+        values={enteringPresets}
         selected={motion.exiting}
         onSelect={(exiting) => onMotionChange({ exiting })}
       />

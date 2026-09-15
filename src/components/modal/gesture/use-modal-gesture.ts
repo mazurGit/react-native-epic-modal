@@ -18,10 +18,7 @@ type UseModalGestureOptions = {
   onDismissRequest?: () => void;
 };
 
-type ModalGestureState = Pick<
-  ModalGestureRuntime,
-  'gestureActive' | 'translationX' | 'translationY'
-> & {
+type ModalGestureState = Pick<ModalGestureRuntime, 'gestureActive'> & {
   gesture: GestureType;
 };
 
@@ -51,7 +48,5 @@ export const useModalGesture = ({
   return {
     gesture,
     gestureActive: runtime.gestureActive,
-    translationX: runtime.translationX,
-    translationY: runtime.translationY,
   };
 };

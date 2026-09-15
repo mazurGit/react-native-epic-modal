@@ -16,9 +16,7 @@ export const getModalAnimationStyle = (
   exiting: boolean,
   gestureActive: SharedValue<boolean>,
   width: number,
-  height: number,
-  translationX: SharedValue<number>,
-  translationY: SharedValue<number>
+  height: number
 ): ViewStyle => {
   'worklet';
 
@@ -39,15 +37,6 @@ export const getModalAnimationStyle = (
             Extrapolation.CLAMP
           ),
         },
-      ],
-    };
-  }
-
-  if (preset === 'slideFree') {
-    return {
-      transform: [
-        { translateX: translationX.value },
-        { translateY: translationY.value },
       ],
     };
   }

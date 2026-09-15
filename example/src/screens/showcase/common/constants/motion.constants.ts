@@ -19,5 +19,4 @@ export const animationLabels: Record<ModalExitingAnimationPreset, string> = {
   slideRight: 'Right →',
   slideTop: '↑ Top',
   slideBottom: 'Bottom ↓',
-  slideFree: 'Free ↗',
 };
