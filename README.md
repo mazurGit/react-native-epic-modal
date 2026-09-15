@@ -66,6 +66,10 @@ used by modal content. Modal content is rendered by the provider's `ModalHost`,
 so it receives contexts placed above `ModalProvider`, but not contexts declared
 deeper in an individual screen.
 
+Mount exactly one `ModalProvider` in the application. The modal registry and
+host are app-wide; mounting another provider throws an error instead of rendering
+the same modal stack more than once.
+
 If a context belongs only to one modal, place its provider inside the modal:
 
 ```tsx
