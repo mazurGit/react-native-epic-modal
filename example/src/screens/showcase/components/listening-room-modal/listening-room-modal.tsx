@@ -3,7 +3,9 @@ import { ScrollView, Text, View } from 'react-native';
 import {
   SharedElement,
   SharedElementModal,
-  SharedElementPresets,
+  Geometry,
+  Projection,
+  mix,
   type ModalRef,
 } from 'react-native-epic-modal';
 import { useArtworkSize } from '../../../../hooks/use-artwork-size/use-artwork-size.hook';
@@ -23,8 +25,8 @@ export function ListeningRoomModal({
     <SharedElementModal
       ref={player}
       animation={{
-        entering: 'slideLeft',
-        exiting: 'slideLeft',
+        entering: 'slideBottom',
+        exiting: 'slideBottom',
         duration: 500,
       }}
       gestureConfig={{ edges: { top: 100 } }}
@@ -33,14 +35,14 @@ export function ListeningRoomModal({
           key: 'art',
           startId: 'orbit-home-art',
           endId: 'orbit-player-art',
-          mode: 'zoom',
-          transition: SharedElementPresets.swoosh,
+          transition: mix(Geometry.resize, Projection.swoosh),
           element: <Artwork fill />,
         },
         {
           key: 'title',
           startId: 'orbit-home-title',
           endId: 'orbit-player-title',
+          transition: mix(Geometry.text, Projection.linear),
         },
       ]}
     >
@@ -59,7 +61,7 @@ export function ListeningRoomModal({
             <SharedElement id="orbit-player-art">
               <Artwork size={artworkSize} />
             </SharedElement>
-            <SharedElement id="orbit-player-title" contentType="text">
+            <SharedElement id="orbit-player-title">
               <Text style={[s.trackTitle, s.playerTitle]}>Orbit</Text>
             </SharedElement>
             <Text style={s.body}>Kairo Collective / Vol. 01</Text>

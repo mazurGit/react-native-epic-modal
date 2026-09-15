@@ -90,7 +90,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "react-native-epic-shared-element": "github:mazurGit/react-native-epic-shared-element#258cc22cf2f7c0b4e21bd4353883ee1a3daafd28"
+    "react-native-epic-shared-element": "github:mazurGit/react-native-epic-shared-element#0389c4bb77b8c82cfa380c2c3f61acce23db3124"
   },
   "peerDependencies": {
     "react": "*",

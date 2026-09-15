@@ -12,6 +12,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   SharedElement,
   SharedElementModal,
+  Geometry,
+  Projection,
+  mix,
   type ModalRef,
 } from 'react-native-epic-modal';
 import { useSharedElementRegistry } from 'react-native-epic-shared-element';
@@ -70,6 +73,7 @@ const photos = [
 ] as const;
 
 const sourceId = (index: number) => `gallery-${photos[index]!.id}`;
+const titleSourceId = (index: number) => `gallery-title-${photos[index]!.id}`;
 
 export function Gallery() {
   const insets = useSafeAreaInsets();
@@ -101,8 +105,12 @@ export function Gallery() {
     // hidden thumbnail until dismissal; transfer that ownership when browsing.
     const previousNode = get(sourceId(selected));
     const nextNode = get(sourceId(next));
+    const previousTitleNode = get(titleSourceId(selected));
+    const nextTitleNode = get(titleSourceId(next));
     if (previousNode) previousNode.visibility.value = 1;
     if (nextNode) nextNode.visibility.value = 0;
+    if (previousTitleNode) previousTitleNode.visibility.value = 1;
+    if (nextTitleNode) nextTitleNode.visibility.value = 0;
     setSelected(next);
   };
 
@@ -146,7 +154,12 @@ export function Gallery() {
                     ]}
                   />
                 </SharedElement>
-                <Text style={styles.cardTitle}>{item.title}</Text>
+                <SharedElement
+                  id={titleSourceId(index)}
+                  style={styles.cardTitleSpacing}
+                >
+                  <Text style={styles.cardTitle}>{item.title}</Text>
+                </SharedElement>
                 <Text style={styles.number}>0{index + 1} / FIELD NOTES</Text>
               </Pressable>
             ))}
@@ -169,7 +182,6 @@ export function Gallery() {
             key: 'gallery-photo',
             startId: sourceId(selected),
             endId: 'gallery-detail',
-            mode: 'resize',
             element: (
               <Image
                 source={photo.source}
@@ -178,6 +190,14 @@ export function Gallery() {
                 style={styles.transitionImage}
               />
             ),
+          },
+          {
+            key: 'gallery-title',
+            startId: titleSourceId(selected),
+            endId: 'gallery-detail-title',
+            // Text needs glyph scaling; resizing only the wrapper does not
+            // change the font metrics during the shared transition.
+            transition: mix(Geometry.text, Projection.linear),
           },
         ]}
       >
@@ -211,7 +231,9 @@ export function Gallery() {
               />
             </SharedElement>
           </View>
-          <Text style={styles.detailTitle}>{photo.title}</Text>
+          <SharedElement id="gallery-detail-title">
+            <Text style={styles.detailTitle}>{photo.title}</Text>
+          </SharedElement>
           <Text style={styles.description}>{photo.subtitle}</Text>
           <View style={styles.toolbar}>
             <Pressable
@@ -273,9 +295,10 @@ const styles = StyleSheet.create({
   cardTitle: {
     color: colors.text,
     fontSize: 15,
-    fontWeight: '600',
-    marginTop: 8,
+    lineHeight: 20,
+    fontWeight: '700',
   },
+  cardTitleSpacing: { marginTop: 8 },
   number: { color: colors.muted, fontSize: 10, letterSpacing: 1, marginTop: 4 },
   footnote: {
     color: colors.muted,
@@ -295,7 +318,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   pictureArea: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  detailTitle: { color: colors.text, fontSize: 28, fontWeight: '700' },
+  detailTitle: {
+    color: colors.text,
+    fontSize: 28,
+    lineHeight: 37,
+    fontWeight: '700',
+  },
   transitionImage: { width: '100%', height: '100%' },
   step: { padding: 14, borderRadius: 14, backgroundColor: colors.panel },
   stepText: { color: colors.text, fontWeight: '600' },

@@ -13023,7 +13023,7 @@ __metadata:
     react-native: 0.86.3
     react-native-builder-bob: ^0.40.6
     react-native-epic-modal: "workspace:*"
-    react-native-epic-shared-element: "github:mazurGit/react-native-epic-shared-element#258cc22cf2f7c0b4e21bd4353883ee1a3daafd28"
+    react-native-epic-shared-element: "github:mazurGit/react-native-epic-shared-element#0389c4bb77b8c82cfa380c2c3f61acce23db3124"
     react-native-gesture-handler: ~2.32.0
     react-native-reanimated: 4.5.1
     react-native-safe-area-context: ~5.7.0
@@ -13060,7 +13060,7 @@ __metadata:
     react: 19.2.3
     react-native: 0.86.3
     react-native-builder-bob: ^0.40.6
-    react-native-epic-shared-element: "github:mazurGit/react-native-epic-shared-element#258cc22cf2f7c0b4e21bd4353883ee1a3daafd28"
+    react-native-epic-shared-element: "github:mazurGit/react-native-epic-shared-element#0389c4bb77b8c82cfa380c2c3f61acce23db3124"
     react-native-gesture-handler: ~2.32.0
     react-native-reanimated: 4.5.1
     react-native-screens: ~4.26.0
@@ -13077,9 +13077,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"react-native-epic-shared-element@github:mazurGit/react-native-epic-shared-element#258cc22cf2f7c0b4e21bd4353883ee1a3daafd28":
+"react-native-epic-shared-element@github:mazurGit/react-native-epic-shared-element#0389c4bb77b8c82cfa380c2c3f61acce23db3124":
   version: 0.1.0
-  resolution: "react-native-epic-shared-element@https://github.com/mazurGit/react-native-epic-shared-element.git#commit=258cc22cf2f7c0b4e21bd4353883ee1a3daafd28"
+  resolution: "react-native-epic-shared-element@https://github.com/mazurGit/react-native-epic-shared-element.git#commit=0389c4bb77b8c82cfa380c2c3f61acce23db3124"
   peerDependencies:
     react: "*"
     react-native: "*"

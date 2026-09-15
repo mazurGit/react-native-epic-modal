@@ -75,31 +75,16 @@ function SharedElementModalContent({
   return (
     <>
       {children}
-      {transitions.map(
-        ({
-          key,
-          startId,
-          endId,
-          element,
-          clip,
-          mode,
-          contentType,
-          transition,
-        }) => {
-          return (
-            <SharedElementTransition
-              key={key}
-              startId={startId}
-              element={element}
-              endId={endId}
-              clip={clip}
-              mode={mode}
-              contentType={contentType}
-              transition={transition}
-            />
-          );
-        }
-      )}
+      {transitions.map(({ key, startId, endId, element, clip, transition }) => (
+        <SharedElementTransition
+          key={key}
+          startId={startId}
+          element={element}
+          endId={endId}
+          clip={clip}
+          transition={transition}
+        />
+      ))}
     </>
   );
 }

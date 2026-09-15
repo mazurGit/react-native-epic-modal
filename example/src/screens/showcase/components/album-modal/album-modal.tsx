@@ -4,6 +4,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   SharedElement,
   SharedElementModal,
+  Geometry,
+  Projection,
+  mix,
   type ModalRef,
 } from 'react-native-epic-modal';
 import { s } from '../../styles';
@@ -29,13 +32,13 @@ export function AlbumModal({ album }: { album: RefObject<ModalRef | null> }) {
           key: 'album-art',
           startId: 'orbit-player-art',
           endId: 'orbit-album-art',
-          mode: 'resize',
           element: <Artwork fill />,
         },
         {
           key: 'album-title',
           startId: 'orbit-player-title',
           endId: 'orbit-album-title',
+          transition: mix(Geometry.text, Projection.linear),
         },
       ]}
     >
@@ -63,7 +66,7 @@ export function AlbumModal({ album }: { album: RefObject<ModalRef | null> }) {
               <Artwork size={112} />
             </SharedElement>
             <View style={s.flexCopy}>
-              <SharedElement id="orbit-album-title" contentType="text">
+              <SharedElement id="orbit-album-title">
                 <Text style={s.trackTitle}>Orbit</Text>
               </SharedElement>
               <Text style={s.body}>

@@ -7,6 +7,9 @@ export {
   SharedElementHost,
   SharedElement,
   SharedElementPresets,
+  Geometry,
+  Projection,
+  mix,
 } from 'react-native-epic-shared-element';
 export { SharedElementTransition } from './components/shared-element-modal/shared-element-transition';
 export type {
@@ -18,7 +21,6 @@ export type { SharedElementModalRef } from './components/shared-element-modal/sh
 export type {
   SharedElementHostProps,
   SharedElementProps,
-  SharedElementContentType,
   SharedElementProviderProps,
   SharedElementNode,
   SharedElementRect,

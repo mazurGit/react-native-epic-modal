@@ -140,7 +140,7 @@ function SharedElementsCard({
           <Artwork size={104} />
         </SharedElement>
         <View style={s.sourceCopy}>
-          <SharedElement id="orbit-home-title" contentType="text">
+          <SharedElement id="orbit-home-title">
             <Text style={s.trackTitle}>Orbit</Text>
           </SharedElement>
           <Text style={s.body}>Kairo Collective</Text>
