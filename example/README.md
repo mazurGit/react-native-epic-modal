@@ -2,6 +2,22 @@
 
 A self-contained, offline showcase of the current Epic Modal API. The artwork is drawn with React Native views; no image downloads or extra UI dependencies are needed.
 
+The bottom navigation switches between Interaction Studio and Photo Gallery.
+Gallery photographs are bundled locally; their source URLs are recorded in
+`assets/gallery/README.md`.
+
+## Photo gallery
+
+Open any of the four photographs to see a shared-element transition from the
+grid into a full-screen viewer. Previous/Next changes the photograph immediately
+inside the viewer; closing animates the current photo back to its own thumbnail.
+You can also dismiss by dragging from the top edge. All return targets stay
+mounted in the grid. Screen tabs themselves do not animate with shared elements.
+
+Manual checks on Android and iOS: open each image, close by button, cancel a
+short dismissal gesture, complete a dismissal gesture, browse to another image
+and close, then reopen the original image to check thumbnail visibility.
+
 ## Run
 
 From the repository root, install with `yarn install`, then run:

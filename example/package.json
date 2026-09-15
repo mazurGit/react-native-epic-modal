@@ -15,7 +15,11 @@
   },
   "dependencies": {
     "@expo/metro-runtime": "~57.0.15",
+    "@expo/vector-icons": "^15.1.1",
+    "@react-navigation/bottom-tabs": "^7.19.1",
+    "@react-navigation/native": "^7.4.1",
     "expo": "^57.0.0",
+    "expo-font": "~57.0.3",
     "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
