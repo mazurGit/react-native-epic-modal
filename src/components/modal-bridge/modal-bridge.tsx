@@ -69,11 +69,21 @@ export const ModalBridge = forwardRef<ModalRef, ModalBridgeProps>(
     );
 
     const contentRef = useRef<ModalContentRef>(null);
+    const initialProps = useRef(modalProps);
 
     useEffect(
-      () => modalManager.register({ id, props: modalProps, ref: contentRef }),
-      [id, modalProps]
+      () =>
+        modalManager.register({
+          id,
+          props: initialProps.current,
+          ref: contentRef,
+        }),
+      [id]
     );
+
+    useEffect(() => {
+      modalManager.update({ id, props: modalProps, ref: contentRef });
+    }, [id, modalProps]);
 
     useImperativeHandle(
       ref,

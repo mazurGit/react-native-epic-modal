@@ -52,6 +52,17 @@ export class ModalManager {
     return () => this.unregister(registration.id, registration.ref);
   };
 
+  update = (registration: ModalRegistration) => {
+    const existingEntry = this.entries.get(registration.id);
+    if (!existingEntry || existingEntry.ref !== registration.ref) return;
+
+    this.entries.set(registration.id, {
+      ...existingEntry,
+      ...registration,
+    });
+    this.updateSnapshot();
+  };
+
   unregister = (id: string, ref?: RefObject<ModalRef | null>) => {
     if (ref && this.entries.get(id)?.ref !== ref) return;
 

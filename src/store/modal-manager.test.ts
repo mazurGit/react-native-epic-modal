@@ -40,4 +40,32 @@ describe('ModalManager', () => {
 
     expect(listener).toHaveBeenCalledTimes(2);
   });
+
+  it('preserves presentation order when modal props change', () => {
+    const manager = modalManager;
+    manager.clear();
+    const lower = registration('lower');
+    const top = registration('top');
+
+    manager.register(lower);
+    manager.register(top);
+    manager.present('lower');
+    manager.present('top');
+    manager.update({ ...top, props: { animationEnabled: false } });
+
+    expect(manager.getSnapshot().map(({ id }) => id)).toEqual(['lower', 'top']);
+    expect(manager.getSnapshot()[1]?.props.animationEnabled).toBe(false);
+  });
+
+  it('ignores an update from a stale registration', () => {
+    const manager = modalManager;
+    manager.clear();
+    const current = registration('modal');
+    const stale = registration('modal');
+
+    manager.register(current);
+    manager.update({ ...stale, props: { animationEnabled: false } });
+
+    expect(manager.getSnapshot()[0]?.props.animationEnabled).toBeUndefined();
+  });
 });
