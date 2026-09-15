@@ -9,6 +9,8 @@ import { scheduleOnRN } from 'react-native-worklets';
 type UseModalAnimationOptions = {
   exiting: boolean;
   enabled: boolean;
+  hidden?: boolean;
+  visible?: boolean;
   duration: number;
   onExitComplete?: () => void;
 };
@@ -16,14 +18,25 @@ type UseModalAnimationOptions = {
 export const useModalAnimation = ({
   exiting,
   enabled,
+  hidden = false,
+  visible = true,
   duration,
   onExitComplete,
 }: UseModalAnimationOptions): SharedValue<number> => {
-  const progress = useSharedValue(0);
+  const progress = useSharedValue(
+    !enabled && visible && !hidden && !exiting ? 1 : 0
+  );
 
   useEffect(() => {
-    if (!enabled) {
+    // Measurement must keep the transition at its source endpoint.
+    if (!exiting && (hidden || !visible)) {
       progress.value = 0;
+      return;
+    }
+
+    if (!enabled) {
+      progress.value = exiting ? 0 : 1;
+      if (exiting) onExitComplete?.();
       return;
     }
 
@@ -32,7 +45,7 @@ export const useModalAnimation = ({
         scheduleOnRN(onExitComplete);
       }
     });
-  }, [duration, enabled, exiting, onExitComplete, progress]);
+  }, [duration, enabled, exiting, hidden, visible, onExitComplete, progress]);
 
   return progress;
 };

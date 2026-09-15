@@ -61,7 +61,9 @@ export const ModalView = ({
     [gestureConfig]
   );
   const progress = useModalAnimation({
-    enabled: animationEnabled && (visible || exiting),
+    enabled: animationEnabled,
+    hidden,
+    visible,
     duration: resolvedAnimation.duration,
     exiting,
     onExitComplete,
