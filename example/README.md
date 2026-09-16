@@ -8,11 +8,13 @@ Gallery photographs are bundled locally; their source URLs are recorded in
 
 ## Photo gallery
 
-Open any of the four photographs to see a shared-element transition from the
-grid into a full-screen viewer. Previous/Next changes the photograph immediately
-inside the viewer; closing animates the current photo back to its own thumbnail.
-You can also dismiss by dragging from the top edge. All return targets stay
-mounted in the grid. Screen tabs themselves do not animate with shared elements.
+Open any of the eight gallery cards, backed by four bundled photographs, to see
+a shared-element transition from the grid into a full-screen viewer.
+Previous/Next changes the photograph immediately inside the viewer; closing
+animates the current photo back to its own thumbnail. Each photo demonstrates a
+different shared-element trajectory and modal presentation. The dismissal
+gesture edge follows the modal's exit direction. All return targets stay mounted
+in the grid. Screen tabs themselves do not animate with shared elements.
 
 Manual checks on Android and iOS: open each image, close by button, cancel a
 short dismissal gesture, complete a dismissal gesture, browse to another image
@@ -38,9 +40,9 @@ Use a native build with `react-native-epic-shared-element` installed. Expo Go an
 
 ## Demo walkthrough
 
-1. **Shared elements:** open the listening room, then the album. Artwork uses `resize`, while title uses the default `zoom` mode. Return through both screens to see the reverse transitions. These are visual demo screens, not an audio player.
+1. **Shared elements:** open the listening room, then the album. Artwork uses `resize`, while the `SharedText` title uses `zoom` geometry. Return through both screens to see the reverse transitions. These are visual demo screens, not an audio player.
 2. **Layers:** choose a collection, open confirmation, and save. Three modals remain stacked; dismiss them individually to see the retained selection, or return to the studio in one action. The saved collection lives in memory for the current app session.
-3. **Motion lab:** independently choose all six entering presets, all seven exiting presets, a duration, and anywhere/left-edge/button-only dismissal. Open the preview and drag it: the orbit and meter subscribe to `useModalProgress` on the UI thread. A short drag returns; a longer drag dismisses.
+3. **Motion lab:** independently choose all six entering and exiting presets, a duration, and anywhere/left-edge/button-only dismissal. Open the preview and drag it: the orbit and meter subscribe to `useModalProgress` on the UI thread. A short drag returns; a longer drag dismisses.
 
 The home screen has quick links to Layers and Motion Lab. Shared-element screens use edge gestures to leave their scrolling content available. Every modal also has an explicit close control.
 

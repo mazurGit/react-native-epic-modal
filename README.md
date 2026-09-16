@@ -17,9 +17,10 @@ See the [example walkthrough and native launch instructions](example/README.md).
 
 - 🎯 Portal-based rendering (modals independent of navigation tree)
 - 🎯 Swipe-to-dismiss gestures with configurable areas
-- 🎯 Built-in animations: `fade`, `slide`, `zoom`
+- 🎯 Built-in animations: `fade`, `zoom`, `slideLeft`, `slideRight`, `slideTop`, and `slideBottom`
 - 🎯 Priority stacking for layered modals
-- 🎯 Full control via `show()` and `hide()` programmatically
+- 🎯 Shared-element transitions for images and text
+- 🎯 Full control via `ref.present()` and `ref.dismiss()`
 - 🎯 TypeScript support out of the box
 - 🎯 Lightweight and mobile-first
 
@@ -28,7 +29,8 @@ See the [example walkthrough and native launch instructions](example/README.md).
 ## 🎥 Demo
 
 <p align="center">
-  <img src="docs/demo.gif" alt="Epic Modal Demo" width="300" />
+  <img src="docs/demo-gallery.gif" alt="Epic Modal Gallery Demo" width="220" />
+  <img src="docs/demo-listening-room.gif" alt="Epic Modal Listening Room Demo" width="220" />
 </p>
 
 ## 📦 Installation
@@ -117,14 +119,16 @@ export default function Screen() {
 
 ## ⚙️ Modal Props
 
-| Prop            | Type                   | Default                                                | Description                                |
-| :-------------- | :--------------------- | :----------------------------------------------------- | :----------------------------------------- |
-| `animation`     | `ModalAnimationConfig` | `{ entering: 'fade', exiting: 'fade', duration: 250 }` | Configure entering and exiting presets     |
-| `gestureConfig` | `ModalGestureConfig`   | —                                                      | Configure swipe dismissal and active edges |
-| `style`         | `StyleProp<ViewStyle>` | —                                                      | Style the modal content container          |
-| `backdropStyle` | `StyleProp<ViewStyle>` | —                                                      | Style the backdrop                         |
-| `ref.present()` | `() => void`           | —                                                      | Present the modal                          |
-| `ref.dismiss()` | `() => void`           | —                                                      | Dismiss the modal                          |
+| Prop               | Type                   | Default                                                | Description                                |
+| :----------------- | :--------------------- | :----------------------------------------------------- | :----------------------------------------- |
+| `animation`        | `ModalAnimationConfig` | `{ entering: 'fade', exiting: 'fade', duration: 250 }` | Configure entering and exiting presets     |
+| `gestureConfig`    | `ModalGestureConfig`   | —                                                      | Configure swipe dismissal and active edges |
+| `style`            | `StyleProp<ViewStyle>` | —                                                      | Style the modal content container          |
+| `backdropStyle`    | `StyleProp<ViewStyle>` | —                                                      | Style the backdrop                         |
+| `animationEnabled` | `boolean`              | `true`                                                 | Enable or disable modal animations         |
+| `onLayout`         | `(event) => void`      | —                                                      | Observe the modal content layout           |
+| `ref.present()`    | `() => void`           | —                                                      | Present the modal                          |
+| `ref.dismiss()`    | `() => void`           | —                                                      | Dismiss the modal                          |
 
 ---
 
@@ -132,12 +136,20 @@ export default function Screen() {
 
 ```tsx
 gestureConfig={{
+  enabled: true,
+  immersive: false,
   edges: { left: 50, top: 100 },
   swipeVelocityThreshold: 800,
   swipeProgressToClose: 0.6,
   dismissBehavior: 'settle',
 }}
 ```
+
+`edges` defines the active start areas for edge gestures. A gesture from the
+left edge dismisses to the right; right dismisses to the left; top dismisses
+down; and bottom dismisses up. Set `immersive: true` to track a swipe that can
+start anywhere on the modal. `dismissBehavior: 'followGesture'` keeps the
+modal following the swipe while it completes.
 
 ## Animate Custom Content
 
@@ -161,7 +173,67 @@ function ModalContent() {
 
 `useModalProgress` must be called from a component rendered inside `Modal`.
 
-## Custom Shared-Element Transitions
+## Shared-element transitions
+
+`ModalProvider` mounts the shared-element provider and host for the application.
+Use `SharedElement` for visual content such as images and `SharedText` for text.
+Both endpoints must be mounted in the same `ModalProvider`-managed tree.
+
+```tsx
+import { Image } from 'react-native';
+import {
+  Geometry,
+  Projection,
+  SharedElement,
+  SharedElementModal,
+  SharedText,
+  mix,
+} from 'react-native-epic-modal';
+
+<SharedElement id="home-art">
+  <Image source={artwork} style={{ width: 120, height: 120 }} />
+</SharedElement>
+<SharedText id="home-title" style={styles.title}>
+  Orbit
+</SharedText>
+
+<SharedElementModal
+  ref={modalRef}
+  transitions={[
+    {
+      key: 'art',
+      startId: 'home-art',
+      endId: 'player-art',
+      transition: mix(Geometry.resize, Projection.linear),
+    },
+    {
+      key: 'title',
+      startId: 'home-title',
+      endId: 'player-title',
+      transition: mix(Geometry.zoom, Projection.linear),
+    },
+  ]}
+>
+  <SharedElement id="player-art">
+    <Image source={artwork} style={{ width: 320, height: 420 }} />
+  </SharedElement>
+  <SharedText id="player-title" style={styles.largeTitle}>
+    Orbit
+  </SharedText>
+</SharedElementModal>;
+```
+
+`SharedText` is a text-aware shared element. It uses `onTextLayout` to measure
+the widest rendered line and text height, so it should be used directly instead
+of wrapping a `Text` component in `SharedElement`.
+
+`SharedElementModal` adds these props to the regular modal API:
+
+- `transitions`: transition descriptors with `key`, `startId`, `endId`, and an
+  optional `transition`, `element`, or `clip` override.
+- `measurementTimeout`: maximum initial layout wait in milliseconds; defaults to
+  `1000`.
+- `onMeasurementTimeout`: callback receiving the IDs that did not settle in time.
 
 Use `transition` when a transition needs a custom path. The callback runs as a
 Reanimated worklet and receives normalized progress plus the measured start and
@@ -195,8 +267,13 @@ const spiral = ({ progress, start, end }) => {
 />;
 ```
 
-When `transition` is provided, it controls the element's position and transform;
-the package's built-in `mode` still controls size interpolation.
+Available geometry presets are `resize`, `zoom`, `aspectResizeWidth`, and
+`aspectResizeHeight`. Available projection presets are `linear`, `spiral`,
+`slingshot`, `arc`, `swoosh`, and `portalWarp`.
+
+`element` is optional; when omitted, the transition uses the source endpoint's
+rendered element. Set `clip={false}` when the transition should be allowed to
+draw outside its animated bounds.
 
 `SharedElementModal.present()` mounts the destination invisibly and calls
 `waitForStableRects` before starting the animation. Every configured `startId`
