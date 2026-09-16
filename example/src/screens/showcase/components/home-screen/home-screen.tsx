@@ -1,6 +1,5 @@
 import type { RefObject } from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SharedElement, type ModalRef } from 'react-native-epic-modal';
 import { colors } from '../../../../common/constants/colors.constants';
 import {
@@ -15,6 +14,7 @@ import { s } from '../../styles';
 import { Artwork } from '../artwork/artwork';
 import { Button } from '../button/button';
 import { Chip } from '../chip/chip';
+import { Screen } from '../../../../components/screen/screen';
 
 type SectionOffsets = { layers: number; motion: number };
 
@@ -37,18 +37,8 @@ export function HomeScreen({
   motion: MotionSettings;
   onMotionChange: (changes: Partial<MotionSettings>) => void;
 }) {
-  const insets = useSafeAreaInsets();
   return (
-    <View
-      style={[
-        s.root,
-        {
-          paddingTop: insets.top,
-          paddingLeft: insets.left,
-          paddingRight: insets.right,
-        },
-      ]}
-    >
+    <Screen edges={['top', 'left', 'right']} style={s.root}>
       <ScrollView
         ref={scroll}
         testID="showcase-scroll"
@@ -68,7 +58,7 @@ export function HomeScreen({
           No navigation dependency. Just motion.
         </Text>
       </ScrollView>
-    </View>
+    </Screen>
   );
 }
 

@@ -15,8 +15,6 @@ import { Button } from '../button/button';
 import { TrackList } from '../track-list/track-list';
 
 export function AlbumModal({ album }: { album: RefObject<ModalRef | null> }) {
-  // FullWindowOverlay reparents native views. Read the app's insets before
-  // entering the overlay instead of measuring safe area on the sliding view.
   const insets = useSafeAreaInsets();
   return (
     <SharedElementModal

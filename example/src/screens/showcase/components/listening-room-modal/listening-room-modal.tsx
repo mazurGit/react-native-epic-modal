@@ -9,6 +9,7 @@ import {
   type ModalRef,
 } from 'react-native-epic-modal';
 import { useArtworkSize } from '../../../../hooks/use-artwork-size/use-artwork-size.hook';
+import { Screen } from '../../../../components/screen/screen';
 import { s } from '../../styles';
 import { Artwork } from '../artwork/artwork';
 import { Button } from '../button/button';
@@ -29,7 +30,7 @@ export function ListeningRoomModal({
         exiting: 'slideBottom',
         duration: 500,
       }}
-      gestureConfig={{ edges: { top: 100 } }}
+      gestureConfig={{ edges: { top: 200 } }}
       transitions={[
         {
           key: 'art',
@@ -46,7 +47,7 @@ export function ListeningRoomModal({
         },
       ]}
     >
-      <View style={s.root}>
+      <Screen edges={['top', 'bottom']} style={s.root}>
         <ScrollView contentContainerStyle={s.page}>
           <View style={s.nav}>
             <Text style={s.eyebrow}>THE LISTENING ROOM</Text>
@@ -83,7 +84,7 @@ export function ListeningRoomModal({
             onPress={() => album.current?.present()}
           />
         </ScrollView>
-      </View>
+      </Screen>
     </SharedElementModal>
   );
 }

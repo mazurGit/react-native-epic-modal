@@ -20,6 +20,7 @@ import {
 import { useSharedElementRegistry } from 'react-native-epic-shared-element';
 import { colors } from '../../common/constants/colors.constants';
 import { Button } from '../showcase/components/button/button';
+import { Screen } from '../../components/screen/screen';
 
 const photos = [
   {
@@ -115,11 +116,10 @@ export function Gallery() {
   };
 
   return (
-    <View style={styles.root}>
+    <Screen edges={['top']} style={styles.root}>
       <ScrollView
         contentContainerStyle={{
-          paddingTop: insets.top + 16,
-          paddingBottom: insets.bottom + 16,
+          paddingVertical: 16,
         }}
       >
         <View style={[styles.page, { width: gridWidth }]}>
@@ -268,7 +268,7 @@ export function Gallery() {
           </Text>
         </View>
       </SharedElementModal>
-    </View>
+    </Screen>
   );
 }
 
