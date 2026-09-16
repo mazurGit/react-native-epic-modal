@@ -11,8 +11,35 @@ const root = path.resolve(__dirname, '..');
  *
  * @type {import('metro-config').MetroConfig}
  */
-module.exports = getConfig(getDefaultConfig(__dirname), {
+const config = getConfig(getDefaultConfig(__dirname), {
   root,
   pkg,
   project: __dirname,
 });
+
+const defaultResolveRequest = config.resolver.resolveRequest;
+
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+  if (moduleName === 'react-native-epic-modal') {
+    return {
+      filePath: path.resolve(root, 'src/index.tsx'),
+      type: 'sourceFile',
+    };
+  }
+
+  if (moduleName === 'react-native-epic-shared-element') {
+    return {
+      filePath: path.resolve(
+        root,
+        'node_modules/react-native-epic-shared-element/src/index.tsx'
+      ),
+      type: 'sourceFile',
+    };
+  }
+
+  return defaultResolveRequest
+    ? defaultResolveRequest(context, moduleName, platform)
+    : context.resolveRequest(context, moduleName, platform);
+};
+
+module.exports = config;

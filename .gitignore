@@ -71,6 +71,12 @@ android/keystores/debug.keystore
 
 # Expo
 .expo/
+example/dist/
+example/android/
+example/ios/
+artifacts/
+e2e/artifacts/
+.detox/
 
 # Turborepo
 .turbo/
@@ -84,3 +90,15 @@ android/generated
 
 # React Native Nitro Modules
 nitrogen/
+
+# Local Codex context
+.local-context/
+
+# Local Codex context
+.codex/context/
+
+# Local architecture 
+internal-docs/
+
+# Logs
+metro.log

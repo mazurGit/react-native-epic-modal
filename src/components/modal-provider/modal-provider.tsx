@@ -1,19 +1,18 @@
-import { useState, type FC, type PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import {
-  ModalSetStateProvider,
-  ModalStateProvider,
-} from '../../context/context';
+  SharedElementHost,
+  SharedElementProvider,
+} from 'react-native-epic-shared-element';
 import { ModalHost } from '../modal-host/modal-host';
-import type { IModalComponent } from '../modal/types';
 
-export const ModalProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [state, setState] = useState<IModalComponent[]>([]);
+export type ModalProviderProps = PropsWithChildren;
+
+/** Provides the app-level modal integration point and mounts the modal host. */
+export const ModalProvider = ({ children }: ModalProviderProps) => {
   return (
-    <ModalSetStateProvider.Provider value={setState}>
-      <ModalStateProvider.Provider value={state}>
-        {children}
-        <ModalHost />
-      </ModalStateProvider.Provider>
-    </ModalSetStateProvider.Provider>
+    <SharedElementProvider>
+      <SharedElementHost>{children}</SharedElementHost>
+      <ModalHost />
+    </SharedElementProvider>
   );
 };
