@@ -30,7 +30,6 @@ See the [example walkthrough and native launch instructions](example/README.md).
 
 <p align="center">
   <img src="docs/demo-gallery.gif" alt="Epic Modal Gallery Demo" width="220" />
-  <img src="docs/demo-listening-room.gif" alt="Epic Modal Listening Room Demo" width="220" />
 </p>
 
 ## 📦 Installation
