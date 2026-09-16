@@ -2,6 +2,7 @@ import type { RefObject } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import {
   SharedElement,
+  SharedText,
   SharedElementModal,
   Geometry,
   Projection,
@@ -43,7 +44,7 @@ export function ListeningRoomModal({
           key: 'title',
           startId: 'orbit-home-title',
           endId: 'orbit-player-title',
-          transition: mix(Geometry.text, Projection.linear),
+          transition: mix(Geometry.zoom, Projection.linear),
         },
       ]}
     >
@@ -62,9 +63,12 @@ export function ListeningRoomModal({
             <SharedElement id="orbit-player-art">
               <Artwork size={artworkSize} />
             </SharedElement>
-            <SharedElement id="orbit-player-title">
-              <Text style={[s.trackTitle, s.playerTitle]}>Orbit</Text>
-            </SharedElement>
+            <SharedText
+              id="orbit-player-title"
+              style={[s.trackTitle, s.playerTitle]}
+            >
+              Orbit
+            </SharedText>
             <Text style={s.body}>Kairo Collective / Vol. 01</Text>
           </View>
           <View style={s.panel}>

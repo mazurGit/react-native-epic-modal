@@ -26,7 +26,7 @@
     "react-dom": "19.2.3",
     "react-native": "0.86.3",
     "react-native-epic-modal": "workspace:*",
-    "react-native-epic-shared-element": "^0.1.0",
+    "react-native-epic-shared-element": "^0.2.1",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",

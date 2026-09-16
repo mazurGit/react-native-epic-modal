@@ -90,7 +90,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "react-native-epic-shared-element": "^0.1.0"
+    "react-native-epic-shared-element": "^0.2.1"
   },
   "peerDependencies": {
     "react": "*",

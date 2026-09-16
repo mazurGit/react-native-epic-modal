@@ -6,11 +6,14 @@ export {
   SharedElementProvider,
   SharedElementHost,
   SharedElement,
-  SharedElementPresets,
+  SharedText,
   Geometry,
   Projection,
   mix,
 } from 'react-native-epic-shared-element';
+// Keep the previous modal-package name available while following the updated
+// shared-element package's Projection API.
+export { Projection as SharedElementPresets } from 'react-native-epic-shared-element';
 export { SharedElementTransition } from './components/shared-element-modal/shared-element-transition';
 export type {
   ModalBridgeProps as ModalProps,
@@ -21,6 +24,7 @@ export type { SharedElementModalRef } from './components/shared-element-modal/sh
 export type {
   SharedElementHostProps,
   SharedElementProps,
+  SharedTextProps,
   SharedElementProviderProps,
   SharedElementNode,
   SharedElementRect,

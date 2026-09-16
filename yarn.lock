@@ -13050,7 +13050,7 @@ __metadata:
     react-native: 0.86.3
     react-native-builder-bob: ^0.40.6
     react-native-epic-modal: "workspace:*"
-    react-native-epic-shared-element: ^0.1.0
+    react-native-epic-shared-element: ^0.2.1
     react-native-gesture-handler: ~2.32.0
     react-native-reanimated: 4.5.1
     react-native-safe-area-context: ~5.7.0
@@ -13087,7 +13087,7 @@ __metadata:
     react: 19.2.3
     react-native: 0.86.3
     react-native-builder-bob: ^0.40.6
-    react-native-epic-shared-element: ^0.1.0
+    react-native-epic-shared-element: ^0.2.1
     react-native-gesture-handler: ~2.32.0
     react-native-reanimated: 4.5.1
     react-native-screens: ~4.26.0
@@ -13104,15 +13104,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"react-native-epic-shared-element@npm:^0.1.0":
-  version: 0.1.2
-  resolution: "react-native-epic-shared-element@npm:0.1.2"
+"react-native-epic-shared-element@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "react-native-epic-shared-element@npm:0.2.1"
   peerDependencies:
     react: "*"
     react-native: "*"
     react-native-reanimated: ">=3.16.0"
     react-native-worklets: ">=0.5.0"
-  checksum: 3c1b128894c468ddd5f2a88e2e96bc0be6adb7bcb32b6f6969d35cf9cbbfdd6c6c0bac85170b757da9208ca6b330333170473b1058f520f9381df5fb819371ef
+  checksum: d8fa42f4e56aa59122a59647760de05413a79e123b187952a8d4fa1a1f0944ae6d6dc2ce3ccfc1a794f558977a950286448db22db48e4bdc95095bafd08bdf39
   languageName: node
   linkType: hard
 

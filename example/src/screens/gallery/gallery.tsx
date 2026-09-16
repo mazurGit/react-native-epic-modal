@@ -11,10 +11,13 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   SharedElement,
+  SharedText,
   SharedElementModal,
   Geometry,
   Projection,
   mix,
+  type ModalAnimationConfig,
+  type ModalGestureEdge,
   type ModalRef,
 } from 'react-native-epic-modal';
 import { useSharedElementRegistry } from 'react-native-epic-shared-element';
@@ -22,56 +25,127 @@ import { colors } from '../../common/constants/colors.constants';
 import { Button } from '../showcase/components/button/button';
 import { Screen } from '../../components/screen/screen';
 
+type GalleryTransition = {
+  geometry: 'resize';
+  projection: keyof typeof Projection;
+};
+
+type GalleryAnimation = Required<
+  Pick<ModalAnimationConfig, 'entering' | 'exiting' | 'duration'>
+>;
+
 const photos = [
   {
     id: 'forest',
     title: 'Into the quiet',
     subtitle: 'A little further from everything.',
     source: require('../../../assets/gallery/forest.jpg'),
+    transition: { geometry: 'resize', projection: 'linear' },
+    animation: {
+      entering: 'slideBottom',
+      exiting: 'slideBottom',
+      duration: 420,
+    },
   },
   {
     id: 'mountains',
     title: 'Higher ground',
     subtitle: 'Take the long way home.',
     source: require('../../../assets/gallery/mountains.jpg'),
+    transition: { geometry: 'resize', projection: 'arc' },
+    animation: { entering: 'slideLeft', exiting: 'slideRight', duration: 460 },
   },
   {
     id: 'coast',
     title: 'Slow mornings',
     subtitle: 'Leave room for the unexpected.',
     source: require('../../../assets/gallery/coast.jpg'),
+    transition: { geometry: 'resize', projection: 'spiral' },
+    animation: { entering: 'fade', exiting: 'fade', duration: 500 },
   },
   {
     id: 'canopy',
     title: 'Wild places',
     subtitle: 'Something worth looking up for.',
     source: require('../../../assets/gallery/canopy.jpg'),
+    transition: { geometry: 'resize', projection: 'swoosh' },
+    animation: { entering: 'slideTop', exiting: 'slideBottom', duration: 420 },
   },
   {
     id: 'trail',
     title: 'The long trail',
     subtitle: 'Follow the path beyond the familiar.',
     source: require('../../../assets/gallery/forest.jpg'),
+    transition: { geometry: 'resize', projection: 'slingshot' },
+    animation: { entering: 'slideRight', exiting: 'slideLeft', duration: 460 },
   },
   {
     id: 'summit',
     title: 'Above the clouds',
     subtitle: 'A wider view changes the way home.',
     source: require('../../../assets/gallery/mountains.jpg'),
+    transition: { geometry: 'resize', projection: 'portalWarp' },
+    animation: { entering: 'slideTop', exiting: 'slideBottom', duration: 480 },
   },
   {
     id: 'tide',
     title: 'Between tides',
     subtitle: 'The shoreline never holds still.',
     source: require('../../../assets/gallery/coast.jpg'),
+    transition: { geometry: 'resize', projection: 'arc' },
+    animation: { entering: 'slideBottom', exiting: 'slideTop', duration: 440 },
   },
   {
     id: 'treetops',
     title: 'Under the canopy',
     subtitle: 'Light finds a way through the leaves.',
     source: require('../../../assets/gallery/canopy.jpg'),
+    transition: { geometry: 'resize', projection: 'spiral' },
+    animation: { entering: 'slideLeft', exiting: 'slideRight', duration: 440 },
   },
-] as const;
+] as const satisfies readonly {
+  id: string;
+  title: string;
+  subtitle: string;
+  source: number;
+  transition: GalleryTransition;
+  animation: GalleryAnimation;
+}[];
+
+function createGalleryTransition({ geometry, projection }: GalleryTransition) {
+  return mix(Geometry[geometry], Projection[projection]);
+}
+
+function getGalleryTextProjection(projection: keyof typeof Projection) {
+  return Projection[projection === 'spiral' ? 'linear' : projection];
+}
+
+function getGalleryGestureEdge(
+  exiting: GalleryAnimation['exiting']
+): ModalGestureEdge {
+  switch (exiting) {
+    case 'slideTop':
+      return 'bottom';
+    case 'slideLeft':
+      return 'right';
+    case 'slideRight':
+      return 'left';
+    case 'slideBottom':
+    case 'fade':
+    default:
+      return 'top';
+  }
+}
+
+function createGalleryGestureConfig(animation: GalleryAnimation) {
+  const edge = getGalleryGestureEdge(animation.exiting);
+  const inset = edge === 'top' || edge === 'bottom' ? 200 : 36;
+
+  return {
+    edges: { [edge]: inset },
+    swipeProgressToClose: 0.3,
+  };
+}
 
 const sourceId = (index: number) => `gallery-${photos[index]!.id}`;
 const titleSourceId = (index: number) => `gallery-title-${photos[index]!.id}`;
@@ -154,12 +228,14 @@ export function Gallery() {
                     ]}
                   />
                 </SharedElement>
-                <SharedElement
-                  id={titleSourceId(index)}
-                  style={styles.cardTitleSpacing}
-                >
-                  <Text style={styles.cardTitle}>{item.title}</Text>
-                </SharedElement>
+                <View style={styles.cardTitleSpacing}>
+                  <SharedText
+                    id={titleSourceId(index)}
+                    style={styles.cardTitle}
+                  >
+                    {item.title}
+                  </SharedText>
+                </View>
                 <Text style={styles.number}>0{index + 1} / FIELD NOTES</Text>
               </Pressable>
             ))}
@@ -171,12 +247,8 @@ export function Gallery() {
       </ScrollView>
       <SharedElementModal
         ref={modal}
-        animation={{
-          entering: 'slideBottom',
-          exiting: 'slideBottom',
-          duration: 420,
-        }}
-        gestureConfig={{ edges: { top: 200 }, swipeProgressToClose: 0.3 }}
+        animation={photo.animation}
+        gestureConfig={createGalleryGestureConfig(photo.animation)}
         transitions={[
           {
             key: 'gallery-photo',
@@ -190,12 +262,16 @@ export function Gallery() {
                 style={styles.transitionImage}
               />
             ),
+            transition: createGalleryTransition(photo.transition),
           },
           {
             key: 'gallery-title',
             startId: titleSourceId(selected),
             endId: 'gallery-detail-title',
-            transition: mix(Geometry.text, Projection.linear),
+            transition: mix(
+              Geometry.zoom,
+              getGalleryTextProjection(photo.transition.projection)
+            ),
           },
         ]}
       >
@@ -229,9 +305,9 @@ export function Gallery() {
               />
             </SharedElement>
           </View>
-          <SharedElement id="gallery-detail-title">
-            <Text style={styles.detailTitle}>{photo.title}</Text>
-          </SharedElement>
+          <SharedText id="gallery-detail-title" style={styles.detailTitle}>
+            {photo.title}
+          </SharedText>
           <Text style={styles.description}>{photo.subtitle}</Text>
           <View style={styles.toolbar}>
             <Pressable

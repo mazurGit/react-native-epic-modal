@@ -1,6 +1,10 @@
 import type { RefObject } from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import { SharedElement, type ModalRef } from 'react-native-epic-modal';
+import {
+  SharedElement,
+  SharedText,
+  type ModalRef,
+} from 'react-native-epic-modal';
 import { colors } from '../../../../common/constants/colors.constants';
 import {
   animationLabels,
@@ -129,9 +133,9 @@ function SharedElementsCard({
           <Artwork size={104} />
         </SharedElement>
         <View style={s.sourceCopy}>
-          <SharedElement id="orbit-home-title">
-            <Text style={s.trackTitle}>Orbit</Text>
-          </SharedElement>
+          <SharedText id="orbit-home-title" style={s.trackTitle}>
+            Orbit
+          </SharedText>
           <Text style={s.body}>Kairo Collective</Text>
           <Text style={s.caption}>Electronic · 2026</Text>
         </View>

@@ -3,6 +3,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   SharedElement,
+  SharedText,
   SharedElementModal,
   Geometry,
   Projection,
@@ -36,7 +37,7 @@ export function AlbumModal({ album }: { album: RefObject<ModalRef | null> }) {
           key: 'album-title',
           startId: 'orbit-player-title',
           endId: 'orbit-album-title',
-          transition: mix(Geometry.text, Projection.linear),
+          transition: mix(Geometry.zoom, Projection.linear),
         },
       ]}
     >
@@ -54,7 +55,7 @@ export function AlbumModal({ album }: { album: RefObject<ModalRef | null> }) {
         <ScrollView contentContainerStyle={s.page}>
           <Button
             testID="close-album"
-            label="← Back to listening room"
+            label="←    Back to listening room"
             secondary
             onPress={() => album.current?.dismiss()}
           />
@@ -64,9 +65,9 @@ export function AlbumModal({ album }: { album: RefObject<ModalRef | null> }) {
               <Artwork size={112} />
             </SharedElement>
             <View style={s.flexCopy}>
-              <SharedElement id="orbit-album-title">
-                <Text style={s.trackTitle}>Orbit</Text>
-              </SharedElement>
+              <SharedText id="orbit-album-title" style={s.trackTitle}>
+                Orbit
+              </SharedText>
               <Text style={s.body}>
                 The complete sessions{'\n'}4 tracks · 18 min
               </Text>
